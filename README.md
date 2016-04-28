@@ -48,7 +48,7 @@ install it (or use it as is...)
 
 #Generate the documentation
 
-Online documentation is comming...
+Online documentation is available at https://ubinity.github.com/ECPy 
 You can regenerate the doc from git clone
 
     $ cd doc
