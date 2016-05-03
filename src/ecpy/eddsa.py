@@ -43,7 +43,7 @@ class EDDSA:
             msg (bytes)            : the message to sign
             pv_key (key.PrivateKey): key to use for signing
         """
-        return self._do_sign(hash_msg, pv_key)
+        return self._do_sign(msg, pv_key)
 
     
     def _do_sign(self,msg,pv_key):
