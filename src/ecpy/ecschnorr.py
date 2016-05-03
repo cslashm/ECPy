@@ -88,7 +88,7 @@ class ECSchnorr:
             sig (bytes)           : signature to verify
             pu_key (key.PublicKey): key to use for verifying
         """
-        curve = pv_key.curve
+        curve = pu_key.curve
         n     = pu_key.curve.order
         G     = pu_key.curve.generator
         size  = curve.size>>3
