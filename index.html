@@ -341,6 +341,35 @@ and assumes P and Q are on this curve.</p>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="ecpy.curves.Curve.sub_point">
+<code class="descname">sub_point</code><span class="sig-paren">(</span><em>P</em>, <em>Q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.sub_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.sub_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the difference of P and Q</p>
+<p>This function ignores the default curve attach to P and Q,
+and assumes P and Q are on this curve.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>P</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) &#8211; first  point to subtract with</li>
+<li><strong>Q</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) &#8211; second point to subtract to</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A new Point R = P-Q</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point">Point</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">ECPyException</span></code> &#8211; with &#8220;Point not on curve&#8221;, if Point R is not on              curve,  thus meaning either P or Q was not on.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -617,8 +646,8 @@ curve (Curve) : curve</dd>
 <span id="ecdsa-module"></span><h2>ECDSA module<a class="headerlink" href="#module-ecpy.ecdsa" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="ecpy.ecdsa.ECDSA">
-<em class="property">class </em><code class="descclassname">ecpy.ecdsa.</code><code class="descname">ECDSA</code><a class="reference internal" href="_modules/ecpy/ecdsa.html#ECDSA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecdsa.ECDSA" title="Permalink to this definition">¶</a></dt>
-<dd><p>ECDSA Signer</p>
+<em class="property">class </em><code class="descclassname">ecpy.ecdsa.</code><code class="descname">ECDSA</code><span class="sig-paren">(</span><em>fmt='DER'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecdsa.html#ECDSA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecdsa.ECDSA" title="Permalink to this definition">¶</a></dt>
+<dd><p>ECDSA signer.</p>
 <dl class="method">
 <dt id="ecpy.ecdsa.ECDSA.sign">
 <code class="descname">sign</code><span class="sig-paren">(</span><em>msg</em>, <em>pv_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecdsa.html#ECDSA.sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecdsa.ECDSA.sign" title="Permalink to this definition">¶</a></dt>
@@ -701,14 +730,22 @@ curve (Curve) : curve</dd>
 <span id="eddsa-module"></span><h2>EDDSA module<a class="headerlink" href="#module-ecpy.eddsa" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="ecpy.eddsa.EDDSA">
-<em class="property">class </em><code class="descclassname">ecpy.eddsa.</code><code class="descname">EDDSA</code><span class="sig-paren">(</span><em>hasher</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/eddsa.html#EDDSA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.eddsa.EDDSA" title="Permalink to this definition">¶</a></dt>
-<dd><p>EDDSA Signer</p>
-<p>Conform to <a class="reference external" href="https://tools.ietf.org/html/draft-irtf-cfrg-eddsa-05">draft-irtf-cfrg-eddsa-05</a>.</p>
+<em class="property">class </em><code class="descclassname">ecpy.eddsa.</code><code class="descname">EDDSA</code><span class="sig-paren">(</span><em>hasher</em>, <em>fmt='EDDSA'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/eddsa.html#EDDSA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.eddsa.EDDSA" title="Permalink to this definition">¶</a></dt>
+<dd><p>EDDSA signer implemenation according to:</p>
+<blockquote>
+<div><ul class="simple">
+<li>IETF <a class="reference external" href="https://tools.ietf.org/html/draft-irtf-cfrg-eddsa-05">draft-irtf-cfrg-eddsa-05</a>.</li>
+</ul>
+</div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hasher</strong> (<a class="reference external" href="https://docs.python.org/library/hashlib.html#module-hashlib" title="(in Python v2.7)"><em>hashlib</em></a>) &#8211; callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512...</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>hasher</strong> (<a class="reference external" href="https://docs.python.org/library/hashlib.html#module-hashlib" title="(in Python v2.7)"><em>hashlib</em></a>) &#8211; callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512...</li>
+<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; in/out signature format. See formater :mod:ecpy.formatters.</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -756,9 +793,69 @@ curve (Curve) : curve</dd>
 <span id="ecschnorr-module"></span><h2>ECSchnorr module<a class="headerlink" href="#module-ecpy.ecschnorr" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="ecpy.ecschnorr.ECSchnorr">
-<em class="property">class </em><code class="descclassname">ecpy.ecschnorr.</code><code class="descname">ECSchnorr</code><span class="sig-paren">(</span><em>hasher</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecschnorr.html#ECSchnorr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecschnorr.ECSchnorr" title="Permalink to this definition">¶</a></dt>
-<dd><p>ECSchnorrSigner
-Conform to <a class="reference external" href="https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TR03111/BSI-TR-03111_pdf.html">BSI TR 03111</a></p>
+<em class="property">class </em><code class="descclassname">ecpy.ecschnorr.</code><code class="descname">ECSchnorr</code><span class="sig-paren">(</span><em>hasher</em>, <em>option='ISO'</em>, <em>fmt='DER'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecschnorr.html#ECSchnorr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecschnorr.ECSchnorr" title="Permalink to this definition">¶</a></dt>
+<dd><p>ECSchnorr signer implementation according to:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TR03111/BSI-TR-03111_pdf.html">BSI:TR03111</a></li>
+<li><a class="reference external" href="http://www.iso.org/iso/iso_catalogue/catalogue_ics/catalogue_detail_ics.htm?csnumber=43656">ISO/IEC:14888-3</a></li>
+<li><a class="reference external" href="https://github.com/bitcoin-core/secp256k1/blob/master/src/modules/schnorr/schnorr_impl.h">bitcoin-core:libsecp256k1</a></li>
+</ul>
+</div></blockquote>
+<p>In order to select the specification to be conform to, choose
+the corresponding string option:</p>
+<ul>
+<li><dl class="first docutils">
+<dt>&#8220;BSI&#8221;: compute r,s according to to BSI :</dt>
+<dd><ul class="first last simple">
+<li>r = H(M||Q.x%n)</li>
+<li>s = k - r.d</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>&#8220;ISO&#8221;: compute r,s according to ISO :</dt>
+<dd><ul class="first last simple">
+<li>r = H(Q.x||Q.y||M)</li>
+<li>s = k + r.d</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>&#8220;ISOx&#8221;: compute r,s according to optimized ISO variant:</dt>
+<dd><ul class="first last simple">
+<li>r = H(Q.x||M)</li>
+<li>s = k + r.d</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>&#8220;LIBSECP&#8221;: compute r,s according to bitcoin lib:</dt>
+<dd><ul class="first last simple">
+<li>r = Q.x</li>
+<li>h = Hash(r || m).</li>
+<li>s = k - h * d.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Default is &#8220;ISO&#8221;</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>hasher</strong> (<a class="reference external" href="https://docs.python.org/library/hashlib.html#module-hashlib" title="(in Python v2.7)"><em>hashlib</em></a>) &#8211; callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512...</li>
+<li><strong>option</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; one of &#8220;BSI&#8221;,&#8221;ISO&#8221;,&#8221;ISOx&#8221;,&#8221;LIBSECP&#8221;</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="ecpy.ecschnorr.ECSchnorr.sign">
 <code class="descname">sign</code><span class="sig-paren">(</span><em>msg</em>, <em>pv_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecschnorr.html#ECSchnorr.sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecschnorr.ECSchnorr.sign" title="Permalink to this definition">¶</a></dt>
@@ -873,6 +970,76 @@ continuation value to pass to next cal if k is rejected.</p>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(k,V)</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/library/functions.html#tuple" title="(in Python v2.7)">tuple</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ecpy.formatters">
+<span id="formatters-module"></span><h2>formatters  module<a class="headerlink" href="#module-ecpy.formatters" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="ecpy.formatters.decode_sig">
+<code class="descclassname">ecpy.formatters.</code><code class="descname">decode_sig</code><span class="sig-paren">(</span><em>sig</em>, <em>fmt='DER'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/formatters.html#decode_sig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.formatters.decode_sig" title="Permalink to this definition">¶</a></dt>
+<dd><p>encore signature according format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>rs</strong> (<em>bytes,ints,tuple</em>) &#8211; r,s value</li>
+<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; &#8216;DER&#8217;|&#8217;BTUPLE&#8217;|&#8217;ITUPLES&#8217;|&#8217;RAW&#8217;|&#8217;EDDSA</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">(r,s)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ints</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecpy.formatters.encode_sig">
+<code class="descclassname">ecpy.formatters.</code><code class="descname">encode_sig</code><span class="sig-paren">(</span><em>r</em>, <em>s</em>, <em>fmt='DER'</em>, <em>size=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/formatters.html#encode_sig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.formatters.encode_sig" title="Permalink to this definition">¶</a></dt>
+<dd><p>encore signature according format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>r</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; r value</li>
+<li><strong>s</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; s value</li>
+<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; &#8216;DER&#8217;|&#8217;BTUPLE&#8217;|&#8217;ITUPLE&#8217;|&#8217;RAW&#8217;|&#8217;EDDSA</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">TLV   for DER encoding</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">bytes</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">(r,s) for BTUPLE encoding</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">bytes</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">(r,s) for ITUPLE encoding</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">ints</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">r|s   for RAW encoding</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bytes</p>
+</td>
 </tr>
 </tbody>
 </table>
