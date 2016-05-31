@@ -133,6 +133,26 @@ class Curve:
              curve,  thus meaning either P or Q was not on.
         """        
         raise NotImplementedError('Abstract method add_point')
+    
+    def sub_point(self, P,Q):
+        """ Returns the difference of P and Q
+
+        This function ignores the default curve attach to P and Q, 
+        and assumes P and Q are on this curve.
+    
+        Args:
+            P (Point): first  point to subtract with
+            Q (Point): second point to subtract to
+
+        Returns:
+            Point: A new Point R = P-Q
+
+        Raises:
+             ECPyException : with "Point not on curve", if Point R is not on \
+             curve,  thus meaning either P or Q was not on.
+        """        
+        return self.add_point(P,Q.neg())
+
             
     def mul_point(self, k, P):
         """ Returns the scalar multiplication  P with k.
@@ -510,6 +530,20 @@ class Point:
     def curve(self):
         return self._curve
         
+    def __neg__(self):
+        curve = self.curve
+        return Point(self.x,curve.field-self.y,curve)
+    
+    def __add__(self, Q):
+        if isinstance(Q,Point) :
+            return self.curve.add_point(self,Q)
+        raise NotImplementedError('__add__: type not supported: %s'%type(Q))
+
+    def __sub__(self, Q):
+        if isinstance(Q,Point) :
+            return self.curve.sub_point(self,Q)
+        raise NotImplementedError('__sub__: type not supported: %s'%type(Q))
+
     def __mul__(self, scal):
         if isinstance(scal,int):
             return self.curve.mul_point(scal,self)
@@ -517,11 +551,6 @@ class Point:
 
     def __rmul__(self,scal) :
         return self.__mul__(scal)
-    
-    def __add__(self, Q):
-        if isinstance(Q,Point) :
-            return self.curve.add_point(self,Q)
-        raise NotImplementedError('__add__: type not supported: %s'%type(Q))
     
     def __eq__(self,Q):
         if isinstance(Q,Point) :
@@ -532,8 +561,14 @@ class Point:
                     self._y == Q._y)
         raise NotImplementedError('eq: type not supported: %s'%(type(Q)))
     
+    def neg(self):
+        return self.__neg__()
+        
     def add(self, Q):
         return self.__add__(Q)
+
+    def sub(self, Q):
+        return self.__sub__(Q)
 
     def mul(self, k):
         return self.__mul__(k)
@@ -678,7 +713,7 @@ curves = [
     },
     
     {
-        'name':      "brainpool p256r1",
+        'name':      "Brainpool-p256r1",
         'type':      WEIERSTRASS,
         'size':      256,
         'field':     0xa9fb57dba1eea9bc3e660a909d838d726e3bf623d52620282013481d1f6e5377,
@@ -691,7 +726,7 @@ curves = [
     },
     
     {
-        'name':      "brainpool p256t1",
+        'name':      "Brainpool-p256t1",
         'type':      WEIERSTRASS,
         'size':      256,
         'field':     0xa9fb57dba1eea9bc3e660a909d838d726e3bf623d52620282013481d1f6e5377,
@@ -704,7 +739,7 @@ curves = [
     },
     
     {
-        'name':      "brainpool p224r1",
+        'name':      "Brainpool-p224r1",
         'type':      WEIERSTRASS,
         'size':      224,
         'field':     0xD7C134AA264366862A18302575D1D787B09F075797DA89F57EC8C0FF,
@@ -717,7 +752,7 @@ curves = [
     },
     
     {
-        'name':      "brainpool p224t1",
+        'name':      "Brainpool-p224t1",
         'type':      WEIERSTRASS,
         'size':      192,
         'a':         0xD7C134AA264366862A18302575D1D787B09F075797DA89F57EC8C0FC,
@@ -730,7 +765,7 @@ curves = [
     },
     
     {
-        'name':      "brainpool p192r1",
+        'name':      "Brainpool-p192r1",
         'type':      WEIERSTRASS,
         'size':      192,
         'field':     0xc302f41d932a36cda7a3463093d18db78fce476de1a86297,
@@ -743,7 +778,7 @@ curves = [
     },
     
     {
-        'name':      "brainpool p192t1",
+        'name':      "Brainpool-p192t1",
         'type':      WEIERSTRASS,
         'size':      192,
         'field':     0xc302f41d932a36cda7a3463093d18db78fce476de1a86297,
@@ -756,7 +791,7 @@ curves = [
     },
     
     {
-        'name':      "brainpool p160r1",
+        'name':      "Brainpool-p160r1",
         'type':      WEIERSTRASS,
         'size':      160,
         'field':     0xe95e4a5f737059dc60dfc7ad95b3d8139515620f,
@@ -769,7 +804,7 @@ curves = [
     },
 
     {
-        'name':      "brainpool p160t1",
+        'name':      "Brainpool-p160t1",
         'type':      WEIERSTRASS,
         'size':      160,
         'field':     0xe95e4a5f737059dc60dfc7ad95b3d8139515620f,
@@ -782,7 +817,7 @@ curves = [
     },
 
     {
-        'name':      "P 256",
+        'name':      "NIST-P256",
         'type':      WEIERSTRASS,
         'size':      256,
         'field':     0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff,
@@ -795,7 +830,7 @@ curves = [
     },
 
     {
-        'name':      "P 224",
+        'name':      "NIST-P224",
         'type':      WEIERSTRASS,
         'size':      224,
         'field':     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000001,
@@ -808,7 +843,7 @@ curves = [
     },
     
     {
-        'name':      "P 192",
+        'name':      "NIST-P192",
         'type':      WEIERSTRASS,
         'size':      192,
         'field':     0xfffffffffffffffffffffffffffffffeffffffffffffffff,

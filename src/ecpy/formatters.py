@@ -15,19 +15,25 @@
 #python 2 compatibility
 from builtins import int,pow
 
+def list_formats():
+    return ("DER","BTUPLE","ITUPLE","RAW","EDDSA")
 
 def encode_sig(r,s,fmt="DER",size=0) :
     """ encore signature according format
 
-    Args
+    Args:
         r (int):   r value
         s (int):   s value
-        fmt (str): DER|TUPLE|RAW|EDDSA
+        fmt (str): 'DER'|'BTUPLE'|'ITUPLE'|'RAW'|'EDDSA
 
-    Returns
-       bytes:  TLV   for DER encoding
-       ints:   (r,s) for TUPLE encoding
-       bytes:  r|s   for RAW encoding
+    Returns:
+         bytes:  TLV   for DER encoding
+    Returns:
+         bytes:  (r,s) for BTUPLE encoding
+    Returns:
+         ints:   (r,s) for ITUPLE encoding
+    Returns:
+         bytes:  r|s   for RAW encoding
     """
     
     if fmt=="DER":        
@@ -42,9 +48,12 @@ def encode_sig(r,s,fmt="DER",size=0) :
                b'\x02'+int(len(s)).to_bytes(1,'big') + s      )
         return sig
 
-    if fmt=="TUPLE":
+    if fmt=="BTUPLE":
         r = r.to_bytes((r.bit_length()+7)//8, 'big')
         s = s.to_bytes((s.bit_length()+7)//8, 'big')
+        return (r,s)
+
+    if fmt=="ITUPLE":
         return (r,s)
     
     if fmt=="RAW":
@@ -65,13 +74,14 @@ def encode_sig(r,s,fmt="DER",size=0) :
 def decode_sig(sig,fmt="DER") :
     """ encore signature according format
 
-    Args
-        rs () : r value       
-        fmt (str): DER|TUPLE|RAW|EDDSA
+    Args:
+        rs (bytes,ints,tuple) : r,s value       
+        fmt (str): 'DER'|'BTUPLE'|'ITUPLES'|'RAW'|'EDDSA
 
-    Returns       
+    Returns:       
        ints:   (r,s) 
     """
+
     
     if fmt=="DER":
         sig_len  = sig[1]+2
@@ -88,8 +98,13 @@ def decode_sig(sig,fmt="DER") :
         s = int.from_bytes(sig[s_offset:s_offset+s_len], 'big')                
         return r,s
     
-    if fmt=="TUPLE":        
-        return sig[0],sig[1]
+    if fmt=="ITUPLE":        
+        return (sig[0],sig[1])
+
+    if fmt=="BTUPLE":        
+        r = int.from_bytes(sig[0], 'big')
+        s = int.from_bytes(sig[1], 'big')                
+        return r,s
 
     if fmt=="RAW":
         l = len(sig)>>1

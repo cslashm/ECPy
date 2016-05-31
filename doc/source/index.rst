@@ -148,6 +148,13 @@ ecrand  module
    :show-inheritance:
    :members:
 
+formatters  module
+------------------
+
+.. automodule:: ecpy.formatters
+   :show-inheritance:
+   :members:
+
       
 Indices and tables
 ==================

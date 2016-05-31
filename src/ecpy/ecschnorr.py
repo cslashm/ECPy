@@ -17,23 +17,54 @@ from builtins import int,pow
 
 from ecpy.curves     import Curve,Point
 from ecpy.keys       import ECPublicKey, ECPrivateKey
-from ecpy.formatters import decode_sig, encode_sig
+from ecpy.formatters import decode_sig, encode_sig, list_formats
 from ecpy            import ecrand
+from ecpy.curves     import ECPyException
 
 import hashlib
 
 class ECSchnorr:
-    """ ECSchnorrSigner
-    Conform to `BSI TR 03111  
-    <https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TR03111/BSI-TR-03111_pdf.html>`_
+    """ ECSchnorr signer implementation according to:
+ 
+     - `BSI:TR03111 <https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TR03111/BSI-TR-03111_pdf.html>`_
+     - `ISO/IEC:14888-3 <http://www.iso.org/iso/iso_catalogue/catalogue_ics/catalogue_detail_ics.htm?csnumber=43656>`_
+     - `bitcoin-core:libsecp256k1 <https://github.com/bitcoin-core/secp256k1/blob/master/src/modules/schnorr/schnorr_impl.h>`_
+
+    In order to select the specification to be conform to, choose 
+    the corresponding string option:
+ 
+    - "BSI": compute r,s according to to BSI : 
+        - r = H(M||Q.x%n)
+        - s = k - r.d
+    - "ISO": compute r,s according to ISO : 
+        - r = H(Q.x||Q.y||M)
+        - s = k + r.d
+    - "ISOx": compute r,s according to optimized ISO variant: 
+        - r = H(Q.x||M)
+        - s = k + r.d
+    - "LIBSECP": compute r,s according to bitcoin lib: 
+        - r = Q.x
+        - h = Hash(r || m).
+        - s = k - h * d.
+       
+    Default is "ISO"
+    
+    Args:
+      hasher (hashlib): callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512...
+      option (int) : one of "BSI","ISO","ISOx","LIBSECP"
     """
+    
+    def __init__(self, hasher, option="ISO", fmt="DER"):
+        if not option in ("ISO","ISOx","BSI","LIBSECP"):
+            raise ECPyException('ECSchnorr option not supported: %s'%option)
+        if not fmt in list_formats():
+            raise ECPyException('ECSchnorr format not supported: %s'%fmt)
 
-    def __init__(self, hasher):
         self._hasher = hasher
-        self.fmt = "DER"
+        self.fmt = fmt
         self.maxtries=10
-        pass
-
+        self.option = option
+        
     def sign(self, msg, pv_key):
         """ Signs a message hash.
 
@@ -41,9 +72,9 @@ class ECSchnorr:
             hash_msg (bytes) : the hash of message to sign
             pv_key (ecpy.keys.PrivateKey): key to use for signing
         """
-        field = pv_key.curve.field
+        order = pv_key.curve.order
         for i in range(1,self.maxtries):
-            k = ecrand.rnd(field)
+            k = ecrand.rnd(order)
             sig = self._do_sign(msg, pv_key,k)
             if sig:
                 return sig
@@ -61,24 +92,59 @@ class ECSchnorr:
             
     def _do_sign(self, msg, pv_key, k):
         if (pv_key.curve == None):
-            raise EcpyException('private key haz no curve')
+            raise ECPyException('private key haz no curve')
         curve = pv_key.curve
         n     = curve.order
         G     = curve.generator
         size  = curve.size>>3
         
         Q = G*k
-        xQ = (Q.x%n).to_bytes(size,'big')
-        
         hasher = self._hasher()
-        hasher.update(xQ+msg)
-        r = hasher.digest()
-        r = int.from_bytes(r,'big')
-        r = r%n
-        
-        s = (k-r*pv_key.d)%n
+        if self.option == "ISO":
+            xQ = (Q.x).to_bytes(size,'big')        
+            yQ = (Q.y).to_bytes(size,'big')
+            hasher.update(xQ+yQ+msg)
+            r = hasher.digest()
+            r = int.from_bytes(r,'big')
+            r = r%n        
+            s = (k+r*pv_key.d)%n
+            if r==0 or s==0:
+                return None
 
-        return encode_sig(r,s)
+        elif self.option == "ISOx":
+            xQ = (Q.x).to_bytes(size,'big') 
+            hasher.update(xQ+msg)
+            r = hasher.digest()
+            r = int.from_bytes(r,'big')
+            r = r%n        
+            s = (k+r*pv_key.d)%n
+            if r==0 or s==0:
+                return None
+            
+        elif self.option == "BSI":
+            xQ = (Q.x%n).to_bytes(size,'big') 
+            hasher.update(msg+xQ)
+            r = hasher.digest()
+            r = int.from_bytes(r,'big')
+            r = r%n
+            s = (k-r*pv_key.d)%n
+            if r==0 or s==0:
+                return None
+
+        elif self.option == "LIBSECP":
+            if Q.y & 1:
+                k = n-k
+                Q = G*k
+            r = Q.x.to_bytes(size,'big')
+            hasher.update(r+msg)
+            h = hasher.digest()
+            h = int.from_bytes(h,'big')
+            if h == 0 or h>n:
+                return None
+            r = Q.x
+            s = (k - h*pv_key.d)%n
+        
+        return encode_sig(r, s, self.fmt)
             
     def verify(self,msg,sig,pu_key):
         """ Verifies a message signature.                
@@ -99,46 +165,89 @@ class ECSchnorr:
             s == 0                or
             s > n-1     ) :
             return False
- 
-        Q = s*G + r*pu_key.W
-        xQ = (Q.x%n).to_bytes(size,'big')
-        
+
         hasher = self._hasher()
-        hasher.update(xQ+msg)
-        v = hasher.digest()
-        v = int.from_bytes(v,'big')
-        v = r%n
+        if self.option == "ISO":
+            Q =  s*G - r*pu_key.W
+            xQ = Q.x.to_bytes(size,'big')
+            yQ = Q.y.to_bytes(size,'big')
+            hasher.update(xQ+yQ+msg)
+            v = hasher.digest()
+            v = int.from_bytes(v,'big')
+            v = v%n
+        
+        elif self.option == "ISOx":
+            Q =  s*G - r*pu_key.W
+            xQ = Q.x.to_bytes(size,'big')
+            hasher.update(xQ+msg)
+            v = hasher.digest()
+            v = int.from_bytes(v,'big')
+            v = v%n
+
+        elif self.option == "BSI":
+            Q =  s*G + r*pu_key.W
+            xQ = (Q.x%n).to_bytes(size,'big')
+            hasher.update(msg+xQ)
+            v = hasher.digest()
+            v = int.from_bytes(v,'big')
+            v = v%n
+
+        elif self.option == "LIBSECP":
+            rb = r.to_bytes(size,'big') 
+            hasher.update(rb+msg)
+            h = hasher.digest()
+            h = int.from_bytes(h,'big')
+            R = s * G + h*pu_key.W
+            v = R.x % n
         
         return v == r
  
 if __name__ == "__main__":
+    import sys
     try:
-        ### ECS
-        cv     = Curve.get_curve('secp256k1')
-        pu_key = ECPublicKey(Point(0x65d5b8bf9ab1801c9f168d4815994ad35f1dcb6ae6c7a1a303966b677b813b00,
-                                   
-                                   0xe6b865e529b8ecbf71cf966e900477d49ced5846d7662dd2dd11ccd55c0aff7f,
+        cv     = Curve.get_curve('NIST-P256')
+        pu_key = ECPublicKey(Point(0x09b58b88323c52d1080aa525c89e8e12c6f40fcb014640fa88081ed9e9352de7,
+                                   0x5ccbbd189538516238b0b0b28acb5f0b5e27217c3a9872421219de0aeebf1080,
                                    cv))
-        pv_key = ECPrivateKey(0xfb26a4e75eec75544c0f44e937dcf5ee6355c7176600b9688c667e5c283b43c5,
+        pv_key = ECPrivateKey(0x5202a3d8acaf6909d12c9a774cd886f9fba61137ffd3e8e76aed363fb47ac492,
                               cv)
 
-        #sha256("abc")
-        msg = int(0xba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad)
-        msg  = msg.to_bytes(32,'big')
+        msg = int(0x616263)
+        msg  = msg.to_bytes(3,'big')
 
-        signer = ECSchnorr(hashlib.sha256)
+        k = int(0xde7e0e5e663f24183414b7c72f24546b81e9e5f410bebf26f3ca5fa82f5192c8)
 
-        #Sign 
-        k   = int(0xe5a8d1d529971c10ca2af378444fb544a211707892c8898f91dcb171584e3db9)
+        ## ISO
+        R=0x5A79A0AA9B241E381A594B220554D096A5F09FA628AD9A33C3CE4393ADE1DEF7
+        S=0x5C0EB78B67A513C3E53B2619F96855E291D5141C7CD0915E1D04B347457C9601
 
+        signer = ECSchnorr(hashlib.sha256,"ISO","ITUPLE")
         sig = signer.sign_k(msg,pv_key,k)
-        assert(signer.verify(msg,sig,pu_key))        
+        assert(R==sig[0])
+        assert(S==sig[1])
+        assert(signer.verify(msg,sig,pu_key))
+        
+        ##ISOx
+        R = 0xd7fb8135d8ea45e8fb3c9059f146e2630ef4bd51c4006a92edb4c8b0849963fb
+        S = 0xb46d1525379e02e232d97928265b7254ea2ed97813454388c1a08f62dccd70b3
 
-        #Sign with krand
-        sig = signer.sign(msg,pv_key)
-        assert(signer.verify(msg,sig,pu_key))        
+        signer = ECSchnorr(hashlib.sha256,"ISOx","ITUPLE")
+        sig = signer.sign_k(msg,pv_key,k)
+        assert(R==sig[0])
+        assert(S==sig[1])
+        assert(signer.verify(msg,sig,pu_key))
 
-        ##OK!
+        ##BSI
+        signer = ECSchnorr(hashlib.sha256,"BSI","ITUPLE")
+        sig = signer.sign_k(msg,pv_key,k)
+        assert(signer.verify(msg,sig,pu_key))
+
+        ##LIBSECP
+        signer = ECSchnorr(hashlib.sha256,"LIBSECP","ITUPLE")
+        sig = signer.sign_k(msg,pv_key,k)
+        assert(signer.verify(msg,sig,pu_key))
+        
+        # ##OK!
         print("All internal assert OK!")
     finally:
         pass

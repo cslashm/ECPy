@@ -23,10 +23,10 @@ from ecpy            import ecrand
 import hashlib
 
 class ECDSA:
-    """ECDSA Signer"""
+    """ECDSA signer."""
 
-    def __init__(self):
-        self.fmt="DER"
+    def __init__(self, fmt="DER"):
+        self.fmt=fmt
         self.maxtries=10
         pass
 
@@ -37,9 +37,9 @@ class ECDSA:
             msg (bytes)                  : the hash of message to sign
             pv_key (ecpy.keys.PrivateKey): key to use for signing
         """
-        field = pv_key.curve.field
+        order = pv_key.curve.order
         for i in range(1,self.maxtries):
-            k = ecrand.rnd(field)
+            k = ecrand.rnd(order)
             sig = self._do_sign(msg, pv_key,k)
             if sig:
                 return sig

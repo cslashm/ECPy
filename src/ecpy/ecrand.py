@@ -36,7 +36,7 @@ def rnd(q):
     while True:
         k = random.getrandbits(nbits)
         if k<q:
-            return q
+            return k
         
     
     

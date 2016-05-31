@@ -23,17 +23,18 @@ from ecpy.formatters import decode_sig, encode_sig
 import hashlib
 
 class EDDSA:
-    """EDDSA Signer
+    """EDDSA signer implemenation according to:
     
-    Conform to `draft-irtf-cfrg-eddsa-05 <https://tools.ietf.org/html/draft-irtf-cfrg-eddsa-05>`_.
+     - IETF `draft-irtf-cfrg-eddsa-05 <https://tools.ietf.org/html/draft-irtf-cfrg-eddsa-05>`_.
 
     Args:
       hasher (hashlib): callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512...
+      fmt (str): in/out signature format. See formater :mod:ecpy.formatters.
     """
         
-    def __init__(self, hasher):
+    def __init__(self, hasher, fmt="EDDSA"):
         self._hasher = hasher
-        self.fmt="EDDSA"
+        self.fmt = fmt
         pass
 
     def sign(self, msg, pv_key):
@@ -56,7 +57,6 @@ class EDDSA:
         hasher = self._hasher()
         hasher.update(k)
         h = hasher.digest()
-        
         #retrieve encoded pub key
         a = bytearray(h[size-1::-1])
         a[0]  &= ~0x40;
@@ -76,14 +76,14 @@ class EDDSA:
         r = r % n
         R = r*B
         eR = curve.encode_point(R)
-                           
+              
         #compute S
         hasher = self._hasher()
         hasher.update(eR+eA+msg)
         H_eR_eA_m = hasher.digest()
         i = int.from_bytes(H_eR_eA_m, 'little')
         S = (r + i*a)%n
-
+        
         #S = S.to_bytes(size,'little')
 
         #return eR+S
@@ -157,10 +157,9 @@ if __name__ == "__main__":
         msg  = msg.to_bytes(1,'big')
 
         signer = EDDSA(hashlib.sha512)
-
         sig = signer.sign(msg,pv_key)
         assert(sig == expected_sig)
-        
+
         assert(signer.verify(msg,expected_sig,pu_key))
 
 
