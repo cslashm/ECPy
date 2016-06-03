@@ -648,6 +648,14 @@ curve (Curve) : curve</dd>
 <dt id="ecpy.ecdsa.ECDSA">
 <em class="property">class </em><code class="descclassname">ecpy.ecdsa.</code><code class="descname">ECDSA</code><span class="sig-paren">(</span><em>fmt='DER'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecdsa.html#ECDSA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecdsa.ECDSA" title="Permalink to this definition">¶</a></dt>
 <dd><p>ECDSA signer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; in/out signature format. See <a class="reference internal" href="#module-ecpy.formatters" title="ecpy.formatters"><code class="xref py py-mod docutils literal"><span class="pre">ecpy.formatters</span></code></a></td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="ecpy.ecdsa.ECDSA.sign">
 <code class="descname">sign</code><span class="sig-paren">(</span><em>msg</em>, <em>pv_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecdsa.html#ECDSA.sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecdsa.ECDSA.sign" title="Permalink to this definition">¶</a></dt>
@@ -743,7 +751,7 @@ curve (Curve) : curve</dd>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>hasher</strong> (<a class="reference external" href="https://docs.python.org/library/hashlib.html#module-hashlib" title="(in Python v2.7)"><em>hashlib</em></a>) &#8211; callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512...</li>
-<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; in/out signature format. See formater :mod:ecpy.formatters.</li>
+<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; in/out signature format. See  <a class="reference internal" href="#module-ecpy.formatters" title="ecpy.formatters"><code class="xref py py-mod docutils literal"><span class="pre">ecpy.formatters</span></code></a>.</li>
 </ul>
 </td>
 </tr>
@@ -803,42 +811,117 @@ curve (Curve) : curve</dd>
 </ul>
 </div></blockquote>
 <p>In order to select the specification to be conform to, choose
-the corresponding string option:</p>
+the corresponding string option: &#8220;BSI&#8221;, &#8220;ISO&#8221;, &#8220;ISOx&#8221;, &#8220;LIBSECP&#8221;</p>
+<p><em>Signature</em>:</p>
 <ul>
 <li><dl class="first docutils">
 <dt>&#8220;BSI&#8221;: compute r,s according to to BSI :</dt>
-<dd><ul class="first last simple">
-<li>r = H(M||Q.x%n)</li>
-<li>s = k - r.d</li>
-</ul>
+<dd><ol class="first last arabic simple">
+<li>k = RNG(1:n-1)</li>
+<li>Q = [k]G</li>
+<li>r = H(M ||Qx)
+If r = 0 mod n, goto 1.</li>
+<li>s = k - r.d mod n
+If s = 0 goto 1.</li>
+<li>Output (r, s)</li>
+</ol>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
 <dt>&#8220;ISO&#8221;: compute r,s according to ISO :</dt>
-<dd><ul class="first last simple">
-<li>r = H(Q.x||Q.y||M)</li>
-<li>s = k + r.d</li>
-</ul>
+<dd><ol class="first last arabic simple">
+<li>k = RNG(1:n-1)</li>
+<li>Q = [k]G
+If r = 0 mod n, goto 1.</li>
+<li>r = H(Qx||Qy||M).</li>
+<li>s = (k + r.d) mod n
+If s = 0 goto 1.</li>
+<li>Output (r, s)</li>
+</ol>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
 <dt>&#8220;ISOx&#8221;: compute r,s according to optimized ISO variant:</dt>
-<dd><ul class="first last simple">
-<li>r = H(Q.x||M)</li>
-<li>s = k + r.d</li>
-</ul>
+<dd><ol class="first last arabic simple">
+<li>k = RNG(1:n-1)</li>
+<li>Q = [k]G
+If r = 0 mod n, goto 1.</li>
+<li>r = H(Qx||Qy||M).</li>
+<li>s = (k + r.d) mod n
+If s = 0 goto 1.</li>
+<li>Output (r, s)</li>
+</ol>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
 <dt>&#8220;LIBSECP&#8221;: compute r,s according to bitcoin lib:</dt>
-<dd><ul class="first last simple">
-<li>r = Q.x</li>
-<li>h = Hash(r || m).</li>
-<li>s = k - h * d.</li>
+<dd><ol class="first last arabic simple">
+<li>k = RNG(1:n-1)</li>
+<li>Q = [k]G
+if Qy is odd, negate k and goto 2</li>
+<li>r = Qx % n</li>
+<li>h = H(r || m).
+if h == 0 or h &gt;= order goto 1</li>
+<li>s = k - h.d.</li>
+<li>Output (r, s)</li>
+</ol>
+</dd>
+</dl>
+</li>
 </ul>
+<p><em>Verification</em></p>
+<ul>
+<li><dl class="first docutils">
+<dt>&#8220;BSI&#8221;: verify r,s according to to BSI :</dt>
+<dd><ol class="first last arabic simple">
+<li>Verify that r in {0, . . . , 2**t - 1} and s in {1, 2, . . . , n - 1}.
+If the check fails, output False and terminate.</li>
+<li>Q = [s]G + [r]W
+If Q = 0, output Error and terminate.</li>
+<li>v = H(M||Qx)</li>
+<li>Output True if v = r, and False otherwise.</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>&#8220;ISO&#8221;: verify r,s according to ISO :</dt>
+<dd><ol class="first last arabic simple">
+<li>check...</li>
+<li>Q = [s]G - [r]W
+If Q = 0, output Error and terminate.</li>
+<li>v = H(Qx||Qy||M).</li>
+<li>Output True if v = r, and False otherwise.</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>&#8220;ISOx&#8221;: verify r,s according to optimized ISO variant:</dt>
+<dd><ol class="first last arabic simple">
+<li>check...</li>
+<li>Q = [s]G - [r]W
+If Q = 0, output Error and terminate.</li>
+<li>v = H(Qx||M).</li>
+<li>Output True if v = r, and False otherwise.</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>&#8220;LIBSECP&#8221;:</dt>
+<dd><ol class="first last arabic simple">
+<li>Signature is invalid if s &gt;= order.
+Signature is invalid if r &gt;= p.</li>
+<li>h = H(r || m).
+Signature is invalid if h == 0 or h &gt;= order.</li>
+<li>R = [h]Q + [s]G.
+Signature is invalid if R is infinity or R&#8217;s y coordinate is odd.</li>
+<li>Signature is valid if the serialization of R&#8217;s x coordinate equals r.</li>
+</ol>
 </dd>
 </dl>
 </li>
@@ -850,7 +933,8 @@ the corresponding string option:</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>hasher</strong> (<a class="reference external" href="https://docs.python.org/library/hashlib.html#module-hashlib" title="(in Python v2.7)"><em>hashlib</em></a>) &#8211; callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512...</li>
-<li><strong>option</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; one of &#8220;BSI&#8221;,&#8221;ISO&#8221;,&#8221;ISOx&#8221;,&#8221;LIBSECP&#8221;</li>
+<li><strong>option</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; one of &#8220;BSI&#8221;,&#8221;ISO&#8221;,&#8221;ISOx&#8221;,&#8221;LIBSECP&#8221;</li>
+<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; in/out signature format. See <a class="reference internal" href="#module-ecpy.formatters" title="ecpy.formatters"><code class="xref py py-mod docutils literal"><span class="pre">ecpy.formatters</span></code></a></li>
 </ul>
 </td>
 </tr>
