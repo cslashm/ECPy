@@ -29,7 +29,7 @@ class EDDSA:
 
     Args:
       hasher (hashlib): callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512...
-      fmt (str): in/out signature format. See formater :mod:ecpy.formatters.
+      fmt (str): in/out signature format. See  :mod:`ecpy.formatters`.
     """
         
     def __init__(self, hasher, fmt="EDDSA"):

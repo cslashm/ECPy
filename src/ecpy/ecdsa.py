@@ -23,8 +23,11 @@ from ecpy            import ecrand
 import hashlib
 
 class ECDSA:
-    """ECDSA signer."""
+    """ECDSA signer.
 
+    Args:
+        fmt (str) : in/out signature format. See :mod:`ecpy.formatters`
+    """
     def __init__(self, fmt="DER"):
         self.fmt=fmt
         self.maxtries=10
