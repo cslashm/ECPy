@@ -35,7 +35,9 @@ class ECPublicKey:
     @property
     def curve(self):
         return self.W.curve
-    
+
+    def __str__(self):
+        return "ECPublicKey:\n  x: %x\n  y: %x" % (self.W.x,self.W.y)
         
 class ECPrivateKey:
     """ Public EC key.
@@ -63,3 +65,6 @@ class ECPrivateKey:
         """        
         W = self.d*self.curve.generator
         return ECPublicKey(W)
+
+    def __str__(self):
+        return "ECPrivateKey:\n  d: %x" % self.d

@@ -560,7 +560,10 @@ class Point:
                     self._x == Q._x and
                     self._y == Q._y)
         raise NotImplementedError('eq: type not supported: %s'%(type(Q)))
-    
+
+    def __str__(self):
+        return "x: %x\n  y: %x" % (self._x,self._y)
+
     def neg(self):
         return self.__neg__()
         
