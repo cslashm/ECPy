@@ -149,7 +149,7 @@ ECDSA, EDDSA, ECSchnorr signature  as well as Point operation.</p>
 <div class="line"><cite>int</cite> are used when scalar is required, as for point coordinate, scalar multiplication, ....</div>
 <div class="line"><cite>bytes</cite> are used when data is required, as hash value, message, ...</div>
 </div>
-<p>Other main types are <a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><code class="xref py py-class docutils literal"><span class="pre">Point</span></code></a>,  <a class="reference internal" href="#ecpy.curves.Curve" title="ecpy.curves.Curve"><code class="xref py py-class docutils literal"><span class="pre">Curve</span></code></a>,  <a class="reference internal" href="#module-ecpy.keys" title="ecpy.keys"><code class="xref py py-mod docutils literal"><span class="pre">Key</span></code></a>,  <code class="xref py py-class docutils literal"><span class="pre">ECDSASigner</span></code>,  <code class="xref py py-class docutils literal"><span class="pre">EDDSASigner</span></code>, <code class="xref py py-class docutils literal"><span class="pre">ECSchnorrSigner</span></code>.</p>
+<p>Other main types are <a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><code class="xref py py-class docutils literal"><span class="pre">Point</span></code></a>,  <a class="reference internal" href="#ecpy.curves.Curve" title="ecpy.curves.Curve"><code class="xref py py-class docutils literal"><span class="pre">Curve</span></code></a>,  <a class="reference internal" href="#module-ecpy.keys" title="ecpy.keys"><code class="xref py py-mod docutils literal"><span class="pre">Key</span></code></a>,  <a class="reference internal" href="#ecpy.ecdsa.ECDSA" title="ecpy.ecdsa.ECDSA"><code class="xref py py-class docutils literal"><span class="pre">ECDSA</span></code></a>,  <a class="reference internal" href="#ecpy.eddsa.EDDSA" title="ecpy.eddsa.EDDSA"><code class="xref py py-class docutils literal"><span class="pre">EDDSA</span></code></a>, <a class="reference internal" href="#ecpy.ecschnorr.ECSchnorr" title="ecpy.ecschnorr.ECSchnorr"><code class="xref py py-class docutils literal"><span class="pre">ECSchnorr</span></code></a>. <a class="reference internal" href="#ecpy.borromean.Borromean" title="ecpy.borromean.Borromean"><code class="xref py py-class docutils literal"><span class="pre">Borromean</span></code></a>.</p>
 <p>See API details...</p>
 </div>
 </div>
@@ -665,8 +665,8 @@ curve (Curve) : curve</dd>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>msg</strong> (<em>bytes</em>) &#8211; the hash of message to sign</li>
-<li><strong>pv_key</strong> (<em>ecpy.keys.PrivateKey</em>) &#8211; key to use for signing</li>
+<li><strong>msg</strong> (<em>bytes</em>) &#8211; the message hash to sign</li>
+<li><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) &#8211; key to use for signing</li>
 </ul>
 </td>
 </tr>
@@ -684,8 +684,8 @@ curve (Curve) : curve</dd>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>msg</strong> (<em>bytes</em>) &#8211; the hash of message to sign</li>
-<li><strong>pv_key</strong> (<em>ecpy.keys.PrivateKey</em>) &#8211; key to use for signing</li>
-<li><strong>k</strong> (<em>ecpy.keys.PrivateKey</em>) &#8211; random to use for signing</li>
+<li><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) &#8211; key to use for signing</li>
+<li><strong>k</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) &#8211; random to use for signing</li>
 </ul>
 </td>
 </tr>
@@ -702,8 +702,8 @@ curve (Curve) : curve</dd>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>msg</strong> (<em>bytes</em>) &#8211; the hash of message to sign</li>
-<li><strong>pv_key</strong> (<em>ecpy.keys.PrivateKey</em>) &#8211; key to use for signing</li>
+<li><strong>msg</strong> (<em>bytes</em>) &#8211; the message hash to sign</li>
+<li><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) &#8211; key to use for signing</li>
 <li><strong>hasher</strong> (<a class="reference external" href="https://docs.python.org/library/hashlib.html#module-hashlib" title="(in Python v2.7)"><em>hashlib</em></a>) &#8211; hasher conform to hashlib interface</li>
 </ul>
 </td>
@@ -721,9 +721,9 @@ curve (Curve) : curve</dd>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>msg</strong> (<em>bytes</em>) &#8211; the hash of message to verify the signature</li>
+<li><strong>msg</strong> (<em>bytes</em>) &#8211; the message hash to verify the signature</li>
 <li><strong>sig</strong> (<em>bytes</em>) &#8211; signature to verify</li>
-<li><strong>pu_key</strong> (<em>key.PublicKey</em>) &#8211; key to use for verifying</li>
+<li><strong>pu_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPublicKey" title="ecpy.keys.ECPublicKey"><em>ecpy.keys.ECPublicKey</em></a>) &#8211; key to use for verifying</li>
 </ul>
 </td>
 </tr>
@@ -767,7 +767,7 @@ curve (Curve) : curve</dd>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>msg</strong> (<em>bytes</em>) &#8211; the message to sign</li>
-<li><strong>pv_key</strong> (<em>key.PrivateKey</em>) &#8211; key to use for signing</li>
+<li><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) &#8211; key to use for signing</li>
 </ul>
 </td>
 </tr>
@@ -786,7 +786,7 @@ curve (Curve) : curve</dd>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>msg</strong> (<em>bytes</em>) &#8211; the message to verify the signature</li>
 <li><strong>sig</strong> (<em>bytes</em>) &#8211; signature to verify</li>
-<li><strong>pu_key</strong> (<em>key.PublicKey</em>) &#8211; key to use for verifying</li>
+<li><strong>pu_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPublicKey" title="ecpy.keys.ECPublicKey"><em>ecpy.keys.ECPublicKey</em></a>) &#8211; key to use for verifying</li>
 </ul>
 </td>
 </tr>
@@ -949,8 +949,8 @@ Signature is invalid if R is infinity or R&#8217;s y coordinate is odd.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>hash_msg</strong> (<em>bytes</em>) &#8211; the hash of message to sign</li>
-<li><strong>pv_key</strong> (<em>ecpy.keys.PrivateKey</em>) &#8211; key to use for signing</li>
+<li><strong>hash_msg</strong> (<em>bytes</em>) &#8211; the message hash to sign</li>
+<li><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) &#8211; key to use for signing</li>
 </ul>
 </td>
 </tr>
@@ -967,9 +967,9 @@ Signature is invalid if R is infinity or R&#8217;s y coordinate is odd.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>hash_msg</strong> (<em>bytes</em>) &#8211; the hash of message to sign</li>
-<li><strong>pv_key</strong> (<em>ecpy.keys.PrivateKey</em>) &#8211; key to use for signing</li>
-<li><strong>k</strong> (<em>ecpy.keys.PrivateKey</em>) &#8211; random to use for signing</li>
+<li><strong>hash_msg</strong> (<em>bytes</em>) &#8211; the message hash to sign</li>
+<li><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) &#8211; key to use for signing</li>
+<li><strong>k</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) &#8211; random to use for signing</li>
 </ul>
 </td>
 </tr>
@@ -986,10 +986,102 @@ Signature is invalid if R is infinity or R&#8217;s y coordinate is odd.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>hash_msg</strong> (<em>bytes</em>) &#8211; the hash of message to verify the signature</li>
+<li><strong>msg</strong> (<em>bytes</em>) &#8211; the message hash to verify the signature</li>
 <li><strong>sig</strong> (<em>bytes</em>) &#8211; signature to verify</li>
-<li><strong>pu_key</strong> (<em>key.PublicKey</em>) &#8211; key to use for verifying</li>
+<li><strong>pu_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPublicKey" title="ecpy.keys.ECPublicKey"><em>ecpy.keys.ECPublicKey</em></a>) &#8211; key to use for verifying</li>
 </ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ecpy.borromean">
+<span id="borromean-module"></span><h2>Borromean module<a class="headerlink" href="#module-ecpy.borromean" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ecpy.borromean.Borromean">
+<em class="property">class </em><code class="descclassname">ecpy.borromean.</code><code class="descname">Borromean</code><span class="sig-paren">(</span><em>fmt='BTUPLE'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/borromean.html#Borromean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.borromean.Borromean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Borromean Ring signer implementation according to:</p>
+<p><a class="reference external" href="https://github.com/Blockstream/borromean_paper/blob/master/borromean_draft_0.01_9ade1e49.pdf">https://github.com/Blockstream/borromean_paper/blob/master/borromean_draft_0.01_9ade1e49.pdf</a></p>
+<p><a class="reference external" href="https://github.com/ElementsProject/secp256k1-zkp/blob/secp256k1-zkp/src/modules/rangeproof/borromean_impl.h">https://github.com/ElementsProject/secp256k1-zkp/blob/secp256k1-zkp/src/modules/rangeproof/borromean_impl.h</a></p>
+<p>ElementsProject implementation has some tweaks compared to PDF. This implementation is ElementsProject compliant.</p>
+<p>For now, only secp256k1+sha256 is supported. This constraint will be release soon.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; in/out signature format. See <a class="reference internal" href="#module-ecpy.formatters" title="ecpy.formatters"><code class="xref py py-mod docutils literal"><span class="pre">ecpy.formatters</span></code></a>. IGNORED.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="ecpy.borromean.Borromean.sign">
+<code class="descname">sign</code><span class="sig-paren">(</span><em>msg</em>, <em>rings</em>, <em>pv_keys</em>, <em>pv_keys_index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/borromean.html#Borromean.sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.borromean.Borromean.sign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Signs a message hash.</p>
+<p>The public <cite>rings</cite> argument is a tuple of public key array. In other
+words each element of the ring tuple is an array containing the  public
+keys list of that ring</p>
+<p>A Private key must be given for each provided ring. For each private key,
+the corresponding public key is specified by its index in the ring.</p>
+<dl class="docutils">
+<dt>Exemple:</dt>
+<dd><p class="first">let r1 be the first ring with 2 keys:    pu11, pu12
+let 21 be the second ring with 3 keys:   pu21,pu22,pu23
+let say we want to produce a signature with sec12 and sec21
+<cite>sign</cite> should be called as:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">borromean</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">m</span><span class="p">,</span>
+              <span class="p">([</span><span class="n">pu11</span><span class="p">,</span><span class="n">pu12</span><span class="p">],[</span><span class="n">pu21</span><span class="p">,</span><span class="n">pu22</span><span class="p">,</span><span class="n">pu23</span><span class="p">]),</span>
+              <span class="p">[</span><span class="n">sec12</span><span class="p">,</span> <span class="n">sec21</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>The return value is a tuple (e0, [s0,s1....]). Each value is encoded
+as binary (bytes).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>msg</strong> (<em>bytes</em>) &#8211; the message hash to sign</li>
+<li><strong>rings</strong> (<em>tuple of (ecpy.keys.ECPublicKey[]</em>) &#8211; public key rings</li>
+<li><strong>pv_keys</strong> (<em>ecpy.keys.ECPrivateKey[]</em>) &#8211; key to use for signing</li>
+<li><strong>pv_keys_index</strong> (<em>int[]</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">signature</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(e0, [s0,s1....])</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecpy.borromean.Borromean.verify">
+<code class="descname">verify</code><span class="sig-paren">(</span><em>msg</em>, <em>sig</em>, <em>rings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/borromean.html#Borromean.verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.borromean.Borromean.verify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies a message signature.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>msg</strong> (<em>bytes</em>) &#8211; the message hash to verify the signature</li>
+<li><strong>sig</strong> (<em>bytes</em>) &#8211; signature to verify</li>
+<li><strong>rings</strong> (<em>key.ECPublicKey</em>) &#8211; key to use for verifying</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if signature is verified, False else</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">boolean</p>
 </td>
 </tr>
 </tbody>
