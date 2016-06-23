@@ -41,8 +41,8 @@ class EDDSA:
         """ Signs a message.
 
         Args:
-            msg (bytes)            : the message to sign
-            pv_key (key.PrivateKey): key to use for signing
+            msg (bytes)                    : the message to sign
+            pv_key (ecpy.keys.ECPrivateKey): key to use for signing
         """
         return self._do_sign(msg, pv_key)
 
@@ -95,9 +95,9 @@ class EDDSA:
         """ Verifies a message signature.                
 
         Args:
-            msg (bytes)           : the message to verify the signature
-            sig (bytes)           : signature to verify
-            pu_key (key.PublicKey): key to use for verifying
+            msg (bytes)                   : the message to verify the signature
+            sig (bytes)                   : signature to verify
+            pu_key (ecpy.keys.ECPublicKey): key to use for verifying
         """
         curve = pu_key.curve
         n     = curve.order

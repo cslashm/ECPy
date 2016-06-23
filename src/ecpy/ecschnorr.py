@@ -123,8 +123,8 @@ class ECSchnorr:
         """ Signs a message hash.
 
         Args:
-            hash_msg (bytes) : the hash of message to sign
-            pv_key (ecpy.keys.PrivateKey): key to use for signing
+            hash_msg (bytes)               : the message hash to sign
+            pv_key (ecpy.keys.ECPrivateKey): key to use for signing
         """
         order = pv_key.curve.order
         for i in range(1,self.maxtries):
@@ -138,9 +138,9 @@ class ECSchnorr:
         """ Signs a message hash  with provided random
 
         Args:
-            hash_msg (bytes) : the hash of message to sign
-            pv_key (ecpy.keys.PrivateKey): key to use for signing
-            k (ecpy.keys.PrivateKey): random to use for signing
+            hash_msg (bytes)               : the message hash to sign
+            pv_key (ecpy.keys.ECPrivateKey): key to use for signing
+            k (ecpy.keys.ECPrivateKey)     : random to use for signing
         """
         return self._do_sign(msg, pv_key,k)
             
@@ -198,9 +198,9 @@ class ECSchnorr:
         """ Verifies a message signature.                
 
         Args:
-            hash_msg (bytes)      : the hash of message to verify the signature
-            sig (bytes)           : signature to verify
-            pu_key (key.PublicKey): key to use for verifying
+            msg (bytes)             : the message hash to verify the signature
+            sig (bytes)             : signature to verify
+            pu_key (ecpy.keys.ECPublicKey): key to use for verifying
         """
         curve = pu_key.curve
         n     = pu_key.curve.order
