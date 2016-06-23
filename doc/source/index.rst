@@ -98,7 +98,7 @@ ECPY use binary `bytes` and `int` as primary types.
 | `int` are used when scalar is required, as for point coordinate, scalar multiplication, ....
 | `bytes` are used when data is required, as hash value, message, ...
 
-Other main types are :py:class:`Point <ecpy.curves.Point>`,  :py:class:`Curve <ecpy.curves.Curve>`,  :py:mod:`Key <ecpy.keys>`,  :py:class:`ECDSASigner <ecpy.ecdsa.ECDSASigner>`,  :py:class:`EDDSASigner <ecpy.eddsa.EDDSASigner>`, :py:class:`ECSchnorrSigner <ecpy.ECSchnorrSigner>`.
+Other main types are :py:class:`Point <ecpy.curves.Point>`,  :py:class:`Curve <ecpy.curves.Curve>`,  :py:mod:`Key <ecpy.keys>`,  :py:class:`ECDSA <ecpy.ecdsa.ECDSA>`,  :py:class:`EDDSA <ecpy.eddsa.EDDSA>`, :py:class:`ECSchnorr <ecpy.ecschnorr.ECSchnorr>`. :py:class:`Borromean <ecpy.borromean.Borromean>`.
 
 See API details...
 
@@ -141,6 +141,13 @@ ECSchnorr module
    :show-inheritance:
    :members:
 
+Borromean module
+----------------
+
+.. automodule:: ecpy.borromean
+   :show-inheritance:
+   :members:
+      
 ecrand  module
 --------------
 
