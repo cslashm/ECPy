@@ -58,8 +58,8 @@ def _borromean_hash(m,e,i,j, H):
     i: int       ring index
     j: int       secret index
     """
-    i = i.to_bytes(4,'big')
-    j = j.to_bytes(4,'big')              
+    i = int(i).to_bytes(4,'big')
+    j = int(j).to_bytes(4,'big')              
     sha256 = H()
     sha256.update(e)
     sha256.update(m)
@@ -168,7 +168,7 @@ class Borromean:
                 e_ij = int.from_bytes(e_ij,'big')
             s[r0+j0] = (k[i]-privkeys[i].d*e_ij)%order
             r0 += rsizes[i]
-        s = [sij.to_bytes(32,'big')  for sij in s]
+        s = [int(sij).to_bytes(32,'big')  for sij in s]
         return (e0,s)
 
     def verify(self, msg, sig, rings):
@@ -265,7 +265,7 @@ if __name__ == "__main__":
         allpubs = [pubkey0, pubkey1, pubkey2, pubkey3, pubkey4, pubkey5,pubkey6, pubkey7]
         allsecs = [seckey0, seckey1, seckey2, seckey3, seckey4, seckey5,seckey6, seckey7]
 
-        m = 0x800102030405060708090a0b0c0d0e0f800102030405060708090a0b0c0d0e0f
+        m = int(0x800102030405060708090a0b0c0d0e0f800102030405060708090a0b0c0d0e0f)
         m = m.to_bytes(32,'big')
 
         borromean = Borromean()
