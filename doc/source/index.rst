@@ -10,7 +10,7 @@ Status
 | ECPy is in beta stage but already used in some internal tooling.
 | Any constructive comment is welcome.
 
-:Version:  0.8
+:Version:  0.8.0
 :Authors:  Cedric Mesnil, <cedric.mesnil@ubinity.com>
 :License:  Apache 2.0
 
@@ -24,6 +24,9 @@ ECPy is originally coded for Python 3, but run under python 2.7 (and maybe 2.6) 
     pip install future
 
 Then install ECPy:
+
+- From pypi (using pip or pip3)
+    * pip install ECPy
 
 - Rebuild from git clone:
     * python3 setup.py sdist
