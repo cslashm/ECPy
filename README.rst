@@ -2,10 +2,13 @@ ECPy
 ====
 
 ECPy (pronounced ekpy), is a pure python Elliptic Curve library
-providing ECDSA, EDDSA, ECSchnorr signatures as well as Point
+providing ECDSA, EDDSA, ECSchnorr, Borromean signatures as well as Point
 operations.
 
-*ECDSA sample*
+Full html documentation is available `here <https://ubinity.github.com/ECPy>`_.
+
+
+**ECDSA sample**
 
 ::
 
@@ -25,7 +28,7 @@ operations.
     sig    = signer.sign(b'01234567890123456789012345678912',pv_key)
     assert(signer.verify(b'01234567890123456789012345678912',sig,pu_key))
 
-*Point sample*
+**Point sample**
 
 ::
 
@@ -39,9 +42,28 @@ operations.
     Q  = k*P
     R  = P+Q
 
+
+
+
 Quick Install
 =============
 
+From Pypi
+---------
+
+::
+
+   $ pip install ECPy
+
+
+
+From Github
+-----------
+
+.. _tarball dist:
+
+From tarball dist
+`````````````````
 Download last dist tarball.
 
 Untar it
@@ -56,10 +78,23 @@ install it (or use it as is...)
 
     $ python3 setup.py install
 
+From sources
+````````````
+
+Clone the git repository
+
+Rebuild the tarball
+
+::
+
+    $ python3 setup.py sdist
+
+Continue with the created `tarball dist`_.
+
+
 Generate the documentation
 ==========================
 
-Online documentation is available at https://ubinity.github.com/ECPy
 
 You can regenerate the doc from git clone
 

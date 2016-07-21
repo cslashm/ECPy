@@ -12,20 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from distutils.core import setup
 import sys
+from distutils.core import setup
 
 if  sys.version_info[0] == 2 and sys.version_info[1] < 7:
     sys.exit("Sorry, Python 2.7 or higher (included 3.x) is only supported ")
+
+reqs = []
+if  sys.version_info[0] == 2:
+    reqs.append('future')
     
+with open('README.rst') as file:
+    long_description = file.read()
+
 setup(name='ECPy',
-      version='0.8',
+      version='0.8.0',
       description='Pure Pyhton Elliptic Curve Library',
+      long_description=long_description,
       author='Cedric Mesnil',
       author_email='cedric.mesnil@ubinity.com',
       url='https://github.com/ubinity',
+      license='Apache License - Version 2.0',
+      provides=['ecpy'],
       packages=['ecpy'],
       package_dir={'ecpy': 'src/ecpy'},
+      install_requires=reqs,
       classifiers=['Programming Language :: Python :: 3 ',
                    'Programming Language :: Python :: 2.7 ',
                    'Development Status :: 4 - Beta',
