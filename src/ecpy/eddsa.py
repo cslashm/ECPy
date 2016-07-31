@@ -37,6 +37,43 @@ class EDDSA:
         self.fmt = fmt
         pass
 
+
+    @staticmethod
+    def get_public_key(pv_key, hasher = hashlib.sha512) :
+        """ Returns the public key corresponding to this private key 
+        
+        This method compute the public key according to draft-irtf-cfrg-eddsa-05.
+        
+        The hash parameter shall be the same as the one used for signing and
+        verifying.
+        
+        Args:
+            hasher (hashlib): callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512...
+            pv_key (ecpy.keys.ECPrivateKey): key to use for signing
+
+        Returns:
+           ECPublicKey : public key
+        """
+        curve = pv_key.curve
+        B     = curve.generator
+        n     = curve.order
+        size = curve.size >>3
+        
+        k = pv_key.d.to_bytes(size,'big')
+        hasher = hasher()
+        hasher.update(k)
+        h = hasher.digest()
+        #retrieve encoded pub key
+        a = bytearray(h[size-1::-1])
+        a[0]  &= ~0x40;
+        a[0]  |= 0x40;
+        a[31] &= 0xF8;
+        a = bytes(a)
+        a = int.from_bytes(a,'big')
+        A = a * B        
+        return   ECPublicKey(A)
+
+
     def sign(self, msg, pv_key):
         """ Signs a message.
 
@@ -144,6 +181,10 @@ if __name__ == "__main__":
         # s: 0x4ccd089b28ff96da9db6c346ec114e0f5b8a319f35aba624da8cf6ed4fb8a6fb
         pv_key = ECPrivateKey(0x4ccd089b28ff96da9db6c346ec114e0f5b8a319f35aba624da8cf6ed4fb8a6fb,
                               cv)
+
+        pu = EDDSA.get_public_key(pv_key)
+        assert(pu.W == pu_key.W);
+        
 
         # sig:
         # 0x92a009a9f0d4cab8720e820b5f642540a2b27b5416503f8fb3762223ebdb69da

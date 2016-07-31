@@ -60,9 +60,14 @@ class ECPrivateKey:
     def get_public_key(self):
         """ Returns the public key corresponding to this private key 
         
+        This method considers the private key the generator multiplier and
+        return pv*Generator in all cases.
+        
+        For specific derivation such as in EdDSA, see ecpy.eddsa.get_public_key
+
         Returns:
            ECPublicKey : public key
-        """        
+        """
         W = self.d*self.curve.generator
         return ECPublicKey(W)
 
