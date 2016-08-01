@@ -64,12 +64,11 @@ class EDDSA:
         hasher.update(k)
         h = hasher.digest()
         #retrieve encoded pub key
-        a = bytearray(h[size-1::-1])
-        a[0]  &= ~0x40;
-        a[0]  |= 0x40;
-        a[31] &= 0xF8;
+        a = bytearray(h[:32])
+        a[0]  &= 0xF8
+        a[31] = (a[31] &0x7F) | 0x40
         a = bytes(a)
-        a = int.from_bytes(a,'big')
+        a = int.from_bytes(a,'little')
         A = a * B        
         return   ECPublicKey(A)
 
@@ -95,13 +94,12 @@ class EDDSA:
         hasher.update(k)
         h = hasher.digest()
         #retrieve encoded pub key
-        a = bytearray(h[size-1::-1])
-        a[0]  &= ~0x40;
-        a[0]  |= 0x40;
-        a[31] &= 0xF8;
+        a = bytearray(h[:32])
+        a[0]  &= 0xF8
+        a[31] = (a[31] &0x7F) | 0x40
         a = bytes(a)
-        a = int.from_bytes(a,'big')
-        A = a * B
+        a = int.from_bytes(a,'little')
+        A = a * B        
         eA = curve.encode_point(A)
         #OK
         
