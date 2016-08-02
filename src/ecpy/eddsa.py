@@ -202,6 +202,45 @@ if __name__ == "__main__":
         assert(signer.verify(msg,expected_sig,pu_key))
 
 
+
+
+
+        ### EDDSA
+        cv     = Curve.get_curve('Ed25519')
+
+        # public key
+        # x: d96878efcfac114929db551927623e574bb552517b0ac585774ae0f1ebf3619
+        # y: 2fad0cf5e2bb0303c5074ca3e6aa0a487b27b7577a012176da6983ee85d95ce0
+
+        pu_key = ECPublicKey(Point(0xd96878efcfac114929db551927623e574bb552517b0ac585774ae0f1ebf3619,
+                                   0x2fad0cf5e2bb0303c5074ca3e6aa0a487b27b7577a012176da6983ee85d95ce0,
+                                   cv))
+        # private key
+        # s: 5bb7dd30fb4ece686a55faa14e346c08ad81c48c2ebe859a548c101a3dcd360e
+        pv_key = ECPrivateKey(0x5bb7dd30fb4ece686a55faa14e346c08ad81c48c2ebe859a548c101a3dcd360e,
+                              cv)
+
+        pu = EDDSA.get_public_key(pv_key)
+        assert(pu.W == pu_key.W);
+        
+
+        # sig:
+        # 477dedac6d8332708e00a7c06ceeda54f2086ba73e71e8988b3760ccd23e0c44
+        # 08cf09c22ef497328579f6178e8a2a4d611d0c6cce0c684f958d150c5daf4902
+        expected_sig = int(0x477dedac6d8332708e00a7c06ceeda54f2086ba73e71e8988b3760ccd23e0c4408cf09c22ef497328579f6178e8a2a4d611d0c6cce0c684f958d150c5daf4902 )
+        expected_sig  = expected_sig.to_bytes(64,'big')
+        
+        #msg:
+        # 72
+        msg  = int(0xe8898b646cc2274b5daf7fb6e30f738b24203604d7849391056d0fe8093f6693)
+        msg  = msg.to_bytes(32,'big')
+
+        signer = EDDSA(hashlib.sha512)
+        sig = signer.sign(msg,pv_key)
+        assert(sig == expected_sig)
+
+        assert(signer.verify(msg,expected_sig,pu_key))
+        
         ##OK!
         print("All internal assert OK!")
     finally:

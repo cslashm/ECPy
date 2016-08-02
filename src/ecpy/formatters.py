@@ -76,7 +76,7 @@ def decode_sig(sig,fmt="DER") :
 
     Args:
         rs (bytes,ints,tuple) : r,s value       
-        fmt (str): 'DER'|'BTUPLE'|'ITUPLES'|'RAW'|'EDDSA
+        fmt (str): 'DER'|'BTUPLE'|'ITUPLES'|'RAW'|'EDDSA'
 
     Returns:       
        ints:   (r,s) 

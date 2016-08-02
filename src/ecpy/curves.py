@@ -390,7 +390,7 @@ class TwistedEdwardCurve(Curve):
            Point : decoded point
         """
         y    =  bytearray(eP)
-        sign = y[len(y)-1]
+        sign = y[len(y)-1] & 0x80
         y[len(y)-1] &= ~0x80
         y = int.from_bytes(y,'little')    
         x = self.x_recover(y,sign)
