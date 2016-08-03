@@ -4,6 +4,15 @@
 Welcome to ECPy's documentation!
 =================================
 
+      
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
+  
 Status
 ======
 
@@ -165,11 +174,4 @@ formatters  module
    :show-inheritance:
    :members:
 
-      
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
