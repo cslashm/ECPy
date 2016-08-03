@@ -54,10 +54,30 @@ class EDDSA:
         Returns:
            ECPublicKey : public key
         """
+        a = EDDSA.get_interal_private_key(pv_key,hasher)
+        A = a.d * pv_key.curve.generator
+        return   ECPublicKey(A)
+
+    @staticmethod
+    def get_interal_private_key(pv_key, hasher = hashlib.sha512) :
+        """ Returns the internal private key corresponding to this private key 
+        
+        Internal private key correspond to the multiplier derived from private
+        key and used to compute the public key.
+        
+        The hash parameter shall be the same as the one used for signing and
+        verifying.
+        
+        Args:
+            hasher (hashlib): callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512...
+            pv_key (ecpy.keys.ECPrivateKey): key to use for signing
+
+        Returns:
+           ECPrivateKey : internal private key
+        """
         curve = pv_key.curve
-        B     = curve.generator
         n     = curve.order
-        size = curve.size >>3
+        size  = curve.size >>3
         
         k = pv_key.d.to_bytes(size,'big')
         hasher = hasher()
@@ -69,8 +89,7 @@ class EDDSA:
         a[31] = (a[31] &0x7F) | 0x40
         a = bytes(a)
         a = int.from_bytes(a,'little')
-        A = a * B        
-        return   ECPublicKey(A)
+        return   ECPrivateKey(a,pv_key.curve)
 
 
     def sign(self, msg, pv_key):
