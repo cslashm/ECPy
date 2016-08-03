@@ -1,0 +1,216 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ecpy.ecrand &mdash; ECPy 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="ECPy 0.8 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ecpy.ecrand</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright 2016 Cedric Mesnil &lt;cedric.mesnil@ubinity.com&gt;, Ubinity SAS</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+
+<span class="c1">#python 2 compatibility</span>
+<span class="kn">from</span> <span class="nn">builtins</span> <span class="kn">import</span> <span class="nb">int</span>
+
+<span class="kn">from</span> <span class="nn">ecpy.curves</span>     <span class="kn">import</span> <span class="n">Curve</span><span class="p">,</span><span class="n">Point</span>
+<span class="kn">from</span> <span class="nn">ecpy.keys</span>       <span class="kn">import</span> <span class="n">ECPublicKey</span><span class="p">,</span> <span class="n">ECPrivateKey</span>
+<span class="kn">from</span> <span class="nn">ecpy.formatters</span> <span class="kn">import</span> <span class="n">decode_sig</span><span class="p">,</span> <span class="n">encode_sig</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">hmac</span>
+
+
+<div class="viewcode-block" id="rnd"><a class="viewcode-back" href="../../index.html#ecpy.ecrand.rnd">[docs]</a><span class="k">def</span> <span class="nf">rnd</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns a random number less than q, with the same bits length than q</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        q (int)         : field/modulo</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int : random </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nbits</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">bit_length</span><span class="p">()</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">getrandbits</span><span class="p">(</span><span class="n">nbits</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">q</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">k</span></div>
+        
+    
+    
+<div class="viewcode-block" id="rnd_rfc6979"><a class="viewcode-back" href="../../index.html#ecpy.ecrand.rnd_rfc6979">[docs]</a><span class="k">def</span> <span class="nf">rnd_rfc6979</span><span class="p">(</span><span class="n">hashmsg</span><span class="p">,</span> <span class="n">secret</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">hasher</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Generates a deterministic `value` according  to RF6979.</span>
+<span class="sd">    </span>
+<span class="sd">    See https://tools.ietf.org/html/rfc6979#section-3.2</span>
+<span class="sd"> </span>
+<span class="sd">    if V == None, this is the first try, so compute the initial value for V.</span>
+<span class="sd">    Else it means the previous value has been rejected by the caller, so </span>
+<span class="sd">    generate the next one!</span>
+
+<span class="sd">    Warning: the `hashmsg` parameter is the message hash, not the message </span>
+<span class="sd">    itself. In other words, `hashmsg` is equal to `h1` in the  *rfc6979, section-3.2,</span>
+<span class="sd">    step a*.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       hasher (hashlib): hasher</span>
+<span class="sd">       hashmsg (bytes) : message hash</span>
+<span class="sd">       secret (int)    : secret</span>
+<span class="sd">       q (int)         : field/modulo</span>
+<span class="sd">       V               : previous value for continuation</span>
+<span class="sd">    </span>
+<span class="sd">    The function returns a couple `(k,V)` with `k` the expected value and `V` is the </span>
+<span class="sd">    continuation value to pass to next cal if k is rejected.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      tuple: (k,V)</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">V</span> <span class="o">==</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="c1">#a.  Process m through the hash function H, yielding: h1 = H(m)</span>
+        <span class="c1">#h1 = hasher(msg).digest()</span>
+        <span class="n">h1</span> <span class="o">=</span> <span class="n">hashmsg</span>
+        <span class="n">hsize</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">h1</span><span class="p">)</span>
+        <span class="c1">#b. Set: V = 0x01 0x01 0x01 ... 0x01</span>
+        <span class="n">V</span> <span class="o">=</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\x01</span><span class="s1">&#39;</span><span class="o">*</span><span class="n">hsize</span>
+        <span class="c1">#c. Set: K = 0x00 0x00 0x00 ... 0x00</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="o">*</span><span class="n">hsize</span>
+        <span class="c1">#d. Set: K = HMAC_K(V || 0x00 || int2octets(x) || bits2octets(h1))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">secret</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">hsize</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">K</span><span class="p">,</span><span class="n">V</span> <span class="o">+</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">x</span> <span class="o">+</span> <span class="n">h1</span><span class="p">,</span><span class="n">hasher</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+        <span class="c1">#e. Set: V = HMAC_K(V)</span>
+        <span class="n">V</span> <span class="o">=</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="p">,</span><span class="n">hasher</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+        <span class="c1">#f. Set: K = HMAC_K(V || 0x01 || int2octets(x) || bits2octets(h1))</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">K</span><span class="p">,</span><span class="n">V</span> <span class="o">+</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\x01</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">x</span> <span class="o">+</span> <span class="n">h1</span><span class="p">,</span><span class="n">hasher</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+        <span class="c1">#g. Set: V = HMAC_K(V)</span>
+        <span class="n">V</span> <span class="o">=</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="p">,</span><span class="n">hasher</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+
+    <span class="c1">#h.  Apply the following algorithm until a proper value is found for  k:</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="c1">#</span>
+        <span class="c1">#  1.  Set T to the empty sequence.  The length of T (in bits) is</span>
+        <span class="c1">#      denoted tlen; thus, at that point, tlen = 0.</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;</span>
+        <span class="c1">#   2.  While tlen &lt; qlen, do the following:</span>
+        <span class="c1">#         V = HMAC_K(V)</span>
+        <span class="c1">#         T = T || V</span>
+        <span class="n">q_blen</span> <span class="o">=</span>  <span class="n">q</span><span class="o">.</span><span class="n">bit_length</span><span class="p">()</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="o">&lt;</span><span class="n">q_blen</span> <span class="p">:</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">hasher</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+            <span class="n">T</span> <span class="o">=</span> <span class="n">T</span> <span class="o">+</span> <span class="n">V</span>
+        <span class="c1">#3.  Compute:</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+        <span class="n">k_blen</span> <span class="o">=</span>  <span class="n">k</span><span class="o">.</span><span class="n">bit_length</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="n">k_blen</span> <span class="o">&gt;</span> <span class="n">q_blen</span> <span class="p">:</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">k</span> <span class="o">&gt;&gt;</span>  <span class="p">(</span><span class="n">kb_len</span> <span class="o">-</span> <span class="n">qb_len</span><span class="p">)</span>
+        <span class="c1">#      If that value of k is within the [1,q-1] range, and is</span>
+        <span class="c1">#      suitable for DSA or ECDSA (i.e., it results in an r value</span>
+        <span class="c1">#      that is not 0; see Section 3.4), then the generation of k is</span>
+        <span class="c1">#      finished.  The obtained value of k is used in DSA or ECDSA.</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">q</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">k</span><span class="p">,</span><span class="n">V</span>
+        <span class="c1">#      Otherwise, compute:</span>
+        <span class="c1">#        K = HMAC_K(V || 0x00)</span>
+        <span class="c1">#        V = HMAC_K(V)</span>
+        <span class="c1">#        and loop (try to generate a new T, and so on).</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">V</span><span class="o">+</span><span class="n">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">hasher</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+        <span class="n">V</span> <span class="o">=</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">hasher</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span></div>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">hashlib</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="mh">0xaf9ae10ca04f826d5ff4727f97fb568c79e9ffa9686b9d5deb4ea4db44d6f23d</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+    <span class="n">secret</span> <span class="o">=</span> <span class="mh">0xe7244dd97b3558788fbf02f443d9a6ebd12a1ab01703a683aa12412354a43218</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="mh">0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f</span>
+   
+    <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span>
+    <span class="n">r</span><span class="p">,</span><span class="n">V</span> <span class="o">=</span> <span class="n">rnd_rfc6979</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">secret</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">r</span> <span class="o">==</span> <span class="mh">0xbf13da837bcfa314f30fa68be3a9219ca244c1b36f0440624ba88406fcd7462d</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Cédric Mesnil.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

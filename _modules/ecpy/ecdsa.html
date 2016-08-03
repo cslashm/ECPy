@@ -1,0 +1,291 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ecpy.ecdsa &mdash; ECPy 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="ECPy 0.8 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ecpy.ecdsa</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright 2016 Cedric Mesnil &lt;cedric.mesnil@ubinity.com&gt;, Ubinity SAS</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+
+<span class="c1">#python 2 compatibility</span>
+<span class="kn">from</span> <span class="nn">builtins</span> <span class="kn">import</span> <span class="nb">int</span><span class="p">,</span><span class="nb">pow</span>
+
+<span class="kn">from</span> <span class="nn">ecpy.curves</span>     <span class="kn">import</span> <span class="n">Curve</span><span class="p">,</span><span class="n">Point</span>
+<span class="kn">from</span> <span class="nn">ecpy.keys</span>       <span class="kn">import</span> <span class="n">ECPublicKey</span><span class="p">,</span> <span class="n">ECPrivateKey</span>
+<span class="kn">from</span> <span class="nn">ecpy.formatters</span> <span class="kn">import</span> <span class="n">decode_sig</span><span class="p">,</span> <span class="n">encode_sig</span>
+<span class="kn">from</span> <span class="nn">ecpy</span>            <span class="kn">import</span> <span class="n">ecrand</span>
+
+<span class="kn">import</span> <span class="nn">hashlib</span>
+
+<div class="viewcode-block" id="ECDSA"><a class="viewcode-back" href="../../index.html#ecpy.ecdsa.ECDSA">[docs]</a><span class="k">class</span> <span class="nc">ECDSA</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;ECDSA signer.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fmt (str) : in/out signature format. See :mod:`ecpy.formatters`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;DER&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxtries</span><span class="o">=</span><span class="mi">10</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="ECDSA.sign"><a class="viewcode-back" href="../../index.html#ecpy.ecdsa.ECDSA.sign">[docs]</a>    <span class="k">def</span> <span class="nf">sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">pv_key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Signs a message hash.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            msg (bytes)                    : the message hash to sign</span>
+<span class="sd">            pv_key (ecpy.keys.ECPrivateKey): key to use for signing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">pv_key</span><span class="o">.</span><span class="n">curve</span><span class="o">.</span><span class="n">order</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">maxtries</span><span class="p">):</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">ecrand</span><span class="o">.</span><span class="n">rnd</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+            <span class="n">sig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_sign</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">pv_key</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sig</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">sig</span>
+        <span class="k">return</span> <span class="bp">None</span></div>
+
+<div class="viewcode-block" id="ECDSA.sign_rfc6979"><a class="viewcode-back" href="../../index.html#ecpy.ecdsa.ECDSA.sign_rfc6979">[docs]</a>    <span class="k">def</span> <span class="nf">sign_rfc6979</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">pv_key</span><span class="p">,</span> <span class="n">hasher</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Signs a message hash  according to  RFC6979 </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            msg (bytes)                    : the message hash to sign</span>
+<span class="sd">            pv_key (ecpy.keys.ECPrivateKey): key to use for signing</span>
+<span class="sd">            hasher (hashlib)               : hasher conform to hashlib interface</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">field</span> <span class="o">=</span> <span class="n">pv_key</span><span class="o">.</span><span class="n">curve</span><span class="o">.</span><span class="n">field</span>
+        <span class="n">V</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">maxtries</span><span class="p">):</span>
+            <span class="n">k</span><span class="p">,</span><span class="n">V</span> <span class="o">=</span> <span class="n">ecrand</span><span class="o">.</span><span class="n">rnd_rfc6979</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">pv_key</span><span class="o">.</span><span class="n">d</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">hasher</span><span class="p">,</span><span class="n">V</span><span class="p">)</span>
+            <span class="n">sig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_sign</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">pv_key</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sig</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">sig</span>
+                                 
+        <span class="k">return</span> <span class="bp">None</span></div>
+    
+<div class="viewcode-block" id="ECDSA.sign_k"><a class="viewcode-back" href="../../index.html#ecpy.ecdsa.ECDSA.sign_k">[docs]</a>    <span class="k">def</span> <span class="nf">sign_k</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">msg</span><span class="p">,</span><span class="n">pv_key</span><span class="p">,</span><span class="n">k</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Signs a message hash  with provided random</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            msg (bytes)                    : the hash of message to sign</span>
+<span class="sd">            pv_key (ecpy.keys.ECPrivateKey): key to use for signing</span>
+<span class="sd">            k (ecpy.keys.ECPrivateKey)     : random to use for signing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_sign</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">pv_key</span><span class="p">,</span><span class="n">k</span><span class="p">)</span></div>
+            
+    <span class="k">def</span> <span class="nf">_do_sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">msg</span><span class="p">,</span><span class="n">pv_key</span><span class="p">,</span><span class="n">k</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">pv_key</span><span class="o">.</span><span class="n">curve</span> <span class="o">==</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ECPyException</span><span class="p">(</span><span class="s1">&#39;private key haz no curve&#39;</span><span class="p">)</span>
+        <span class="n">curve</span> <span class="o">=</span> <span class="n">pv_key</span><span class="o">.</span><span class="n">curve</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">generator</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">k</span><span class="o">%</span><span class="n">n</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s1">&#39;big&#39;</span><span class="p">)</span>
+        
+        <span class="n">Q</span> <span class="o">=</span> <span class="n">G</span><span class="o">*</span><span class="n">k</span>
+        <span class="n">kinv</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">x</span> <span class="o">%</span> <span class="n">n</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="n">kinv</span><span class="o">*</span><span class="p">(</span><span class="n">msg</span><span class="o">+</span><span class="n">pv_key</span><span class="o">.</span><span class="n">d</span><span class="o">*</span><span class="n">r</span><span class="p">))</span> <span class="o">%</span><span class="n">n</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">encode_sig</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="p">)</span>
+        
+        <span class="c1"># r = r.to_bytes((r.bit_length()+7)//8, &#39;big&#39;)</span>
+        <span class="c1"># s = s.to_bytes((s.bit_length()+7)//8, &#39;big&#39;)</span>
+        <span class="c1"># if (r[0] &amp; 0x80) == 0x80 :</span>
+        <span class="c1">#     r = b&#39;\0&#39;+r</span>
+        <span class="c1"># if (s[0] &amp; 0x80) == 0x80 :</span>
+        <span class="c1">#     s = b&#39;\0&#39;+s</span>
+        <span class="c1"># sig = (b&#39;\x30&#39;+int((len(r)+len(s)+4)).to_bytes(1,&#39;big&#39;) +</span>
+        <span class="c1">#        b&#39;\x02&#39;+int(len(r)).to_bytes(1,&#39;big&#39;) + r        +</span>
+        <span class="c1">#        b&#39;\x02&#39;+int(len(s)).to_bytes(1,&#39;big&#39;) + s      )</span>
+        <span class="k">return</span> <span class="n">sig</span>
+            
+<div class="viewcode-block" id="ECDSA.verify"><a class="viewcode-back" href="../../index.html#ecpy.ecdsa.ECDSA.verify">[docs]</a>    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">msg</span><span class="p">,</span><span class="n">sig</span><span class="p">,</span><span class="n">pu_key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Verifies a message signature.                </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            msg (bytes)                   : the message hash to verify the signature</span>
+<span class="sd">            sig (bytes)                   : signature to verify</span>
+<span class="sd">            pu_key (ecpy.keys.ECPublicKey): key to use for verifying</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">curve</span> <span class="o">=</span> <span class="n">pu_key</span><span class="o">.</span><span class="n">curve</span>
+        <span class="n">n</span>     <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">G</span>     <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">generator</span>
+
+        <span class="n">r</span><span class="p">,</span><span class="n">s</span> <span class="o">=</span> <span class="n">decode_sig</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">or</span>
+            <span class="n">r</span> <span class="o">&gt;</span> <span class="n">n</span>     <span class="ow">or</span>
+            <span class="n">s</span> <span class="o">&gt;</span> <span class="n">n</span>     <span class="p">)</span> <span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="n">h</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+
+        <span class="n">c</span>   <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="n">u1</span>  <span class="o">=</span> <span class="p">(</span><span class="n">h</span><span class="o">*</span><span class="n">c</span><span class="p">)</span><span class="o">%</span><span class="n">n</span>
+        <span class="n">u2</span>  <span class="o">=</span> <span class="p">(</span><span class="n">r</span><span class="o">*</span><span class="n">c</span><span class="p">)</span><span class="o">%</span><span class="n">n</span>
+        <span class="n">u1G</span> <span class="o">=</span> <span class="n">u1</span><span class="o">*</span><span class="n">G</span>
+        <span class="n">u2Q</span> <span class="o">=</span> <span class="n">u2</span><span class="o">*</span><span class="n">pu_key</span><span class="o">.</span><span class="n">W</span>
+        <span class="n">GQ</span>  <span class="o">=</span>  <span class="n">u1G</span><span class="o">+</span><span class="n">u2Q</span>
+        <span class="n">x</span>   <span class="o">=</span> <span class="n">GQ</span><span class="o">.</span><span class="n">x</span> <span class="o">%</span> <span class="n">n</span>
+
+        <span class="k">return</span> <span class="n">x</span> <span class="o">==</span> <span class="n">r</span></div></div>
+
+    
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1">### ECDSA</span>
+        <span class="n">cv</span>     <span class="o">=</span> <span class="n">Curve</span><span class="o">.</span><span class="n">get_curve</span><span class="p">(</span><span class="s1">&#39;secp256k1&#39;</span><span class="p">)</span>
+        <span class="n">pu_key</span> <span class="o">=</span> <span class="n">ECPublicKey</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="mh">0x65d5b8bf9ab1801c9f168d4815994ad35f1dcb6ae6c7a1a303966b677b813b00</span><span class="p">,</span>
+                                   
+                                   <span class="mh">0xe6b865e529b8ecbf71cf966e900477d49ced5846d7662dd2dd11ccd55c0aff7f</span><span class="p">,</span>
+                                   <span class="n">cv</span><span class="p">))</span>
+        <span class="n">pv_key</span> <span class="o">=</span> <span class="n">ECPrivateKey</span><span class="p">(</span><span class="mh">0xfb26a4e75eec75544c0f44e937dcf5ee6355c7176600b9688c667e5c283b43c5</span><span class="p">,</span>
+                              <span class="n">cv</span><span class="p">)</span>
+
+        <span class="c1">#sha256(&quot;abc&quot;)</span>
+        <span class="c1">#  c:  0xC03DDDA6174963AD10224BADDBCF7ED9EA5E3DAE91941CB428D2EC060B4F290A</span>
+        <span class="c1"># u1:  0x113BE17918E856E4D6EC2EE04F5E9B3CB599B82AC879C8E32A0140C290D32659</span>
+        <span class="c1"># u2:  0x2976F786AE6333E125C0DFFD6C16D37E8CED5ABEDB491BCCA21C75B307D0B318</span>
+        <span class="c1"># u1G: 0x51e4e6ed6f4b1db33b0d21b8bd30fb732f1d999c4e27bb1800eba20813ad3e86</span>
+        <span class="c1">#      0x93101a9fa0d5c7c680400b03d3becb9130dd8f9f4d9b034360a74829dc1201ab</span>
+        <span class="c1"># u2Q: 0xeaca8440897333e259d0f99165611b085d6e10a9bfd371c451bc0aea1aeb99c3</span>
+        <span class="c1">#      0x57c5c95ea9f491c0fd9029a4089a2e6df47313f915f3e39e9f12e03ab16521c2</span>
+        <span class="c1">#  + : 0x0623b4159c7112125be51716d1e706d68e52f5b321da68d8b86b3c7c7019a9da</span>
+        <span class="c1">#    : 0x1029094ccc466a534df3dbb7f588b283c9bef213633750aeff021c4c131b7ce5</span>
+        <span class="c1"># SIG: 3045</span>
+        <span class="c1">#      0220</span>
+        <span class="c1">#       0623b4159c7112125be51716d1e706d68e52f5b321da68d8b86b3c7c7019a9da</span>
+        <span class="c1">#      0221</span>
+        <span class="c1">#       008dffe3c592a0c7e5168dcb3d4121a60ee727082be4fbf79eae564929156305fc</span>
+        
+        <span class="n">msg</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mh">0xba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad</span><span class="p">)</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mh">0x304502200623b4159c7112125be51716d1e706d68e52f5b321da68d8b86b3c7c7019a9da0221008dffe3c592a0c7e5168dcb3d4121a60ee727082be4fbf79eae564929156305fc</span><span class="p">)</span>
+        <span class="n">msg</span>  <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+        <span class="n">sig</span>  <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mh">0x47</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+
+        <span class="n">signer</span> <span class="o">=</span> <span class="n">ECDSA</span><span class="p">()</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">signer</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="n">sig</span><span class="p">,</span><span class="n">pu_key</span><span class="p">))</span>
+
+        <span class="c1">#  k:     0xe5a8d1d529971c10ca2af378444fb544a211707892c8898f91dcb171584e3db9</span>
+        <span class="c1"># kG:     0x4f123ed9de853836447782f0a436508d34e6609083cf97c9b9cd69673d8f04a5</span>
+        <span class="c1">#         0x50b57473f987f2d7c4715827dbd7b23c3088645d5f898aa66e4ef2778591d643</span>
+        <span class="c1"># kinv:    0x0F2DD0361F61F683957CF708FB54DBC0B6B97F9EDF28604983E6F492117C154C</span>
+        <span class="c1"># kinv.d   0xFF68C89B97C63273EB5F787FBC0C33DA02BA4C883AB09E3D381197E9E3964E8C</span>
+        <span class="c1"># kinv.d.x 0x5A20058782FB81C8F98C30D9D441B7196C22939B144918CF519FB155180664B1</span>
+        <span class="c1"># kinv.h   0x112FA7E277E3AE8AE4911A05B56880F05B601CCC633A3D0084C4D5734F0C5BD1</span>
+        <span class="c1"># SIG      3044</span>
+        <span class="c1">#           0220,</span>
+        <span class="c1">#            4f123ed9de853836447782f0a436508d34e6609083cf97c9b9cd69673d8f04a5</span>
+        <span class="c1">#           0220,</span>
+        <span class="c1">#            6b4fad69fadf3053de1d4adf89aa3809c782b067778355cfd66486c86712c082</span>
+        <span class="n">expected_sig</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mh">0x304402204f123ed9de853836447782f0a436508d34e6609083cf97c9b9cd69673d8f04a502206b4fad69fadf3053de1d4adf89aa3809c782b067778355cfd66486c86712c082</span><span class="p">)</span>
+        <span class="n">expected_sig</span> <span class="o">=</span> <span class="n">expected_sig</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mh">0x46</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+        <span class="n">k</span>   <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mh">0xe5a8d1d529971c10ca2af378444fb544a211707892c8898f91dcb171584e3db9</span><span class="p">)</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">signer</span><span class="o">.</span><span class="n">sign_k</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="n">pv_key</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">sig</span> <span class="o">==</span> <span class="n">expected_sig</span><span class="p">)</span>
+
+        <span class="c1">#Sign with k rand</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">signer</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="n">pv_key</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">signer</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="n">sig</span><span class="p">,</span><span class="n">pu_key</span><span class="p">))</span>        
+
+        <span class="c1">#sign with krfc</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">signer</span><span class="o">.</span><span class="n">sign_rfc6979</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="n">pv_key</span><span class="p">,</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">sig</span> <span class="o">==</span> <span class="n">expected_sig</span><span class="p">)</span>
+        
+        <span class="c1">##OK!</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;All internal assert OK!&quot;</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Cédric Mesnil.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

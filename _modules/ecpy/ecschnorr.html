@@ -1,0 +1,405 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ecpy.ecschnorr &mdash; ECPy 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="ECPy 0.8 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ecpy.ecschnorr</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright 2016 Cedric Mesnil &lt;cedric.mesnil@ubinity.com&gt;, Ubinity SAS</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+
+<span class="c1">#python 2 compatibility</span>
+<span class="kn">from</span> <span class="nn">builtins</span> <span class="kn">import</span> <span class="nb">int</span><span class="p">,</span><span class="nb">pow</span>
+
+<span class="kn">from</span> <span class="nn">ecpy.curves</span>     <span class="kn">import</span> <span class="n">Curve</span><span class="p">,</span><span class="n">Point</span>
+<span class="kn">from</span> <span class="nn">ecpy.keys</span>       <span class="kn">import</span> <span class="n">ECPublicKey</span><span class="p">,</span> <span class="n">ECPrivateKey</span>
+<span class="kn">from</span> <span class="nn">ecpy.formatters</span> <span class="kn">import</span> <span class="n">decode_sig</span><span class="p">,</span> <span class="n">encode_sig</span><span class="p">,</span> <span class="n">list_formats</span>
+<span class="kn">from</span> <span class="nn">ecpy</span>            <span class="kn">import</span> <span class="n">ecrand</span>
+<span class="kn">from</span> <span class="nn">ecpy.curves</span>     <span class="kn">import</span> <span class="n">ECPyException</span>
+
+<span class="kn">import</span> <span class="nn">hashlib</span>
+
+<div class="viewcode-block" id="ECSchnorr"><a class="viewcode-back" href="../../index.html#ecpy.ecschnorr.ECSchnorr">[docs]</a><span class="k">class</span> <span class="nc">ECSchnorr</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; ECSchnorr signer implementation according to:</span>
+<span class="sd"> </span>
+<span class="sd">     - `BSI:TR03111 &lt;https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TR03111/BSI-TR-03111_pdf.html&gt;`_</span>
+<span class="sd">     - `ISO/IEC:14888-3 &lt;http://www.iso.org/iso/iso_catalogue/catalogue_ics/catalogue_detail_ics.htm?csnumber=43656&gt;`_</span>
+<span class="sd">     - `bitcoin-core:libsecp256k1 &lt;https://github.com/bitcoin-core/secp256k1/blob/master/src/modules/schnorr/schnorr_impl.h&gt;`_</span>
+
+
+<span class="sd">    In order to select the specification to be conform to, choose </span>
+<span class="sd">    the corresponding string option: &quot;BSI&quot;, &quot;ISO&quot;, &quot;ISOx&quot;, &quot;LIBSECP&quot;</span>
+
+<span class="sd">    *Signature*:</span>
+
+<span class="sd">    - &quot;BSI&quot;: compute r,s according to to BSI : </span>
+<span class="sd">        1. k = RNG(1:n-1)</span>
+<span class="sd">        2. Q = [k]G</span>
+<span class="sd">        3. r = H(M ||Qx)</span>
+<span class="sd">           If r = 0 mod n, goto 1.</span>
+<span class="sd">        4. s = k - r.d mod n</span>
+<span class="sd">           If s = 0 goto 1.</span>
+<span class="sd">        5. Output (r, s)</span>
+<span class="sd">    - &quot;ISO&quot;: compute r,s according to ISO : </span>
+<span class="sd">        1. k = RNG(1:n-1)</span>
+<span class="sd">        2. Q = [k]G</span>
+<span class="sd">           If r = 0 mod n, goto 1.</span>
+<span class="sd">        3. r = H(Qx||Qy||M).</span>
+<span class="sd">        4. s = (k + r.d) mod n</span>
+<span class="sd">           If s = 0 goto 1.</span>
+<span class="sd">        5. Output (r, s)</span>
+<span class="sd">    - &quot;ISOx&quot;: compute r,s according to optimized ISO variant: </span>
+<span class="sd">        1. k = RNG(1:n-1)</span>
+<span class="sd">        2. Q = [k]G</span>
+<span class="sd">           If r = 0 mod n, goto 1.</span>
+<span class="sd">        3. r = H(Qx||Qy||M).</span>
+<span class="sd">        4. s = (k + r.d) mod n</span>
+<span class="sd">           If s = 0 goto 1.</span>
+<span class="sd">        5. Output (r, s)</span>
+<span class="sd">    - &quot;LIBSECP&quot;: compute r,s according to bitcoin lib: </span>
+<span class="sd">        1. k = RNG(1:n-1)</span>
+<span class="sd">        2. Q = [k]G</span>
+<span class="sd">           if Qy is odd, negate k and goto 2</span>
+<span class="sd">        3. r = Qx % n</span>
+<span class="sd">        4. h = H(r || m).</span>
+<span class="sd">           if h == 0 or h &gt;= order goto 1</span>
+<span class="sd">        5. s = k - h.d.</span>
+<span class="sd">        6. Output (r, s)</span>
+
+<span class="sd">    *Verification*</span>
+
+<span class="sd">    - &quot;BSI&quot;: verify r,s according to to BSI : </span>
+<span class="sd">        1. Verify that r in {0, . . . , 2**t - 1} and s in {1, 2, . . . , n - 1}.</span>
+<span class="sd">           If the check fails, output False and terminate.</span>
+<span class="sd">        2. Q = [s]G + [r]W</span>
+<span class="sd">           If Q = 0, output Error and terminate.</span>
+<span class="sd">        3. v = H(M||Qx)</span>
+<span class="sd">        4. Output True if v = r, and False otherwise.</span>
+<span class="sd">    - &quot;ISO&quot;: verify r,s according to ISO : </span>
+<span class="sd">        1. check...</span>
+<span class="sd">        2. Q = [s]G - [r]W</span>
+<span class="sd">           If Q = 0, output Error and terminate.</span>
+<span class="sd">        3. v = H(Qx||Qy||M).</span>
+<span class="sd">        4. Output True if v = r, and False otherwise.</span>
+<span class="sd">    - &quot;ISOx&quot;: verify r,s according to optimized ISO variant: </span>
+<span class="sd">        1. check...</span>
+<span class="sd">        2. Q = [s]G - [r]W</span>
+<span class="sd">           If Q = 0, output Error and terminate.</span>
+<span class="sd">        3. v = H(Qx||M).</span>
+<span class="sd">        4. Output True if v = r, and False otherwise.</span>
+<span class="sd">    - &quot;LIBSECP&quot;: </span>
+<span class="sd">        1. Signature is invalid if s &gt;= order.</span>
+<span class="sd">           Signature is invalid if r &gt;= p.</span>
+<span class="sd">        2. h = H(r || m). </span>
+<span class="sd">           Signature is invalid if h == 0 or h &gt;= order.</span>
+<span class="sd">        3. R = [h]Q + [s]G. </span>
+<span class="sd">           Signature is invalid if R is infinity or R&#39;s y coordinate is odd.</span>
+<span class="sd">        4. Signature is valid if the serialization of R&#39;s x coordinate equals r.</span>
+
+<span class="sd">    Default is &quot;ISO&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">      hasher (hashlib): callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512...</span>
+<span class="sd">      option (str) : one of &quot;BSI&quot;,&quot;ISO&quot;,&quot;ISOx&quot;,&quot;LIBSECP&quot;</span>
+<span class="sd">      fmt (str) : in/out signature format. See :mod:`ecpy.formatters`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hasher</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="s2">&quot;ISO&quot;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;DER&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ISO&quot;</span><span class="p">,</span><span class="s2">&quot;ISOx&quot;</span><span class="p">,</span><span class="s2">&quot;BSI&quot;</span><span class="p">,</span><span class="s2">&quot;LIBSECP&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ECPyException</span><span class="p">(</span><span class="s1">&#39;ECSchnorr option not supported: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">option</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="n">list_formats</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">ECPyException</span><span class="p">(</span><span class="s1">&#39;ECSchnorr format not supported: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">fmt</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hasher</span> <span class="o">=</span> <span class="n">hasher</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span> <span class="o">=</span> <span class="n">fmt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxtries</span><span class="o">=</span><span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">option</span> <span class="o">=</span> <span class="n">option</span>
+        
+<div class="viewcode-block" id="ECSchnorr.sign"><a class="viewcode-back" href="../../index.html#ecpy.ecschnorr.ECSchnorr.sign">[docs]</a>    <span class="k">def</span> <span class="nf">sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">pv_key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Signs a message hash.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            hash_msg (bytes)               : the message hash to sign</span>
+<span class="sd">            pv_key (ecpy.keys.ECPrivateKey): key to use for signing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">pv_key</span><span class="o">.</span><span class="n">curve</span><span class="o">.</span><span class="n">order</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">maxtries</span><span class="p">):</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">ecrand</span><span class="o">.</span><span class="n">rnd</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+            <span class="n">sig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_sign</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">pv_key</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sig</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">sig</span> 
+        <span class="k">return</span> <span class="bp">None</span></div>
+
+<div class="viewcode-block" id="ECSchnorr.sign_k"><a class="viewcode-back" href="../../index.html#ecpy.ecschnorr.ECSchnorr.sign_k">[docs]</a>    <span class="k">def</span> <span class="nf">sign_k</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">pv_key</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Signs a message hash  with provided random</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            hash_msg (bytes)               : the message hash to sign</span>
+<span class="sd">            pv_key (ecpy.keys.ECPrivateKey): key to use for signing</span>
+<span class="sd">            k (ecpy.keys.ECPrivateKey)     : random to use for signing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_sign</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">pv_key</span><span class="p">,</span><span class="n">k</span><span class="p">)</span></div>
+            
+    <span class="k">def</span> <span class="nf">_do_sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">pv_key</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">pv_key</span><span class="o">.</span><span class="n">curve</span> <span class="o">==</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ECPyException</span><span class="p">(</span><span class="s1">&#39;private key haz no curve&#39;</span><span class="p">)</span>
+        <span class="n">curve</span> <span class="o">=</span> <span class="n">pv_key</span><span class="o">.</span><span class="n">curve</span>
+        <span class="n">n</span>     <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">G</span>     <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">generator</span>
+        <span class="n">size</span>  <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">size</span><span class="o">&gt;&gt;</span><span class="mi">3</span>
+        
+        <span class="n">Q</span> <span class="o">=</span> <span class="n">G</span><span class="o">*</span><span class="n">k</span>
+        <span class="n">hasher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hasher</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;ISO&quot;</span><span class="p">:</span>
+            <span class="n">xQ</span> <span class="o">=</span> <span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>        
+            <span class="n">yQ</span> <span class="o">=</span> <span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+            <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">xQ</span><span class="o">+</span><span class="n">yQ</span><span class="o">+</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">hasher</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="n">k</span><span class="o">+</span><span class="n">r</span><span class="o">*</span><span class="n">pv_key</span><span class="o">.</span><span class="n">d</span><span class="p">)</span><span class="o">%</span><span class="n">n</span>
+            <span class="k">if</span> <span class="n">r</span><span class="o">==</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">s</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;ISOx&quot;</span><span class="p">:</span>
+            <span class="n">xQ</span> <span class="o">=</span> <span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span> 
+            <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">xQ</span><span class="o">+</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">hasher</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="n">k</span><span class="o">+</span><span class="n">r</span><span class="o">*</span><span class="n">pv_key</span><span class="o">.</span><span class="n">d</span><span class="p">)</span><span class="o">%</span><span class="n">n</span>
+            <span class="k">if</span> <span class="n">r</span><span class="o">==</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">s</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">None</span>
+            
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;BSI&quot;</span><span class="p">:</span>
+            <span class="n">xQ</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span> 
+            <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">msg</span><span class="o">+</span><span class="n">xQ</span><span class="p">)</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">hasher</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="n">r</span><span class="o">*</span><span class="n">pv_key</span><span class="o">.</span><span class="n">d</span><span class="p">)</span><span class="o">%</span><span class="n">n</span>
+            <span class="k">if</span> <span class="n">r</span><span class="o">==</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">s</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;LIBSECP&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">Q</span><span class="o">.</span><span class="n">y</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="n">n</span><span class="o">-</span><span class="n">k</span>
+                <span class="n">Q</span> <span class="o">=</span> <span class="n">G</span><span class="o">*</span><span class="n">k</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">x</span><span class="o">%</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+            <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">r</span><span class="o">+</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">hasher</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">h</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">x</span> <span class="o">%</span> <span class="n">n</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="n">h</span><span class="o">*</span><span class="n">pv_key</span><span class="o">.</span><span class="n">d</span><span class="p">)</span><span class="o">%</span><span class="n">n</span>
+        <span class="k">return</span> <span class="n">encode_sig</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="p">)</span>
+            
+<div class="viewcode-block" id="ECSchnorr.verify"><a class="viewcode-back" href="../../index.html#ecpy.ecschnorr.ECSchnorr.verify">[docs]</a>    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">msg</span><span class="p">,</span><span class="n">sig</span><span class="p">,</span><span class="n">pu_key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Verifies a message signature.                </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            msg (bytes)             : the message hash to verify the signature</span>
+<span class="sd">            sig (bytes)             : signature to verify</span>
+<span class="sd">            pu_key (ecpy.keys.ECPublicKey): key to use for verifying</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">curve</span> <span class="o">=</span> <span class="n">pu_key</span><span class="o">.</span><span class="n">curve</span>
+        <span class="n">n</span>     <span class="o">=</span> <span class="n">pu_key</span><span class="o">.</span><span class="n">curve</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">G</span>     <span class="o">=</span> <span class="n">pu_key</span><span class="o">.</span><span class="n">curve</span><span class="o">.</span><span class="n">generator</span>
+        <span class="n">size</span>  <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">size</span><span class="o">&gt;&gt;</span><span class="mi">3</span>
+        
+        <span class="n">r</span><span class="p">,</span><span class="n">s</span> <span class="o">=</span> <span class="n">decode_sig</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="o">==</span> <span class="bp">None</span>             <span class="ow">or</span>
+            <span class="n">r</span> <span class="o">&gt;</span> <span class="p">(</span><span class="nb">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">size</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span>
+            <span class="n">s</span> <span class="o">==</span> <span class="mi">0</span>                <span class="ow">or</span>
+            <span class="n">s</span> <span class="o">&gt;</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span>     <span class="p">)</span> <span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="n">hasher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hasher</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;ISO&quot;</span><span class="p">:</span>
+            <span class="n">sG</span> <span class="o">=</span> <span class="n">s</span> <span class="o">*</span> <span class="n">G</span>
+            <span class="n">rW</span> <span class="o">=</span> <span class="n">r</span><span class="o">*</span><span class="n">pu_key</span><span class="o">.</span><span class="n">W</span>
+            <span class="n">Q</span> <span class="o">=</span> <span class="n">sG</span> <span class="o">-</span> <span class="n">rW</span>            
+            <span class="n">xQ</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+            <span class="n">yQ</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+            <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">xQ</span><span class="o">+</span><span class="n">yQ</span><span class="o">+</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">hasher</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+             
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;ISOx&quot;</span><span class="p">:</span>
+            <span class="n">sG</span> <span class="o">=</span> <span class="n">s</span> <span class="o">*</span> <span class="n">G</span>
+            <span class="n">rW</span> <span class="o">=</span> <span class="n">r</span><span class="o">*</span><span class="n">pu_key</span><span class="o">.</span><span class="n">W</span>
+            <span class="n">Q</span> <span class="o">=</span> <span class="n">sG</span> <span class="o">-</span> <span class="n">rW</span>   
+            <span class="n">xQ</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+            <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">xQ</span><span class="o">+</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">hasher</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+            
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;BSI&quot;</span><span class="p">:</span>
+            <span class="n">sG</span> <span class="o">=</span> <span class="n">s</span> <span class="o">*</span> <span class="n">G</span>
+            <span class="n">rW</span> <span class="o">=</span> <span class="n">r</span><span class="o">*</span><span class="n">pu_key</span><span class="o">.</span><span class="n">W</span>
+            <span class="n">Q</span> <span class="o">=</span> <span class="n">sG</span> <span class="o">+</span> <span class="n">rW</span>   
+            <span class="n">xQ</span> <span class="o">=</span> <span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+            <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">msg</span><span class="o">+</span><span class="n">xQ</span><span class="p">)</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">hasher</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;LIBSECP&quot;</span><span class="p">:</span>
+            <span class="n">rb</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span> 
+            <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rb</span><span class="o">+</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">hasher</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">h</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">h</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">h</span> <span class="o">&gt;</span> <span class="n">n</span> <span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="n">sG</span> <span class="o">=</span> <span class="n">s</span> <span class="o">*</span> <span class="n">G</span>
+            <span class="n">hW</span> <span class="o">=</span> <span class="n">h</span><span class="o">*</span><span class="n">pu_key</span><span class="o">.</span><span class="n">W</span>
+            <span class="n">R</span> <span class="o">=</span> <span class="n">sG</span> <span class="o">+</span> <span class="n">hW</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">R</span><span class="o">.</span><span class="n">x</span> <span class="o">%</span> <span class="n">n</span>
+
+        <span class="k">return</span> <span class="n">v</span> <span class="o">==</span> <span class="n">r</span></div></div>
+ 
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">cv</span>     <span class="o">=</span> <span class="n">Curve</span><span class="o">.</span><span class="n">get_curve</span><span class="p">(</span><span class="s1">&#39;NIST-P256&#39;</span><span class="p">)</span>
+        <span class="n">pu_key</span> <span class="o">=</span> <span class="n">ECPublicKey</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="mh">0x09b58b88323c52d1080aa525c89e8e12c6f40fcb014640fa88081ed9e9352de7</span><span class="p">,</span>
+                                   <span class="mh">0x5ccbbd189538516238b0b0b28acb5f0b5e27217c3a9872421219de0aeebf1080</span><span class="p">,</span>
+                                   <span class="n">cv</span><span class="p">))</span>
+        <span class="n">pv_key</span> <span class="o">=</span> <span class="n">ECPrivateKey</span><span class="p">(</span><span class="mh">0x5202a3d8acaf6909d12c9a774cd886f9fba61137ffd3e8e76aed363fb47ac492</span><span class="p">,</span>
+                              <span class="n">cv</span><span class="p">)</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mh">0x616263</span><span class="p">)</span>
+        <span class="n">msg</span>  <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+
+        <span class="n">k</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mh">0xde7e0e5e663f24183414b7c72f24546b81e9e5f410bebf26f3ca5fa82f5192c8</span><span class="p">)</span>
+
+        <span class="c1">## ISO</span>
+        <span class="n">R</span><span class="o">=</span><span class="mh">0x5A79A0AA9B241E381A594B220554D096A5F09FA628AD9A33C3CE4393ADE1DEF7</span>
+        <span class="n">S</span><span class="o">=</span><span class="mh">0x5C0EB78B67A513C3E53B2619F96855E291D5141C7CD0915E1D04B347457C9601</span>
+
+        <span class="n">signer</span> <span class="o">=</span> <span class="n">ECSchnorr</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">,</span><span class="s2">&quot;ISO&quot;</span><span class="p">,</span><span class="s2">&quot;ITUPLE&quot;</span><span class="p">)</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">signer</span><span class="o">.</span><span class="n">sign_k</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="n">pv_key</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">R</span><span class="o">==</span><span class="n">sig</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">S</span><span class="o">==</span><span class="n">sig</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">signer</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="n">sig</span><span class="p">,</span><span class="n">pu_key</span><span class="p">))</span>
+
+        <span class="c1">##ISOx</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="mh">0xd7fb8135d8ea45e8fb3c9059f146e2630ef4bd51c4006a92edb4c8b0849963fb</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="mh">0xb46d1525379e02e232d97928265b7254ea2ed97813454388c1a08f62dccd70b3</span>
+
+        <span class="n">signer</span> <span class="o">=</span> <span class="n">ECSchnorr</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">,</span><span class="s2">&quot;ISOx&quot;</span><span class="p">,</span><span class="s2">&quot;ITUPLE&quot;</span><span class="p">)</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">signer</span><span class="o">.</span><span class="n">sign_k</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="n">pv_key</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">R</span><span class="o">==</span><span class="n">sig</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">S</span><span class="o">==</span><span class="n">sig</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">signer</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="n">sig</span><span class="p">,</span><span class="n">pu_key</span><span class="p">))</span>
+
+        <span class="c1">##BSI</span>
+        <span class="n">signer</span> <span class="o">=</span> <span class="n">ECSchnorr</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">,</span><span class="s2">&quot;BSI&quot;</span><span class="p">,</span><span class="s2">&quot;ITUPLE&quot;</span><span class="p">)</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">signer</span><span class="o">.</span><span class="n">sign_k</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="n">pv_key</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">signer</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="n">sig</span><span class="p">,</span><span class="n">pu_key</span><span class="p">))</span>
+
+        <span class="c1">##LIBSECP</span>
+        <span class="n">cv</span>     <span class="o">=</span> <span class="n">Curve</span><span class="o">.</span><span class="n">get_curve</span><span class="p">(</span><span class="s1">&#39;secp256k1&#39;</span><span class="p">)</span>
+        <span class="n">pu_key</span> <span class="o">=</span> <span class="n">ECPublicKey</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="mh">0x65d5b8bf9ab1801c9f168d4815994ad35f1dcb6ae6c7a1a303966b677b813b00</span><span class="p">,</span>
+                                   <span class="mh">0xe6b865e529b8ecbf71cf966e900477d49ced5846d7662dd2dd11ccd55c0aff7f</span><span class="p">,</span>
+                                   <span class="n">cv</span><span class="p">))</span>
+        <span class="n">pv_key</span> <span class="o">=</span> <span class="n">ECPrivateKey</span><span class="p">(</span><span class="mh">0xfb26a4e75eec75544c0f44e937dcf5ee6355c7176600b9688c667e5c283b43c5</span><span class="p">,</span>
+                              <span class="n">cv</span><span class="p">)</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mh">0x0101010101010101010101010101010101010101010101010101010101010101</span><span class="p">)</span>
+        <span class="n">msg</span>  <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mh">0x4242424242424242424242424242424242424242424242424242424242424242</span><span class="p">)</span>
+        <span class="n">expect_r</span> <span class="o">=</span> <span class="mh">0x24653eac434488002cc06bbfb7f10fe18991e35f9fe4302dbea6d2353dc0ab1c</span>
+        <span class="n">expect_s</span> <span class="o">=</span> <span class="mh">0xacd417b277ab7e7d993cc4a601dd01a71696fd0dd2e93561d9de9b69dd4dc75c</span>
+        
+        <span class="n">signer</span> <span class="o">=</span> <span class="n">ECSchnorr</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">,</span><span class="s2">&quot;LIBSECP&quot;</span><span class="p">,</span><span class="s2">&quot;ITUPLE&quot;</span><span class="p">)</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">signer</span><span class="o">.</span><span class="n">sign_k</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="n">pv_key</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">expect_r</span> <span class="o">==</span> <span class="n">sig</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">expect_s</span> <span class="o">==</span> <span class="n">sig</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">signer</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="n">sig</span><span class="p">,</span><span class="n">pu_key</span><span class="p">))</span>
+        
+        <span class="c1"># ##OK!</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;All internal assert OK!&quot;</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">pass</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Cédric Mesnil.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

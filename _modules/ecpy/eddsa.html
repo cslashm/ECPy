@@ -1,0 +1,350 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ecpy.eddsa &mdash; ECPy 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="ECPy 0.8 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ecpy.eddsa</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright 2016 Cedric Mesnil &lt;cedric.mesnil@ubinity.com&gt;, Ubinity SAS</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+
+
+<span class="c1">#python 2 compatibility</span>
+<span class="kn">from</span> <span class="nn">builtins</span> <span class="kn">import</span> <span class="nb">int</span><span class="p">,</span><span class="nb">pow</span>
+
+
+<span class="kn">from</span> <span class="nn">ecpy.curves</span> <span class="kn">import</span> <span class="n">Curve</span><span class="p">,</span><span class="n">Point</span>
+<span class="kn">from</span> <span class="nn">ecpy.keys</span> <span class="kn">import</span> <span class="n">ECPublicKey</span><span class="p">,</span> <span class="n">ECPrivateKey</span>
+<span class="kn">from</span> <span class="nn">ecpy.formatters</span> <span class="kn">import</span> <span class="n">decode_sig</span><span class="p">,</span> <span class="n">encode_sig</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+
+<div class="viewcode-block" id="EDDSA"><a class="viewcode-back" href="../../index.html#ecpy.eddsa.EDDSA">[docs]</a><span class="k">class</span> <span class="nc">EDDSA</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;EDDSA signer implemenation according to:</span>
+<span class="sd">    </span>
+<span class="sd">     - IETF `draft-irtf-cfrg-eddsa-05 &lt;https://tools.ietf.org/html/draft-irtf-cfrg-eddsa-05&gt;`_.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      hasher (hashlib): callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512...</span>
+<span class="sd">      fmt (str): in/out signature format. See  :mod:`ecpy.formatters`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+        
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hasher</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;EDDSA&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hasher</span> <span class="o">=</span> <span class="n">hasher</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span> <span class="o">=</span> <span class="n">fmt</span>
+        <span class="k">pass</span>
+
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="EDDSA.get_public_key"><a class="viewcode-back" href="../../index.html#ecpy.eddsa.EDDSA.get_public_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_public_key</span><span class="p">(</span><span class="n">pv_key</span><span class="p">,</span> <span class="n">hasher</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha512</span><span class="p">)</span> <span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the public key corresponding to this private key </span>
+<span class="sd">        </span>
+<span class="sd">        This method compute the public key according to draft-irtf-cfrg-eddsa-05.</span>
+<span class="sd">        </span>
+<span class="sd">        The hash parameter shall be the same as the one used for signing and</span>
+<span class="sd">        verifying.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            hasher (hashlib): callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512...</span>
+<span class="sd">            pv_key (ecpy.keys.ECPrivateKey): key to use for signing</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">           ECPublicKey : public key</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">EDDSA</span><span class="o">.</span><span class="n">get_interal_private_key</span><span class="p">(</span><span class="n">pv_key</span><span class="p">,</span><span class="n">hasher</span><span class="p">)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">d</span> <span class="o">*</span> <span class="n">pv_key</span><span class="o">.</span><span class="n">curve</span><span class="o">.</span><span class="n">generator</span>
+        <span class="k">return</span>   <span class="n">ECPublicKey</span><span class="p">(</span><span class="n">A</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="EDDSA.get_interal_private_key"><a class="viewcode-back" href="../../index.html#ecpy.eddsa.EDDSA.get_interal_private_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_interal_private_key</span><span class="p">(</span><span class="n">pv_key</span><span class="p">,</span> <span class="n">hasher</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha512</span><span class="p">)</span> <span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the internal private key corresponding to this private key </span>
+<span class="sd">        </span>
+<span class="sd">        Internal private key correspond to the multiplier derived from private</span>
+<span class="sd">        key and used to compute the public key.</span>
+<span class="sd">        </span>
+<span class="sd">        The hash parameter shall be the same as the one used for signing and</span>
+<span class="sd">        verifying.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            hasher (hashlib): callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512...</span>
+<span class="sd">            pv_key (ecpy.keys.ECPrivateKey): key to use for signing</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">           ECPrivateKey : internal private key</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">curve</span> <span class="o">=</span> <span class="n">pv_key</span><span class="o">.</span><span class="n">curve</span>
+        <span class="n">n</span>     <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">size</span>  <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;&gt;</span><span class="mi">3</span>
+        
+        <span class="n">k</span> <span class="o">=</span> <span class="n">pv_key</span><span class="o">.</span><span class="n">d</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+        <span class="n">hasher</span> <span class="o">=</span> <span class="n">hasher</span><span class="p">()</span>
+        <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">hasher</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+        <span class="c1">#retrieve encoded pub key</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">h</span><span class="p">[:</span><span class="mi">32</span><span class="p">])</span>
+        <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="o">&amp;=</span> <span class="mh">0xF8</span>
+        <span class="n">a</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span> <span class="o">&amp;</span><span class="mh">0x7F</span><span class="p">)</span> <span class="o">|</span> <span class="mh">0x40</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="s1">&#39;little&#39;</span><span class="p">)</span>
+        <span class="k">return</span>   <span class="n">ECPrivateKey</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">pv_key</span><span class="o">.</span><span class="n">curve</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EDDSA.sign"><a class="viewcode-back" href="../../index.html#ecpy.eddsa.EDDSA.sign">[docs]</a>    <span class="k">def</span> <span class="nf">sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">pv_key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Signs a message.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            msg (bytes)                    : the message to sign</span>
+<span class="sd">            pv_key (ecpy.keys.ECPrivateKey): key to use for signing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_sign</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">pv_key</span><span class="p">)</span></div>
+
+    
+    <span class="k">def</span> <span class="nf">_do_sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">msg</span><span class="p">,</span><span class="n">pv_key</span><span class="p">):</span>
+        <span class="n">curve</span> <span class="o">=</span> <span class="n">pv_key</span><span class="o">.</span><span class="n">curve</span>
+        <span class="n">B</span>     <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">generator</span>
+        <span class="n">n</span>     <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;&gt;</span><span class="mi">3</span>
+        
+        <span class="n">k</span> <span class="o">=</span> <span class="n">pv_key</span><span class="o">.</span><span class="n">d</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+        <span class="n">hasher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hasher</span><span class="p">()</span>
+        <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">hasher</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+        <span class="c1">#retrieve encoded pub key</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">h</span><span class="p">[:</span><span class="mi">32</span><span class="p">])</span>
+        <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="o">&amp;=</span> <span class="mh">0xF8</span>
+        <span class="n">a</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span> <span class="o">&amp;</span><span class="mh">0x7F</span><span class="p">)</span> <span class="o">|</span> <span class="mh">0x40</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="s1">&#39;little&#39;</span><span class="p">)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">B</span>        
+        <span class="n">eA</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">encode_point</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+        <span class="c1">#OK</span>
+        
+        <span class="c1">#compute R</span>
+        <span class="n">hasher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hasher</span><span class="p">()</span>         
+        <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="n">size</span><span class="p">:]</span><span class="o">+</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">hasher</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="s1">&#39;little&#39;</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">r</span> <span class="o">%</span> <span class="n">n</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">r</span><span class="o">*</span><span class="n">B</span>
+        <span class="n">eR</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">encode_point</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+              
+        <span class="c1">#compute S</span>
+        <span class="n">hasher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hasher</span><span class="p">()</span>
+        <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">eR</span><span class="o">+</span><span class="n">eA</span><span class="o">+</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">H_eR_eA_m</span> <span class="o">=</span> <span class="n">hasher</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">H_eR_eA_m</span><span class="p">,</span> <span class="s1">&#39;little&#39;</span><span class="p">)</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">%</span><span class="n">n</span>
+        
+        <span class="c1">#S = S.to_bytes(size,&#39;little&#39;)</span>
+
+        <span class="c1">#return eR+S</span>
+        <span class="n">eR</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">eR</span><span class="p">,</span><span class="s1">&#39;little&#39;</span><span class="p">)</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">encode_sig</span><span class="p">(</span><span class="n">eR</span><span class="p">,</span><span class="n">S</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="p">,</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sig</span>
+    
+<div class="viewcode-block" id="EDDSA.verify"><a class="viewcode-back" href="../../index.html#ecpy.eddsa.EDDSA.verify">[docs]</a>    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">msg</span><span class="p">,</span><span class="n">sig</span><span class="p">,</span><span class="n">pu_key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Verifies a message signature.                </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            msg (bytes)                   : the message to verify the signature</span>
+<span class="sd">            sig (bytes)                   : signature to verify</span>
+<span class="sd">            pu_key (ecpy.keys.ECPublicKey): key to use for verifying</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">curve</span> <span class="o">=</span> <span class="n">pu_key</span><span class="o">.</span><span class="n">curve</span>
+        <span class="n">n</span>     <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">size</span>  <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">size</span><span class="o">&gt;&gt;</span><span class="mi">3</span>
+
+        <span class="c1">#eR = sig[0:size]</span>
+        <span class="c1">#S  = int.from_bytes(sig[size:],&#39;little&#39;)</span>
+        <span class="n">eR</span><span class="p">,</span><span class="n">S</span> <span class="o">=</span> <span class="n">decode_sig</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="p">)</span>
+
+        <span class="c1">#left</span>
+        <span class="n">eR</span> <span class="o">=</span> <span class="n">eR</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="s1">&#39;little&#39;</span><span class="p">)</span>
+        <span class="n">R</span>  <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">decode_point</span><span class="p">(</span><span class="n">eR</span><span class="p">)</span>
+        
+        <span class="n">hasher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hasher</span><span class="p">()</span>
+        <span class="n">eA</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">encode_point</span><span class="p">(</span><span class="n">pu_key</span><span class="o">.</span><span class="n">W</span><span class="p">)</span>
+        <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">eR</span><span class="o">+</span><span class="n">eA</span><span class="o">+</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">hasher</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">h</span><span class="p">,</span><span class="s1">&#39;little&#39;</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">h</span><span class="o">%</span><span class="n">n</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">pu_key</span><span class="o">.</span><span class="n">W</span>        
+        <span class="n">left</span>  <span class="o">=</span> <span class="n">R</span><span class="o">+</span><span class="n">h</span><span class="o">*</span><span class="n">A</span>
+
+        <span class="c1">#right</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="n">S</span><span class="o">*</span><span class="n">curve</span><span class="o">.</span><span class="n">generator</span>
+        
+        <span class="k">return</span> <span class="n">left</span> <span class="o">==</span> <span class="n">right</span></div></div>
+
+
+    
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1">### EDDSA</span>
+        <span class="n">cv</span>     <span class="o">=</span> <span class="n">Curve</span><span class="o">.</span><span class="n">get_curve</span><span class="p">(</span><span class="s1">&#39;Ed25519&#39;</span><span class="p">)</span>
+
+        <span class="c1"># public key</span>
+        <span class="c1"># x: 74ad28205b4f384bc0813e6585864e528085f91fb6a5096f244ae01e57de43ae</span>
+        <span class="c1"># y: 0c66f42af155cdc08c96c42ecf2c989cbc7e1b4da70ab7925a8943e8c317403d</span>
+
+
+        <span class="n">pu_key</span> <span class="o">=</span> <span class="n">ECPublicKey</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="mh">0x74ad28205b4f384bc0813e6585864e528085f91fb6a5096f244ae01e57de43ae</span><span class="p">,</span>
+                                   <span class="mh">0x0c66f42af155cdc08c96c42ecf2c989cbc7e1b4da70ab7925a8943e8c317403d</span><span class="p">,</span>
+                                   <span class="n">cv</span><span class="p">))</span>
+        <span class="c1"># private key</span>
+        <span class="c1"># s: 0x4ccd089b28ff96da9db6c346ec114e0f5b8a319f35aba624da8cf6ed4fb8a6fb</span>
+        <span class="n">pv_key</span> <span class="o">=</span> <span class="n">ECPrivateKey</span><span class="p">(</span><span class="mh">0x4ccd089b28ff96da9db6c346ec114e0f5b8a319f35aba624da8cf6ed4fb8a6fb</span><span class="p">,</span>
+                              <span class="n">cv</span><span class="p">)</span>
+
+        <span class="n">pu</span> <span class="o">=</span> <span class="n">EDDSA</span><span class="o">.</span><span class="n">get_public_key</span><span class="p">(</span><span class="n">pv_key</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">pu</span><span class="o">.</span><span class="n">W</span> <span class="o">==</span> <span class="n">pu_key</span><span class="o">.</span><span class="n">W</span><span class="p">);</span>
+        
+
+        <span class="c1"># sig:</span>
+        <span class="c1"># 0x92a009a9f0d4cab8720e820b5f642540a2b27b5416503f8fb3762223ebdb69da</span>
+        <span class="c1"># 0x085ac1e43e15996e458f3613d0f11d8c387b2eaeb4302aeeb00d291612bb0c00</span>
+        <span class="n">expected_sig</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mh">0x92a009a9f0d4cab8720e820b5f642540a2b27b5416503f8fb3762223ebdb69da085ac1e43e15996e458f3613d0f11d8c387b2eaeb4302aeeb00d291612bb0c00</span><span class="p">)</span>
+        <span class="n">expected_sig</span>  <span class="o">=</span> <span class="n">expected_sig</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+        
+        <span class="c1">#msg:</span>
+        <span class="c1"># 72</span>
+        <span class="n">msg</span>  <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mh">0x72</span><span class="p">)</span>
+        <span class="n">msg</span>  <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+
+        <span class="n">signer</span> <span class="o">=</span> <span class="n">EDDSA</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha512</span><span class="p">)</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">signer</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="n">pv_key</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">sig</span> <span class="o">==</span> <span class="n">expected_sig</span><span class="p">)</span>
+
+        <span class="k">assert</span><span class="p">(</span><span class="n">signer</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="n">expected_sig</span><span class="p">,</span><span class="n">pu_key</span><span class="p">))</span>
+
+
+
+
+
+        <span class="c1">### EDDSA</span>
+        <span class="n">cv</span>     <span class="o">=</span> <span class="n">Curve</span><span class="o">.</span><span class="n">get_curve</span><span class="p">(</span><span class="s1">&#39;Ed25519&#39;</span><span class="p">)</span>
+
+        <span class="c1"># public key</span>
+        <span class="c1"># x: d96878efcfac114929db551927623e574bb552517b0ac585774ae0f1ebf3619</span>
+        <span class="c1"># y: 2fad0cf5e2bb0303c5074ca3e6aa0a487b27b7577a012176da6983ee85d95ce0</span>
+
+        <span class="n">pu_key</span> <span class="o">=</span> <span class="n">ECPublicKey</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="mh">0xd96878efcfac114929db551927623e574bb552517b0ac585774ae0f1ebf3619</span><span class="p">,</span>
+                                   <span class="mh">0x2fad0cf5e2bb0303c5074ca3e6aa0a487b27b7577a012176da6983ee85d95ce0</span><span class="p">,</span>
+                                   <span class="n">cv</span><span class="p">))</span>
+        <span class="c1"># private key</span>
+        <span class="c1"># s: 5bb7dd30fb4ece686a55faa14e346c08ad81c48c2ebe859a548c101a3dcd360e</span>
+        <span class="n">pv_key</span> <span class="o">=</span> <span class="n">ECPrivateKey</span><span class="p">(</span><span class="mh">0x5bb7dd30fb4ece686a55faa14e346c08ad81c48c2ebe859a548c101a3dcd360e</span><span class="p">,</span>
+                              <span class="n">cv</span><span class="p">)</span>
+
+        <span class="n">pu</span> <span class="o">=</span> <span class="n">EDDSA</span><span class="o">.</span><span class="n">get_public_key</span><span class="p">(</span><span class="n">pv_key</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">pu</span><span class="o">.</span><span class="n">W</span> <span class="o">==</span> <span class="n">pu_key</span><span class="o">.</span><span class="n">W</span><span class="p">);</span>
+        
+
+        <span class="c1"># sig:</span>
+        <span class="c1"># 477dedac6d8332708e00a7c06ceeda54f2086ba73e71e8988b3760ccd23e0c44</span>
+        <span class="c1"># 08cf09c22ef497328579f6178e8a2a4d611d0c6cce0c684f958d150c5daf4902</span>
+        <span class="n">expected_sig</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mh">0x477dedac6d8332708e00a7c06ceeda54f2086ba73e71e8988b3760ccd23e0c4408cf09c22ef497328579f6178e8a2a4d611d0c6cce0c684f958d150c5daf4902</span> <span class="p">)</span>
+        <span class="n">expected_sig</span>  <span class="o">=</span> <span class="n">expected_sig</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+        
+        <span class="c1">#msg:</span>
+        <span class="c1"># 72</span>
+        <span class="n">msg</span>  <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mh">0xe8898b646cc2274b5daf7fb6e30f738b24203604d7849391056d0fe8093f6693</span><span class="p">)</span>
+        <span class="n">msg</span>  <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+
+        <span class="n">signer</span> <span class="o">=</span> <span class="n">EDDSA</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha512</span><span class="p">)</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">signer</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="n">pv_key</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">sig</span> <span class="o">==</span> <span class="n">expected_sig</span><span class="p">)</span>
+
+        <span class="k">assert</span><span class="p">(</span><span class="n">signer</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="n">expected_sig</span><span class="p">,</span><span class="n">pu_key</span><span class="p">))</span>
+        
+        <span class="c1">##OK!</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;All internal assert OK!&quot;</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Cédric Mesnil.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

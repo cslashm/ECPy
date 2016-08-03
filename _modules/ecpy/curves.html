@@ -1,0 +1,1046 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ecpy.curves &mdash; ECPy 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="ECPy 0.8 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ecpy.curves</h1><div class="highlight"><pre>
+<span></span><span class="c1"># encoding: UTF-8</span>
+
+<span class="c1"># Copyright 2016 Cedric Mesnil &lt;cedric.mesnil@ubinity.com&gt;, Ubinity SAS</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+
+
+<span class="sd">&quot;&quot;&quot; Elliptic Curve and Point manipulation</span>
+
+<span class="sd">.. moduleauthor:: Cédric Mesnil &lt;cedric.mesnil@ubinity.com&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1">#python 2 compatibility</span>
+<span class="kn">from</span> <span class="nn">builtins</span> <span class="kn">import</span> <span class="nb">int</span><span class="p">,</span><span class="nb">pow</span>
+
+<span class="kn">import</span> <span class="nn">binascii</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+
+<div class="viewcode-block" id="Curve"><a class="viewcode-back" href="../../index.html#ecpy.curves.Curve">[docs]</a><span class="k">class</span> <span class="nc">Curve</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Elliptic Curve abstraction</span>
+
+<span class="sd">    You should not directly create such Object.</span>
+<span class="sd">    Use `get_curve` to get the predefined curve or create a well-know type</span>
+<span class="sd">    of curve with your parameters</span>
+
+<span class="sd">    Supported well know elliptic curve are:</span>
+<span class="sd">       - Short Weierstrass form:  y²=x³+a*x+b</span>
+<span class="sd">       - Twisted Edward          a*x²+y2=1+d*x²*y²</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">       name (str)       : curve name, the one given to get_curve or return by get_curve_names</span>
+<span class="sd">       size (int)       : bit size of curve</span>
+<span class="sd">       a (int)          : first curve parameter</span>
+<span class="sd">       b d (int)        : second curve parameter</span>
+<span class="sd">       field (int)      : curve field</span>
+<span class="sd">       generator (Point): curve point generator</span>
+<span class="sd">       order (int)      : order of generator</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Curve.get_curve"><a class="viewcode-back" href="../../index.html#ecpy.curves.Curve.get_curve">[docs]</a>    <span class="k">def</span> <span class="nf">get_curve</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a Curve object  according to its name</span>
+<span class="sd">        </span>
+<span class="sd">       Args:</span>
+<span class="sd">           name (str) : curve name to retrieve</span>
+
+<span class="sd">       Returns:</span>
+<span class="sd">           Curve:          Curve object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">curves</span> <span class="k">if</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="n">cp</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">cp</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">WEIERSTRASS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">WeierstrassCurve</span><span class="p">(</span><span class="n">cp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cp</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">TWISTEDEDWARD</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">TwistedEdwardCurve</span><span class="p">(</span><span class="n">cp</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">None</span></div>
+
+    <span class="nd">@staticmethod</span>    
+<div class="viewcode-block" id="Curve.get_curve_names"><a class="viewcode-back" href="../../index.html#ecpy.curves.Curve.get_curve_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_curve_names</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot; Returns all known curve names</span>
+
+<span class="sd">        Returns: </span>
+<span class="sd">          tuple:  list of names as str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">curves</span><span class="p">]</span></div>
+        
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">parameters</span><span class="p">):</span>        
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Abstract method __init__&#39;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span> <span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_domain</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span><span class="p">[</span><span class="s1">&#39;generator&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span><span class="p">[</span><span class="s1">&#39;generator&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span><span class="p">[</span><span class="s1">&#39;generator&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span>
+
+        
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_domain</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Curve.is_on_curve"><a class="viewcode-back" href="../../index.html#ecpy.curves.Curve.is_on_curve">[docs]</a>    <span class="k">def</span> <span class="nf">is_on_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if P is on this curve </span>
+
+<span class="sd">        This function ignores the default curve attach to P</span>
+<span class="sd">    </span>
+<span class="sd">        Args:</span>
+<span class="sd">            P (Point): Point to check</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if P is on curve, False else</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Abstract method is_on_curve&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Curve.add_point"><a class="viewcode-back" href="../../index.html#ecpy.curves.Curve.add_point">[docs]</a>    <span class="k">def</span> <span class="nf">add_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span><span class="n">Q</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the sum of P and Q</span>
+
+<span class="sd">        This function ignores the default curve attach to P and Q, </span>
+<span class="sd">        and assumes P and Q are on this curve.</span>
+<span class="sd">    </span>
+<span class="sd">        Args:</span>
+<span class="sd">            P (Point): first  point to add</span>
+<span class="sd">            Q (Point): second point to add</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Point: A new Point R = P+Q</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">             ECPyException : with &quot;Point not on curve&quot;, if Point R is not on \</span>
+<span class="sd">             curve,  thus meaning either P or Q was not on.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Abstract method add_point&#39;</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="Curve.sub_point"><a class="viewcode-back" href="../../index.html#ecpy.curves.Curve.sub_point">[docs]</a>    <span class="k">def</span> <span class="nf">sub_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span><span class="n">Q</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the difference of P and Q</span>
+
+<span class="sd">        This function ignores the default curve attach to P and Q, </span>
+<span class="sd">        and assumes P and Q are on this curve.</span>
+<span class="sd">    </span>
+<span class="sd">        Args:</span>
+<span class="sd">            P (Point): first  point to subtract with</span>
+<span class="sd">            Q (Point): second point to subtract to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Point: A new Point R = P-Q</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">             ECPyException : with &quot;Point not on curve&quot;, if Point R is not on \</span>
+<span class="sd">             curve,  thus meaning either P or Q was not on.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_point</span><span class="p">(</span><span class="n">P</span><span class="p">,</span><span class="n">Q</span><span class="o">.</span><span class="n">neg</span><span class="p">())</span></div>
+
+            
+<div class="viewcode-block" id="Curve.mul_point"><a class="viewcode-back" href="../../index.html#ecpy.curves.Curve.mul_point">[docs]</a>    <span class="k">def</span> <span class="nf">mul_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the scalar multiplication  P with k.</span>
+
+<span class="sd">        This function ignores the default curve attach to P and Q, </span>
+<span class="sd">        and assumes P and Q are on this curve.</span>
+<span class="sd">    </span>
+<span class="sd">        Args:</span>
+<span class="sd">            P (Point): point to mul_point</span>
+<span class="sd">            k (int)  : scalar to multiply</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Point: A new Point R = k*Q</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ECPyException : with &quot;Point not on curve&quot;, if Point R is not </span>
+<span class="sd">            on curve, thus meaning P was not on.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Abstract method mul_point&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Curve.encode_point"><a class="viewcode-back" href="../../index.html#ecpy.curves.Curve.encode_point">[docs]</a>    <span class="k">def</span> <span class="nf">encode_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; encode/compress a point according to its curve&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Abstract method encode_point&#39;</span><span class="p">)</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Curve.decode_point"><a class="viewcode-back" href="../../index.html#ecpy.curves.Curve.decode_point">[docs]</a>    <span class="k">def</span> <span class="nf">decode_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eP</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; decode/decompress a point according to its curve&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Abstract method _point decode_point&#39;</span><span class="p">)</span>
+    
+        <span class="k">pass</span></div></div>
+
+
+    
+<div class="viewcode-block" id="WeierstrassCurve"><a class="viewcode-back" href="../../index.html#ecpy.curves.WeierstrassCurve">[docs]</a><span class="k">class</span> <span class="nc">WeierstrassCurve</span><span class="p">(</span><span class="n">Curve</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An elliptic curve defined by the equation: y²=x³+a*x+b. </span>
+
+<span class="sd">        The given domain must be a dictionary providing the following keys/values:</span>
+<span class="sd">              - name (str)         : curve unique name</span>
+<span class="sd">              - size (int)         : bit size</span>
+<span class="sd">              - a    (int)         : `a` equation coefficient</span>
+<span class="sd">              - b    (int)         : `b` equation coefficient</span>
+<span class="sd">              - field (inf)        : field value </span>
+<span class="sd">              - generator (int[2]) : x,y coordinate of generator</span>
+<span class="sd">              - order (int)        : order of generator</span>
+<span class="sd">              - cofactor (int)     : cofactor</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">           domain (dict): a dictionary providing curve parameters</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">domain</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Built an new short Weierstrass curve with the provided parameters. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span> <span class="o">=</span> <span class="p">{}</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;field&#39;</span><span class="p">,</span><span class="s1">&#39;generator&#39;</span><span class="p">,</span><span class="s1">&#39;order&#39;</span><span class="p">,</span><span class="s1">&#39;cofactor&#39;</span><span class="p">))</span>
+
+    
+<div class="viewcode-block" id="WeierstrassCurve.is_on_curve"><a class="viewcode-back" href="../../index.html#ecpy.curves.WeierstrassCurve.is_on_curve">[docs]</a>    <span class="k">def</span> <span class="nf">is_on_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; See :func:`Curve.is_on_curve` &quot;&quot;&quot;</span>
+        <span class="n">q</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span>
+        <span class="n">x</span>     <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">sq3x</span>  <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">y</span>     <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">y</span>
+        <span class="n">sqy</span>   <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="o">*</span><span class="n">y</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">left</span>  <span class="o">=</span> <span class="n">sqy</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="p">(</span><span class="n">sq3x</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">*</span><span class="n">x</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="k">return</span> <span class="n">left</span> <span class="o">==</span> <span class="n">right</span></div>
+
+
+<div class="viewcode-block" id="WeierstrassCurve.add_point"><a class="viewcode-back" href="../../index.html#ecpy.curves.WeierstrassCurve.add_point">[docs]</a>    <span class="k">def</span> <span class="nf">add_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span><span class="n">Q</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; See :func:`Curve.add_point` &quot;&quot;&quot;</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">P</span> <span class="o">==</span> <span class="n">Q</span><span class="p">):</span>
+            <span class="n">Px</span><span class="p">,</span><span class="n">Py</span><span class="p">,</span><span class="n">Pz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aff2jac</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="n">P</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+            <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbl_jac</span><span class="p">(</span><span class="n">Px</span><span class="p">,</span><span class="n">Py</span><span class="p">,</span><span class="n">Pz</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Px</span><span class="p">,</span><span class="n">Py</span><span class="p">,</span><span class="n">Pz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aff2jac</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="n">P</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+            <span class="n">Qx</span><span class="p">,</span><span class="n">Qy</span><span class="p">,</span><span class="n">Qz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aff2jac</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="n">Q</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>            
+            <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_jac</span><span class="p">(</span><span class="n">Px</span><span class="p">,</span><span class="n">Py</span><span class="p">,</span><span class="n">Pz</span><span class="p">,</span> <span class="n">Qx</span><span class="p">,</span><span class="n">Qy</span><span class="p">,</span><span class="n">Qz</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>        
+        <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jac2aff</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+        <span class="n">PQ</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PQ</span></div>
+
+        
+<div class="viewcode-block" id="WeierstrassCurve.mul_point"><a class="viewcode-back" href="../../index.html#ecpy.curves.WeierstrassCurve.mul_point">[docs]</a>    <span class="k">def</span> <span class="nf">mul_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; See :func:`Curve.mul_point` &quot;&quot;&quot;</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span>
+        <span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">z1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aff2jac</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="n">P</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="nb">bin</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">k</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="n">sz</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="n">z2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbl_jac</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">sz</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span> <span class="p">:</span>
+                <span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">z1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_jac</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="n">z2</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+                <span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="n">z2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbl_jac</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="n">z2</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="n">z2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_jac</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="n">z2</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+                <span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">z1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbl_jac</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jac2aff</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_aff2jac</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_jac2aff</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="n">invz</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="n">q</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">sqinvz</span> <span class="o">=</span> <span class="p">(</span><span class="n">invz</span><span class="o">*</span><span class="n">invz</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">sqinvz</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="o">*</span><span class="n">sqinvz</span><span class="o">*</span><span class="n">invz</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+
+    
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_dbl_jac</span><span class="p">(</span><span class="n">X1</span><span class="p">,</span><span class="n">Y1</span><span class="p">,</span><span class="n">Z1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+        <span class="n">XX</span>   <span class="o">=</span> <span class="p">(</span><span class="n">X1</span><span class="o">*</span><span class="n">X1</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">YY</span>   <span class="o">=</span> <span class="p">(</span><span class="n">Y1</span><span class="o">*</span><span class="n">Y1</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">YYYY</span> <span class="o">=</span> <span class="p">(</span><span class="n">YY</span><span class="o">*</span><span class="n">YY</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">ZZ</span>   <span class="o">=</span> <span class="p">(</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z1</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">S</span>    <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">((</span><span class="n">X1</span><span class="o">+</span><span class="n">YY</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">X1</span><span class="o">+</span><span class="n">YY</span><span class="p">)</span><span class="o">-</span><span class="n">XX</span><span class="o">-</span><span class="n">YYYY</span><span class="p">))</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">M</span>    <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">XX</span><span class="o">+</span><span class="n">a</span><span class="o">*</span><span class="n">ZZ</span><span class="o">*</span><span class="n">ZZ</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">T</span>    <span class="o">=</span> <span class="p">(</span><span class="n">M</span><span class="o">*</span><span class="n">M</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">S</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">X3</span>   <span class="o">=</span> <span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">Y3</span>   <span class="o">=</span> <span class="p">(</span><span class="n">M</span><span class="o">*</span><span class="p">(</span><span class="n">S</span><span class="o">-</span><span class="n">T</span><span class="p">)</span><span class="o">-</span><span class="mi">8</span><span class="o">*</span><span class="n">YYYY</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">Z3</span>   <span class="o">=</span> <span class="p">((</span><span class="n">Y1</span><span class="o">+</span><span class="n">Z1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">Y1</span><span class="o">+</span><span class="n">Z1</span><span class="p">)</span><span class="o">-</span><span class="n">YY</span><span class="o">-</span><span class="n">ZZ</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="k">return</span> <span class="n">X3</span><span class="p">,</span><span class="n">Y3</span><span class="p">,</span><span class="n">Z3</span>
+        
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_add_jac</span><span class="p">(</span><span class="n">X1</span><span class="p">,</span><span class="n">Y1</span><span class="p">,</span><span class="n">Z1</span><span class="p">,</span> <span class="n">X2</span><span class="p">,</span><span class="n">Y2</span><span class="p">,</span><span class="n">Z2</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="n">Z1Z1</span> <span class="o">=</span> <span class="p">(</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z1</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">Z2Z2</span> <span class="o">=</span> <span class="p">(</span><span class="n">Z2</span><span class="o">*</span><span class="n">Z2</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">U1</span>   <span class="o">=</span> <span class="p">(</span><span class="n">X1</span><span class="o">*</span><span class="n">Z2Z2</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">U2</span>   <span class="o">=</span> <span class="p">(</span><span class="n">X2</span><span class="o">*</span><span class="n">Z1Z1</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">S1</span>   <span class="o">=</span> <span class="p">(</span><span class="n">Y1</span><span class="o">*</span><span class="n">Z2</span><span class="o">*</span><span class="n">Z2Z2</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">S2</span>   <span class="o">=</span> <span class="p">(</span><span class="n">Y2</span><span class="o">*</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z1Z1</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">H</span>    <span class="o">=</span> <span class="p">(</span><span class="n">U2</span><span class="o">-</span><span class="n">U1</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">I</span>    <span class="o">=</span> <span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">H</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">H</span><span class="p">))</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">J</span>    <span class="o">=</span> <span class="p">(</span><span class="n">H</span><span class="o">*</span><span class="n">I</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">r</span>    <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">S2</span><span class="o">-</span><span class="n">S1</span><span class="p">))</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">V</span>    <span class="o">=</span> <span class="p">(</span><span class="n">U1</span><span class="o">*</span><span class="n">I</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">X3</span>   <span class="o">=</span> <span class="p">(</span><span class="n">r</span><span class="o">*</span><span class="n">r</span><span class="o">-</span><span class="n">J</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">V</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">Y3</span>   <span class="o">=</span> <span class="p">(</span><span class="n">r</span><span class="o">*</span><span class="p">(</span><span class="n">V</span><span class="o">-</span><span class="n">X3</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">S1</span><span class="o">*</span><span class="n">J</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">Z3</span>   <span class="o">=</span> <span class="p">(((</span><span class="n">Z1</span><span class="o">+</span><span class="n">Z2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">Z1</span><span class="o">+</span><span class="n">Z2</span><span class="p">)</span><span class="o">-</span><span class="n">Z1Z1</span><span class="o">-</span><span class="n">Z2Z2</span><span class="p">)</span><span class="o">*</span><span class="n">H</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="k">return</span> <span class="n">X3</span><span class="p">,</span><span class="n">Y3</span><span class="p">,</span><span class="n">Z3</span></div>
+
+    
+<div class="viewcode-block" id="TwistedEdwardCurve"><a class="viewcode-back" href="../../index.html#ecpy.curves.TwistedEdwardCurve">[docs]</a><span class="k">class</span> <span class="nc">TwistedEdwardCurve</span><span class="p">(</span><span class="n">Curve</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An elliptic curve defined by the equation: a*x²+y²=1+d*x²*y² </span>
+<span class="sd">    </span>
+<span class="sd">        The given domain must be a dictionary providing the following keys/values:</span>
+<span class="sd">              - name (str)         : curve unique name</span>
+<span class="sd">              - size (int)         : bit size</span>
+<span class="sd">              - a    (int)         : `a` equation coefficient</span>
+<span class="sd">              - d    (int)         : `b` equation coefficient</span>
+<span class="sd">              - field (inf)        : field value </span>
+<span class="sd">              - generator (int[2]) : x,y coordinate of generator</span>
+<span class="sd">              - order (int)        : order of generator</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">           domain (dict): a dictionary providing curve domain parameters</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">domain</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Built an new short twisted Edward curve with the provided parameters.  &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;type&#39;</span><span class="p">,</span><span class="s1">&#39;size&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="s1">&#39;field&#39;</span><span class="p">,</span><span class="s1">&#39;generator&#39;</span><span class="p">,</span><span class="s1">&#39;order&#39;</span><span class="p">))</span>
+
+<div class="viewcode-block" id="TwistedEdwardCurve.is_on_curve"><a class="viewcode-back" href="../../index.html#ecpy.curves.TwistedEdwardCurve.is_on_curve">[docs]</a>    <span class="k">def</span> <span class="nf">is_on_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; See :func:`Curve.is_on_curve` &quot;&quot;&quot;</span>
+        <span class="n">q</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span>
+        <span class="n">x</span>     <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">sqx</span>   <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">y</span>     <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">y</span>
+        <span class="n">sqy</span>   <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="o">*</span><span class="n">y</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">left</span>  <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">*</span><span class="n">sqx</span><span class="o">+</span><span class="n">sqy</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="o">*</span><span class="n">sqx</span><span class="o">*</span><span class="n">sqy</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="k">return</span> <span class="n">left</span> <span class="o">==</span> <span class="n">right</span></div>
+    
+<div class="viewcode-block" id="TwistedEdwardCurve.x_recover"><a class="viewcode-back" href="../../index.html#ecpy.curves.TwistedEdwardCurve.x_recover">[docs]</a>    <span class="k">def</span> <span class="nf">x_recover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>        
+        <span class="sd">&quot;&quot;&quot; Retrieves the x coordinate according to the y one, \</span>
+<span class="sd">            such that point (x,y) is on curve.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            y (int): y coordinate</span>
+<span class="sd">            sign (int): sign of x</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">           int: the computed x coordinate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span>
+        <span class="n">I</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">,(</span><span class="n">q</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">4</span><span class="p">,</span><span class="n">q</span><span class="p">)</span>
+
+        
+        <span class="k">if</span> <span class="n">sign</span><span class="p">:</span>
+            <span class="n">sign</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="o">*</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">d</span><span class="o">*</span><span class="n">y</span><span class="o">*</span> <span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">q</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">xx</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">b</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">xx</span><span class="p">,(</span><span class="n">q</span><span class="o">+</span><span class="mi">3</span><span class="p">)</span><span class="o">//</span><span class="mi">8</span><span class="p">,</span><span class="n">q</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="o">-</span> <span class="n">xx</span><span class="p">)</span> <span class="o">%</span> <span class="n">q</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">I</span><span class="p">)</span> <span class="o">%</span> <span class="n">q</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">&amp;</span><span class="mi">1</span> <span class="o">!=</span> <span class="n">sign</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">q</span><span class="o">-</span><span class="n">x</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+
+<div class="viewcode-block" id="TwistedEdwardCurve.encode_point"><a class="viewcode-back" href="../../index.html#ecpy.curves.TwistedEdwardCurve.encode_point">[docs]</a>    <span class="k">def</span> <span class="nf">encode_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Encodes a point P according to *draft_irtf-cfrg-eddsa-04*.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            P: point to encode</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">           bytes : encoded point</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="o">&gt;&gt;</span><span class="mi">3</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="s1">&#39;little&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">P</span><span class="o">.</span><span class="n">x</span><span class="o">&amp;</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">y</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">|=</span> <span class="mh">0x80</span>
+        <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TwistedEdwardCurve.decode_point"><a class="viewcode-back" href="../../index.html#ecpy.curves.TwistedEdwardCurve.decode_point">[docs]</a>    <span class="k">def</span> <span class="nf">decode_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eP</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Decodes a point P according to *draft_irtf-cfrg-eddsa-04*.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            eP (bytes)    : encoded point</span>
+<span class="sd">            curve (Curve) : curve on witch point is</span>
+<span class="sd">        Returns</span>
+<span class="sd">           Point : decoded point</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">y</span>    <span class="o">=</span>  <span class="nb">bytearray</span><span class="p">(</span><span class="n">eP</span><span class="p">)</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x80</span>
+        <span class="n">y</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="mh">0x80</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="s1">&#39;little&#39;</span><span class="p">)</span>    
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_recover</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">sign</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="bp">self</span><span class="p">,</span><span class="bp">False</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="TwistedEdwardCurve.add_point"><a class="viewcode-back" href="../../index.html#ecpy.curves.TwistedEdwardCurve.add_point">[docs]</a>    <span class="k">def</span> <span class="nf">add_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">P</span><span class="p">,</span><span class="n">Q</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; See :func:`Curve.add_point` &quot;&quot;&quot;</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">P</span> <span class="o">==</span> <span class="n">Q</span><span class="p">):</span>
+            <span class="n">Px</span><span class="p">,</span><span class="n">Py</span><span class="p">,</span><span class="n">Pz</span><span class="p">,</span><span class="n">Pt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aff2ext</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="n">P</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+            <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">t</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbl_ext</span><span class="p">(</span><span class="n">Px</span><span class="p">,</span><span class="n">Py</span><span class="p">,</span><span class="n">Pz</span><span class="p">,</span><span class="n">Pt</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Px</span><span class="p">,</span><span class="n">Py</span><span class="p">,</span><span class="n">Pz</span><span class="p">,</span><span class="n">Pt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aff2ext</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="n">P</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+            <span class="n">Qx</span><span class="p">,</span><span class="n">Qy</span><span class="p">,</span><span class="n">Qz</span><span class="p">,</span><span class="n">Qt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aff2ext</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="n">Q</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+            <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">t</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_ext</span><span class="p">(</span><span class="n">Px</span><span class="p">,</span><span class="n">Py</span><span class="p">,</span><span class="n">Pz</span><span class="p">,</span><span class="n">Pt</span><span class="p">,</span> <span class="n">Qx</span><span class="p">,</span><span class="n">Qy</span><span class="p">,</span><span class="n">Qz</span><span class="p">,</span><span class="n">Qt</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ext2aff</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">t</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TwistedEdwardCurve.mul_point"><a class="viewcode-back" href="../../index.html#ecpy.curves.TwistedEdwardCurve.mul_point">[docs]</a>    <span class="k">def</span> <span class="nf">mul_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; See :func:`Curve.add_point` &quot;&quot;&quot;</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span>
+        <span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span><span class="n">t1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aff2ext</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="n">P</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="nb">bin</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">k</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="n">sz</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="n">z2</span><span class="p">,</span><span class="n">t2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbl_ext</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span><span class="n">t1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">sz</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span> <span class="p">:</span>
+                <span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span><span class="n">t1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_ext</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="n">z2</span><span class="p">,</span><span class="n">t2</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span><span class="n">t1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
+                <span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="n">z2</span><span class="p">,</span><span class="n">t2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbl_ext</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="n">z2</span><span class="p">,</span><span class="n">t2</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="n">z2</span><span class="p">,</span><span class="n">t2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_ext</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span><span class="n">t1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="n">z2</span><span class="p">,</span><span class="n">t2</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
+                <span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span><span class="n">t1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbl_ext</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span><span class="n">t1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ext2aff</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span><span class="n">t1</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span></div>
+
+    
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_aff2ext</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="n">rnd</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">getrandbits</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">y</span><span class="o">*</span><span class="n">z</span><span class="p">)</span> <span class="o">%</span> <span class="n">q</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">z</span><span class="p">)</span> <span class="o">%</span> <span class="n">q</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="o">*</span><span class="n">z</span><span class="p">)</span> <span class="o">%</span> <span class="n">q</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">t</span><span class="p">)</span>
+    
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_ext2aff</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">xy</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="n">invz</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="n">q</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">invz</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="o">*</span><span class="n">invz</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+    
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_dbl_ext</span><span class="p">(</span><span class="n">X1</span><span class="p">,</span><span class="n">Y1</span><span class="p">,</span><span class="n">Z1</span><span class="p">,</span><span class="n">XY1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span><span class="n">a</span><span class="p">):</span>
+        <span class="n">A</span>  <span class="o">=</span> <span class="p">(</span><span class="n">X1</span><span class="o">*</span><span class="n">X1</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">B</span>  <span class="o">=</span> <span class="p">(</span><span class="n">Y1</span><span class="o">*</span><span class="n">Y1</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">C</span>  <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z1</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">D</span>  <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">A</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">E</span>  <span class="o">=</span> <span class="p">((</span><span class="n">X1</span><span class="o">+</span><span class="n">Y1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">X1</span><span class="o">+</span><span class="n">Y1</span><span class="p">)</span><span class="o">-</span><span class="n">A</span><span class="o">-</span><span class="n">B</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">G</span>  <span class="o">=</span> <span class="p">(</span><span class="n">D</span><span class="o">+</span><span class="n">B</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">F</span>  <span class="o">=</span> <span class="p">(</span><span class="n">G</span><span class="o">-</span><span class="n">C</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">H</span>  <span class="o">=</span> <span class="p">(</span><span class="n">D</span><span class="o">-</span><span class="n">B</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">X3</span>  <span class="o">=</span> <span class="p">(</span><span class="n">E</span><span class="o">*</span><span class="n">F</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">Y3</span>  <span class="o">=</span> <span class="p">(</span><span class="n">G</span><span class="o">*</span><span class="n">H</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">XY3</span> <span class="o">=</span> <span class="p">(</span><span class="n">E</span><span class="o">*</span><span class="n">H</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">Z3</span>  <span class="o">=</span> <span class="p">(</span><span class="n">F</span><span class="o">*</span><span class="n">G</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">X3</span><span class="p">,</span><span class="n">Y3</span><span class="p">,</span><span class="n">Z3</span><span class="p">,</span><span class="n">XY3</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_add_ext</span><span class="p">(</span><span class="n">X1</span><span class="p">,</span><span class="n">Y1</span><span class="p">,</span><span class="n">Z1</span><span class="p">,</span><span class="n">XY1</span><span class="p">,</span>  <span class="n">X2</span><span class="p">,</span><span class="n">Y2</span><span class="p">,</span><span class="n">Z2</span><span class="p">,</span><span class="n">XY2</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span><span class="n">a</span><span class="p">):</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="p">(</span><span class="n">X1</span><span class="o">*</span><span class="n">X2</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y1</span><span class="o">*</span><span class="n">Y2</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="p">(</span><span class="n">Z1</span><span class="o">*</span><span class="n">XY2</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="p">(</span><span class="n">XY1</span><span class="o">*</span><span class="n">Z2</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">E</span> <span class="o">=</span> <span class="p">(</span><span class="n">D</span><span class="o">+</span><span class="n">C</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="p">(</span><span class="n">X1</span><span class="o">-</span><span class="n">Y1</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="p">(</span><span class="n">X2</span><span class="o">+</span><span class="n">Y2</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">t2</span> <span class="o">=</span> <span class="p">(</span><span class="n">t0</span><span class="o">*</span><span class="n">t1</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">t3</span> <span class="o">=</span> <span class="p">(</span><span class="n">t2</span><span class="o">+</span><span class="n">B</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">F</span> <span class="o">=</span> <span class="p">(</span><span class="n">t3</span><span class="o">-</span><span class="n">A</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">t4</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">A</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="p">(</span><span class="n">B</span><span class="o">+</span><span class="n">t4</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="p">(</span><span class="n">D</span><span class="o">-</span><span class="n">C</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">X3</span> <span class="o">=</span> <span class="p">(</span><span class="n">E</span><span class="o">*</span><span class="n">F</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">Y3</span> <span class="o">=</span> <span class="p">(</span><span class="n">G</span><span class="o">*</span><span class="n">H</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">XY3</span> <span class="o">=</span> <span class="p">(</span><span class="n">E</span><span class="o">*</span><span class="n">H</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="n">Z3</span> <span class="o">=</span> <span class="p">(</span><span class="n">F</span><span class="o">*</span><span class="n">G</span><span class="p">)</span><span class="o">%</span><span class="n">q</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">X3</span><span class="p">,</span><span class="n">Y3</span><span class="p">,</span><span class="n">Z3</span><span class="p">,</span><span class="n">XY3</span><span class="p">)</span></div>
+        
+    
+<div class="viewcode-block" id="Point"><a class="viewcode-back" href="../../index.html#ecpy.curves.Point">[docs]</a><span class="k">class</span> <span class="nc">Point</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Immutable Elliptic Curve Point.</span>
+
+<span class="sd">    A Point support the following operator:</span>
+<span class="sd">    </span>
+<span class="sd">        - `+` : Point Addition, with automatic doubling support.</span>
+<span class="sd">        - `*` : Scalar multiplication, can write as k*P or P*k, with P :class:Point and  k :class:int</span>
+<span class="sd">        - `==`: Point comparison</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        x (int)       : Affine x coordinate </span>
+<span class="sd">        y (int)       : Affine y coordinate </span>
+<span class="sd">        curve (Curve) : Curve on which the point is define</span>
+
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (int) :     x coordinate</span>
+<span class="sd">        y (int) :     y coordinate</span>
+<span class="sd">        check (bool): if True enforce x,y is on curve</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ECPyException : if check=True and x,y is not on curve </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="s1">&#39;_x&#39;</span><span class="p">,</span><span class="s1">&#39;_y&#39;</span><span class="p">,</span><span class="s1">&#39;_curve&#39;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">curve</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_curve</span> <span class="o">=</span> <span class="n">curve</span>        
+        <span class="k">if</span> <span class="n">check</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">curve</span><span class="o">.</span><span class="n">is_on_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ECPyException</span><span class="p">(</span><span class="s2">&quot;Point not on curve&quot;</span><span class="p">)</span>
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">y</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">curve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_curve</span>
+        
+    <span class="k">def</span> <span class="nf">__neg__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">curve</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">curve</span>
+        <span class="k">return</span> <span class="n">Point</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="n">curve</span><span class="o">.</span><span class="n">field</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span><span class="n">curve</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Q</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span><span class="n">Point</span><span class="p">)</span> <span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">curve</span><span class="o">.</span><span class="n">add_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">Q</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;__add__: type not supported: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">type</span><span class="p">(</span><span class="n">Q</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Q</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span><span class="n">Point</span><span class="p">)</span> <span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">curve</span><span class="o">.</span><span class="n">sub_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">Q</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;__sub__: type not supported: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">type</span><span class="p">(</span><span class="n">Q</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scal</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scal</span><span class="p">,</span><span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">curve</span><span class="o">.</span><span class="n">mul_point</span><span class="p">(</span><span class="n">scal</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;__mul__: type not supported: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">type</span><span class="p">(</span><span class="n">scal</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">scal</span><span class="p">)</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__mul__</span><span class="p">(</span><span class="n">scal</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">Q</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span><span class="n">Point</span><span class="p">)</span> <span class="p">:</span>
+            <span class="k">return</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_curve</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">Q</span><span class="o">.</span><span class="n">_curve</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">_curve</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">or</span>
+                     <span class="n">Q</span><span class="o">.</span><span class="n">_curve</span><span class="o">.</span><span class="n">name</span>    <span class="o">==</span> <span class="bp">None</span> <span class="p">)</span> <span class="ow">and</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_x</span> <span class="o">==</span> <span class="n">Q</span><span class="o">.</span><span class="n">_x</span> <span class="ow">and</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">==</span> <span class="n">Q</span><span class="o">.</span><span class="n">_y</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;eq: type not supported: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">Q</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;x: </span><span class="si">%x</span><span class="se">\n</span><span class="s2">  y: </span><span class="si">%x</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_y</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">neg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__neg__</span><span class="p">()</span>
+        
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Q</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__add__</span><span class="p">(</span><span class="n">Q</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">sub</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Q</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sub__</span><span class="p">(</span><span class="n">Q</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">mul</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__mul__</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">eq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">Q</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__eq__</span><span class="p">(</span><span class="n">Q</span><span class="p">)</span></div>
+
+
+
+<span class="k">class</span> <span class="nc">ECPyException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">rept</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+
+
+    
+<span class="n">WEIERSTRASS</span>   <span class="o">=</span> <span class="s2">&quot;weierstrass&quot;</span>
+<span class="n">TWISTEDEDWARD</span> <span class="o">=</span> <span class="s2">&quot;twistededward&quot;</span>
+
+<span class="n">curves</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;secp256k1&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">256</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798</span><span class="p">,</span>
+                      <span class="mh">0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mi">1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mi">7</span>
+        
+    <span class="p">},</span>
+
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;secp256r1&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">256</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296</span><span class="p">,</span>
+                      <span class="mh">0x4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mh">0x1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0xffffffff00000001000000000000000000000000fffffffffffffffffffffffc</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b</span>
+    <span class="p">},</span>
+    
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;secp224k1&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">224</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFE56D</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0xA1455B334DF099DF30FC28A169A467E9E47075A90F7E650EB6B7A45C</span><span class="p">,</span>
+                      <span class="mh">0x7E089FED7FBA344282CAFBD6F7E319F7C0B0BD59E2CA4BDB556D61A5</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0x010000000000000000000000000001DCE8D2EC6184CAF0A971769FB1F7</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mh">0x1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0x0</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0x5</span><span class="p">,</span>
+    <span class="p">},</span>
+    
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;secp224r1&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">224</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000001</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0xB70E0CBD6BB4BF7F321390B94A03C1D356C21122343280D6115C1D21</span> <span class="p">,</span>
+                      <span class="mh">0xBD376388B5F723FB4C22DFE6CD4375A05A07476444D5819985007E34</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0xFFFFFFFFFFFFFFFFFFFFFFFFFFFF16A2E0B8F03E13DD29455C5C2A3D</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mh">0x1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFE</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0xB4050A850C04B3ABF54132565044B0B7D7BFD8BA270B39432355FFB4</span>
+    <span class="p">},</span>
+    
+    
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;secp192k1&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">192</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xfffffffffffffffffffffffffffffffffffffffeffffee37</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0xdb4ff10ec057e9ae26b07d0280b7f4341da5d1b1eae06c7d</span><span class="p">,</span>
+                      <span class="mh">0x9b2f2f6d9c5628a7844163d015be86344082aa88d95e2f9d</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0xfffffffffffffffffffffffe26f2fc170f69466a74defd8d</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mh">0x1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0x0</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0x3</span>
+    <span class="p">},</span>
+    
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;secp192r1&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">256</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xfffffffffffffffffffffffffffffffeffffffffffffffff</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x188da80eb03090f67cbf20eb43a18800f4ff0afd82ff1012</span><span class="p">,</span>
+                      <span class="mh">0x7192b95ffc8da78631011ed6b24cdd573f977a11e794811</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0xffffffffffffffffffffffff99def836146bc9b1b4d22831</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mh">0x1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0xfffffffffffffffffffffffffffffffefffffffffffffffc</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0x64210519e59c80e70fa7e9ab72243049feb8deecc146b9b1</span>
+    <span class="p">},</span>
+    
+    
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;secp160k1&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">160</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xfffffffffffffffffffffffffffffffeffffac73</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x3b4c382ce37aa192a4019e763036f4f5dd4d7ebb</span><span class="p">,</span>
+                      <span class="mh">0x938cf935318fdced6bc28286531733c3f03c4fee</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0x100000000000000000001b8fa16dfab9aca16b6b3</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mh">0x1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0x0</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0x7</span>
+    <span class="p">},</span>
+    
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;secp160r1&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">160</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xffffffffffffffffffffffffffffffff7fffffff</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x4a96b5688ef573284664698968c38bb913cbfc82</span><span class="p">,</span>
+                      <span class="mh">0x23a628553168947d59dcc912042351377ac5fb32</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0x100000000000000000001f4c8f927aed3ca752257</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mh">0x1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0xffffffffffffffffffffffffffffffff7ffffffc</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0x1c97befc54bd7a8b65acf89f81d4d4adc565fa45</span>
+    <span class="p">},</span>
+    
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;secp160r2&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">160</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xfffffffffffffffffffffffffffffffeffffac73</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x52dcb034293a117e1f4ff11b30f7199d3144ce6d</span><span class="p">,</span>
+                      <span class="mh">0xfeaffef2e331f296e071fa0df9982cfea7d43f2e</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0x100000000000000000000351ee786a818f3a1a16b</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mh">0x1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0xfffffffffffffffffffffffffffffffeffffac70</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0xb4e134d3fb59eb8bab57274904664d5af50388ba</span>
+    <span class="p">},</span>
+    
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;Brainpool-p256r1&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">256</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xa9fb57dba1eea9bc3e660a909d838d726e3bf623d52620282013481d1f6e5377</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x8bd2aeb9cb7e57cb2c4b482ffc81b7afb9de27e1e3bd23c23a4453bd9ace3262</span><span class="p">,</span>
+                      <span class="mh">0x547ef835c3dac4fd97f8461a14611dc9c27745132ded8e545c1d54c72f046997</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0xa9fb57dba1eea9bc3e660a909d838d718c397aa3b561a6f7901e0e82974856a7</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mh">0x1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0x7d5a0975fc2c3057eef67530417affe7fb8055c126dc5c6ce94a4b44f330b5d9</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0x26dc5c6ce94a4b44f330b5d9bbd77cbf958416295cf7e1ce6bccdc18ff8c07b6</span>
+    <span class="p">},</span>
+    
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;Brainpool-p256t1&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">256</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xa9fb57dba1eea9bc3e660a909d838d726e3bf623d52620282013481d1f6e5377</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0xa3e8eb3cc1cfe7b7732213b23a656149afa142c47aafbc2b79a191562e1305f4</span><span class="p">,</span>
+                      <span class="mh">0x2d996c823439c56d7f7b22e14644417e69bcb6de39d027001dabe8f35b25c9be</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0xa9fb57dba1eea9bc3e660a909d838d718c397aa3b561a6f7901e0e82974856a7</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mh">0x1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0xa9fb57dba1eea9bc3e660a909d838d726e3bf623d52620282013481d1f6e5374</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0x662c61c430d84ea4fe66a7733d0b76b7bf93ebc4af2f49256ae58101fee92b04</span>
+    <span class="p">},</span>
+    
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;Brainpool-p224r1&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">224</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xD7C134AA264366862A18302575D1D787B09F075797DA89F57EC8C0FF</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x0D9029AD2C7E5CF4340823B2A87DC68C9E4CE3174C1E6EFDEE12C07D</span><span class="p">,</span>
+                      <span class="mh">0x58AA56F772C0726F24C6B89E4ECDAC24354B9E99CAA3F6D3761402CD</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0xD7C134AA264366862A18302575D0FB98D116BC4B6DDEBCA3A5A7939F</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mh">0x1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0x68A5E62CA9CE6C1C299803A6C1530B514E182AD8B0042A59CAD29F43</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0x2580F63CCFE44138870713B1A92369E33E2135D266DBB372386C400B</span>
+    <span class="p">},</span>
+    
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;Brainpool-p224t1&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">192</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0xD7C134AA264366862A18302575D1D787B09F075797DA89F57EC8C0FC</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0x4B337D934104CD7BEF271BF60CED1ED20DA14C08B3BB64F18A60888D</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0x2DF271E14427A346910CF7A2E6CFA7B3F484E5C2CCE1C8B730E28B3F</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x6AB1E344CE25FF3896424E7FFE14762ECB49F8928AC0C76029B4D580</span><span class="p">,</span>
+                      <span class="mh">0x0374E9F5143E568CD23F3F4D7C0D4B1E41C8CC0D1C6ABD5F1A46DB4C</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0xD7C134AA264366862A18302575D0FB98D116BC4B6DDEBCA3A5A7939F</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>   <span class="mh">0x1</span><span class="p">,</span>
+    <span class="p">},</span>
+    
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;Brainpool-p192r1&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">192</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xc302f41d932a36cda7a3463093d18db78fce476de1a86297</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0xc0a0647eaab6a48753b033c56cb0f0900a2f5c4853375fd6</span><span class="p">,</span>
+                      <span class="mh">0x14b690866abd5bb88b5f4828c1490002e6773fa2fa299b8f</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0xc302f41d932a36cda7a3462f9e9e916b5be8f1029ac4acc1</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mh">0x1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0x6a91174076b1e0e19c39c031fe8685c1cae040e5c69a28ef</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0x469a28ef7c28cca3dc721d044f4496bcca7ef4146fbf25c9</span>
+    <span class="p">},</span>
+    
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;Brainpool-p192t1&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">192</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xc302f41d932a36cda7a3463093d18db78fce476de1a86297</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x3ae9e58c82f63c30282e1fe7bbf43fa72c446af6f4618129</span><span class="p">,</span>
+                      <span class="mh">0x97e2c5667c2223a902ab5ca449d0084b7e5b3de7ccc01c9</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0xc302f41d932a36cda7a3462f9e9e916b5be8f1029ac4acc1</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mh">0x1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0xc302f41d932a36cda7a3463093d18db78fce476de1a86294</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0x13d56ffaec78681e68f9deb43b35bec2fb68542e27897b79</span>
+    <span class="p">},</span>
+    
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;Brainpool-p160r1&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">160</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xe95e4a5f737059dc60dfc7ad95b3d8139515620f</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0xbed5af16ea3f6a4f62938c4631eb5af7bdbcdbc3</span><span class="p">,</span>
+                      <span class="mh">0x1667cb477a1a8ec338f94741669c976316da6321</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0xe95e4a5f737059dc60df5991d45029409e60fc09</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mh">0x1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0x340e7be2a280eb74e2be61bada745d97e8f7c300</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0x1e589a8595423412134faa2dbdec95c8d8675e58</span>
+    <span class="p">},</span>
+
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;Brainpool-p160t1&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">160</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xe95e4a5f737059dc60dfc7ad95b3d8139515620f</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0xb199b13b9b34efc1397e64baeb05acc265ff2378</span><span class="p">,</span>
+                      <span class="mh">0xadd6718b7c7c1961f0991b842443772152c9e0ad</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0xe95e4a5f737059dc60df5991d45029409e60fc09</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mh">0x1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0xe95e4a5f737059dc60dfc7ad95b3d8139515620c</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0x7a556b6dae535b7b51ed2c4d7daa7a0b5c55f380</span>
+    <span class="p">},</span>
+
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;NIST-P256&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">256</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296</span><span class="p">,</span>
+                      <span class="mh">0x4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mh">0x1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0xffffffff00000001000000000000000000000000fffffffffffffffffffffffc</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b</span>
+    <span class="p">},</span>
+
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;NIST-P224&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">224</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000001</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0xB70E0CBD6BB4BF7F321390B94A03C1D356C21122343280D6115C1D21</span> <span class="p">,</span>
+                      <span class="mh">0xBD376388B5F723FB4C22DFE6CD4375A05A07476444D5819985007E34</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0xFFFFFFFFFFFFFFFFFFFFFFFFFFFF16A2E0B8F03E13DD29455C5C2A3D</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mh">0x1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFE</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0xB4050A850C04B3ABF54132565044B0B7D7BFD8BA270B39432355FFB4</span>
+    <span class="p">},</span>
+    
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;NIST-P192&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">WEIERSTRASS</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">192</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0xfffffffffffffffffffffffffffffffeffffffffffffffff</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x188da80eb03090f67cbf20eb43a18800f4ff0afd82ff1012</span><span class="p">,</span>
+                      <span class="mh">0x07192b95ffc8da78631011ed6b24cdd573f977a11e794811</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0xffffffffffffffffffffffff99def836146bc9b1b4d22831</span><span class="p">,</span>
+        <span class="s1">&#39;cofactor&#39;</span><span class="p">:</span>  <span class="mh">0x1</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="mh">0xfffffffffffffffffffffffffffffffefffffffffffffffc</span><span class="p">,</span>
+        <span class="s1">&#39;b&#39;</span><span class="p">:</span>         <span class="mh">0x64210519e59c80e70fa7e9ab72243049feb8deecc146b9b1</span>
+    <span class="p">},</span>
+    
+    <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span>      <span class="s2">&quot;Ed25519&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span>      <span class="n">TWISTEDEDWARD</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span>      <span class="mi">256</span><span class="p">,</span>
+        <span class="s1">&#39;field&#39;</span><span class="p">:</span>     <span class="mh">0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffed</span><span class="p">,</span>
+        <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">15112221349535400772501151409588531511454012693041857206046113283949847762202</span><span class="p">,</span>
+                      <span class="mi">46316835694926478169428394003475163141307993866256225615783033603165251855960</span><span class="p">),</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span>     <span class="mh">0x1000000000000000000000000000000014DEF9DEA2F79CD65812631A5CF5D3ED</span><span class="p">,</span>
+        <span class="s1">&#39;d&#39;</span><span class="p">:</span>         <span class="mh">0x52036cee2b6ffe738cc740797779e89800700a4d4141d8ab75eb4dca135978a3</span><span class="p">,</span>
+        <span class="s1">&#39;a&#39;</span><span class="p">:</span>         <span class="o">-</span><span class="mi">1</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1">### Weierstrass quick check ###</span>
+        <span class="n">cv</span>  <span class="o">=</span> <span class="n">Curve</span><span class="o">.</span><span class="n">get_curve</span><span class="p">(</span><span class="s1">&#39;secp256k1&#39;</span><span class="p">)</span>
+        
+        <span class="c1">#check generator</span>
+        <span class="n">Gx</span> <span class="o">=</span> <span class="mh">0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798</span>
+        <span class="n">Gy</span> <span class="o">=</span> <span class="mh">0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">Gx</span><span class="p">,</span> <span class="n">Gy</span><span class="p">,</span> <span class="n">cv</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">G</span> <span class="o">==</span> <span class="n">cv</span><span class="o">.</span><span class="n">generator</span><span class="p">)</span>
+
+        <span class="c1">#define point    </span>
+        <span class="n">W1</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mh">0x6fb13b7e8ab1c7d191d16197c1bf7f8dc7992412e1266155b3fb3ac8b30f3ed8</span><span class="p">,</span>
+                   <span class="mh">0x2e1eb77bd89505113819600b395e0475d102c4788a3280a583d9d82625ed8533</span><span class="p">,</span>
+                   <span class="n">cv</span><span class="p">)</span>
+        <span class="n">W2</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mh">0x07cd9ee748a0b26773d9d29361f75594964106d13e1cad67cfe2df503ee3e90e</span><span class="p">,</span>
+                   <span class="mh">0xd209f7c16cdb6d3559bea88c7d920f8ff077406c615da8adfecdeef604cb40a6</span><span class="p">,</span>
+                   <span class="n">cv</span><span class="p">)</span>
+        
+        <span class="c1">#check add</span>
+        <span class="n">sum_W1_W2</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mh">0xc4a20cbc2dc27c70fbc1335292c109a1ccd106981b5698feafe702bcb0fb2fca</span><span class="p">,</span>
+                          <span class="mh">0x7e1ad514051b87b7ce815c7defcd4fcc01e88842b3135e10a342be49bf5cad09</span><span class="p">,</span>
+                          <span class="n">cv</span><span class="p">)</span>
+        <span class="n">dbl_W2</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mh">0xb4f211b11166e6b3a3561e5978f47855787943dbeccd2014706c941a5890c913</span><span class="p">,</span>
+                       <span class="mh">0xe0122dc6f3ce097eb73865e66a1ced02a518afdec02596d7d152f121391e2d63</span><span class="p">,</span>
+                       <span class="n">cv</span><span class="p">)</span>
+        
+        <span class="n">s</span> <span class="o">=</span> <span class="n">W1</span><span class="o">+</span><span class="n">W2</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">s</span> <span class="o">==</span> <span class="n">sum_W1_W2</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">W2</span><span class="o">+</span><span class="n">W2</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">dbl_W2</span><span class="p">)</span>
+        
+        <span class="c1">#check mul</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="mh">0x2976F786AE6333E125C0DFFD6C16D37E8CED5ABEDB491BCCA21C75B307D0B318</span>
+        <span class="n">kW1</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mh">0x1de93c28f8c58db95f30be1704394f6f5d4602291c4933a1126cc61f9ed70b88</span><span class="p">,</span>
+                    <span class="mh">0x6f66df7bb6b37609cacded3052e1d127b47684949dff366020f824d517d66f34</span><span class="p">,</span>
+                    <span class="n">cv</span><span class="p">)</span>
+        <span class="n">mulW1</span> <span class="o">=</span> <span class="n">k</span><span class="o">*</span><span class="n">W1</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">kW1</span> <span class="o">==</span> <span class="n">mulW1</span><span class="p">)</span>
+        
+        
+        <span class="c1">##################################</span>
+        <span class="c1">### Twisted Edward quick check ###</span>
+        <span class="c1">##################################</span>
+        <span class="n">cv</span>  <span class="o">=</span> <span class="n">Curve</span><span class="o">.</span><span class="n">get_curve</span><span class="p">(</span><span class="s1">&#39;Ed25519&#39;</span><span class="p">)</span>
+        
+        <span class="n">W1</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mh">0x36ab384c9f5a046c3d043b7d1833e7ac080d8e4515d7a45f83c5a14e2843ce0e</span><span class="p">,</span>
+                   <span class="mh">0x2260cdf3092329c21da25ee8c9a21f5697390f51643851560e5f46ae6af8a3c9</span><span class="p">,</span>
+                   <span class="n">cv</span><span class="p">)</span>
+        <span class="n">W2</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mh">0x67ae9c4a22928f491ff4ae743edac83a6343981981624886ac62485fd3f8e25c</span><span class="p">,</span>
+                   <span class="mh">0x1267b1d177ee69aba126a18e60269ef79f16ec176724030402c3684878f5b4d4</span><span class="p">,</span>
+                   <span class="n">cv</span><span class="p">)</span>
+        
+        <span class="c1">#check generator</span>
+        <span class="n">Bx</span> <span class="o">=</span> <span class="mi">15112221349535400772501151409588531511454012693041857206046113283949847762202</span>
+        <span class="n">By</span> <span class="o">=</span> <span class="mi">46316835694926478169428394003475163141307993866256225615783033603165251855960</span> 
+        <span class="n">B</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">Bx</span><span class="p">,</span> <span class="n">By</span><span class="p">,</span> <span class="n">cv</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">B</span> <span class="o">==</span> <span class="n">cv</span><span class="o">.</span><span class="n">generator</span><span class="p">)</span>
+        
+        <span class="c1">#check add</span>
+        <span class="n">sum_W1_W2</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mh">0x49fda73eade3587bfcef7cf7d12da5de5c2819f93e1be1a591409cc0322ef233</span><span class="p">,</span>
+                          <span class="mh">0x5f4825b298feae6fe02c6e148992466631282eca89430b5d10d21f83d676c8ed</span><span class="p">,</span>
+                          
+                          <span class="n">cv</span><span class="p">)</span>
+        <span class="n">dbl_W1</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mh">0x203da8db56cff1468325d4b87a3520f91a739ec193ce1547493aa657c4c9f870</span><span class="p">,</span>
+                       <span class="mh">0x47d0e827cb1595e1470eb88580d5716c4cf22832ea2f0ff0df38ab61ca32112f</span><span class="p">,</span>
+                       <span class="n">cv</span><span class="p">)</span>
+        
+        <span class="n">s</span> <span class="o">=</span> <span class="n">W1</span><span class="o">+</span><span class="n">W2</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">s</span> <span class="o">==</span> <span class="n">sum_W1_W2</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">W1</span><span class="o">+</span><span class="n">W1</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">dbl_W1</span><span class="p">)</span>
+        
+        <span class="c1">#check mul</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mh">0x74ad28205b4f384bc0813e6585864e528085f91fb6a5096f244ae01e57de43ae</span><span class="p">,</span>
+                  <span class="mh">0x0c66f42af155cdc08c96c42ecf2c989cbc7e1b4da70ab7925a8943e8c317403d</span><span class="p">,</span>
+                  <span class="n">cv</span><span class="p">)</span>
+        <span class="n">k</span>  <span class="o">=</span> <span class="mh">0x035ce307f6524510110b4ea1c8af0e81fb705118ebcf886912f8d2d87b5776b3</span>
+        <span class="n">kA</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mh">0x0d968dd46de0ff98f4a6916e60f84c8068444dbc2d93f5d3b9cf06dade04a994</span><span class="p">,</span>
+                   <span class="mh">0x3ba16a015e1dd42b3d088c7a68c344ec47aaba463f67f4e9099c634f64781e00</span><span class="p">,</span>
+                   <span class="n">cv</span><span class="p">)</span>
+        <span class="n">mul</span> <span class="o">=</span> <span class="n">k</span><span class="o">*</span><span class="n">A</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">mul</span> <span class="o">==</span> <span class="n">kA</span><span class="p">)</span>
+        
+        <span class="c1">##OK!</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;All internal assert OK!&quot;</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">pass</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Cédric Mesnil.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
