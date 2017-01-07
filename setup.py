@@ -27,7 +27,7 @@ with open('README.rst') as file:
 
 setup(name='ECPy',
       version='0.8.0',
-      description='Pure Pyhton Elliptic Curve Library',
+      description='Pure Python Elliptic Curve Library',
       long_description=long_description,
       author='Cedric Mesnil',
       author_email='cedric.mesnil@ubinity.com',
