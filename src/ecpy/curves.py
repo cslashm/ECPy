@@ -465,6 +465,15 @@ class TwistedEdwardCurve(Curve):
         self._set(domain, ('name','type','size',
                               'a','d','field','generator','order'))
 
+    def _coord_size(self):
+        if self.name == 'Ed25519':
+            size = 32
+        elif self.name == 'Ed448':
+            size = 57
+        else:
+            assert False, '%s not supported'%curve.name
+        return size
+
     def is_on_curve(self, P):
         """ See :func:`Curve.is_on_curve` """
         q     = self.field
@@ -488,20 +497,43 @@ class TwistedEdwardCurve(Curve):
            int: the computed x coordinate
         """
         q = self.field
+        a = self.a
         d = self.d
-        I = pow(2,(q-1)//4,q)
-
-        
         if sign:
             sign = 1
-        a = (y*y-1)%q
-        b = pow(d*y* y+1,q-2,q)
-        xx = (a*b)%q
-        x = pow(xx,(q+3)//8,q)
-        if (x*x - xx) % q != 0:
-            x = (x*I) % q
+        
+        # #x2 = (y^2-1) * (d*y^2-a)^-1
+        yy = (y*y)%q
+        u = (1-yy)%q
+        v = pow(a-d*yy,q-2,q)
+        xx = (u*v)%q
+        if self.name =='Ed25519':
+            x = pow(xx,(q+3)//8,q)
+            if (x*x - xx) % q != 0:
+                I = pow(2,(q-1)//4,q)
+                x = (x*I) % q
+        elif self.name =='Ed448':
+            x = pow(xx,(q+1)//4,q)      
+        else:
+            assert False, '%s not supported'%curve.name
+
         if x &1 != sign:
             x = q-x
+
+        assert (x*x)%q == xx
+
+
+        # over F(q):
+        #     a.xx +yy = 1+d.xx.yy
+        # <=> xx(a-d.yy) = 1-yy
+        # <=> xx = (1-yy)/(a-d.yy)
+        # <=> x = +- sqrt((1-yy)/(a-d.yy))
+        # yy   = (y*y)%q
+        # u    = (1-yy)%q
+        # v    = (a - d*yy)%q
+        # v_1 = pow(v, q-2,q)
+        # xx = (v_1*u)%q
+        # x = self._sqrt(xx,q,sign) # Inherited generic Tonelli–Shanks from Curve 
         return x
 
     def encode_point(self, P):
@@ -513,7 +545,8 @@ class TwistedEdwardCurve(Curve):
         Returns
            bytes : encoded point
         """
-        size = self.size>>3
+        size = self._coord_size()
+
         y = bytearray(P.y.to_bytes(size,'little'))
         if P.x&1:
             y[len(y)-1] |= 0x80
@@ -533,7 +566,7 @@ class TwistedEdwardCurve(Curve):
         y[len(y)-1] &= ~0x80
         y = int.from_bytes(y,'little')    
         x = self.x_recover(y,sign)
-        return Point(x,y,self,False)
+        return Point(x,y,self,True)
 
     
     def add_point(self,P,Q):
@@ -572,7 +605,6 @@ class TwistedEdwardCurve(Curve):
     
     @staticmethod
     def _aff2ext(x,y, q):
-        rnd = random.getrandbits(300)
         z = 1
         t = (x*y*z) % q
         x = (x*z) % q
@@ -623,11 +655,7 @@ class TwistedEdwardCurve(Curve):
         Z3 = (F*G)%q
         return (X3,Y3,Z3,XY3)
         
-
-def mt(x):
-    return (x*115792089237316195423570985008687907853269984665640564039457584007913129639936)%57896044618658097711785492504343953926634992332820282019728792003956564819949
-def pmt(l,x):
-    print('%s: %.064x  %.064x'%(l,x,mt(x)))        
+      
 class MontgomeryCurve(Curve):
     """An elliptic curve defined by the equation: b.y²=x³+a*x²+x.  
     
@@ -721,23 +749,14 @@ class MontgomeryCurve(Curve):
         x3 = u
         z3 = 1
         for i in range(0, sz):
-            ki = int(k[i])
-            print("\n\nloop %d, ki=%d"%(sz-i-1,ki))
-           
+            ki = int(k[i])           
             if ki == 1:
                 x3,z3, x2,z2 = self._ladder_step(x1, x3,z3, x2,z2)
             else:
                 x2,z2, x3,z3 = self._ladder_step(x1, x2,z2, x3,z3) 
-            print()
-            pmt('X2  ',x2)
-            pmt('Z2  ',z2)
-            pmt('X3  ',x3)
-            pmt('Z3  ',z3)  
         p = self.field
         zinv = pow(z2,(p - 2),p)
-        pmt('Zinv',zinv)
         ku = (x2*zinv)%p
-        pmt('ku',ku)
         return ku
 
     def _ladder_step(self, x_qp, x_p,z_p, x_q,z_q):
@@ -752,15 +771,6 @@ class MontgomeryCurve(Curve):
         t4   = (x_q - z_q)              %p
         t8   = (t4  * t1)               %p
         t9   = (t3  * t2)               %p
-        pmt('  t1',t1)
-        pmt('  t2',t2)
-        pmt('  t3',t3)
-        pmt('  t4',t4)
-        pmt('  t5',t5)
-        pmt('  t6',t6)
-        pmt('  t7',t7)
-        pmt('  t8',t8)
-        pmt('  t9',t9)
 
         x_pq = ((t8+t9)*(t8+t9))        %p
         z_pq = (x_qp*(t8-t9)*(t8-t9))   %p
@@ -884,7 +894,51 @@ WEIERSTRASS   = "weierstrass"
 TWISTEDEDWARD = "twistededward"
 MONTGOMERY     = "montgomery"
 
+
 curves = [
+
+    {
+        'name':      "frp256v1",
+        'type':      WEIERSTRASS,
+        'size':      256,
+        'field':     0xF1FD178C0B3AD58F10126DE8CE42435B3961ADBCABC8CA6DE8FCF353D86E9C03,
+        'generator': (0xB6B3D4C356C139EB31183D4749D423958C27D2DCAF98B70164C97A2DD98F5CFF,
+                      0x6142E0F7C8B204911F9271F0F3ECEF8C2701C307E8E4C9E183115A1554062CFB),
+        'order':     0xF1FD178C0B3AD58F10126DE8CE42435B53DC67E140D2BF941FFDD459C6D655E1,
+        'cofactor':  1,
+        'a':         0xF1FD178C0B3AD58F10126DE8CE42435B3961ADBCABC8CA6DE8FCF353D86E9C00,
+        'b':         0xEE353FCA5428A9300D4ABA754A44C00FDFEC0C9AE4B1A1803075ED967B7BB73F,
+        
+    },
+
+    {
+        'name':      "secp521r1",
+        'type':      WEIERSTRASS,
+        'size':      521,
+        'field':     0x01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF,
+        'generator': (0x00C6858E06B70404E9CD9E3ECB662395B4429C648139053FB521F828AF606B4D3DBAA14B5E77EFE75928FE1DC127A2FFA8DE3348B3C1856A429BF97E7E31C2E5BD66,
+                      0x011839296A789A3BC0045C8A5FB42C7D1BD998F54449579B446817AFBD17273E662C97EE72995EF42640C550B9013FAD0761353C7086A272C24088BE94769FD16650),
+        'order':     0x01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA51868783BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409,
+        'cofactor':  1,
+        'a':         0x01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC,
+        'b':         0x0051953EB9618E1C9A1F929A21A0B68540EEA2DA725B99B315F3B8B489918EF109E156193951EC7E937B1652C0BD3BB1BF073573DF883D2C34F1EF451FD46B503F00,
+        
+    },
+
+    {
+        'name':      "secp384r1",
+        'type':      WEIERSTRASS,
+        'size':      384,
+        'field':     0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffeffffffff0000000000000000ffffffff,
+        'generator': (0xaa87ca22be8b05378eb1c71ef320ad746e1d3b628ba79b9859f741e082542a385502f25dbf55296c3a545e3872760ab7,
+                      0x3617de4a96262c6f5d9e98bf9292dc29f8f41dbd289a147ce9da3113b5f0b8c00a60b1ce1d7e819d7a431d7c90ea0e5f),
+        'order':     0xffffffffffffffffffffffffffffffffffffffffffffffffc7634d81f4372ddf581a0db248b0a77aecec196accc52973,
+        'cofactor':  1,
+        'a':         0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffeffffffff0000000000000000fffffffc,
+        'b':         0xb3312fa7e23ee7e4988e056be3f82d19181d9c6efe8141120314088f5013875ac656398d8a2ed19d2a85c8edd3ec2aef,
+        
+    },
+
     {
         'name':      "secp256k1",
         'type':      WEIERSTRASS,
@@ -1003,6 +1057,90 @@ curves = [
         'cofactor':  0x1,
         'a':         0xfffffffffffffffffffffffffffffffeffffac70,
         'b':         0xb4e134d3fb59eb8bab57274904664d5af50388ba
+    },
+
+    {
+        'name':      "Brainpool-p512t1",
+        'type':      WEIERSTRASS,
+        'size':      512,
+        'field':     0xAADD9DB8DBE9C48B3FD4E6AE33C9FC07CB308DB3B3C9D20ED6639CCA703308717D4D9B009BC66842AECDA12AE6A380E62881FF2F2D82C68528AA6056583A48F3,
+        'generator': (0x640ECE5C12788717B9C1BA06CBC2A6FEBA85842458C56DDE9DB1758D39C0313D82BA51735CDB3EA499AA77A7D6943A64F7A3F25FE26F06B51BAA2696FA9035DA,
+                      0x5B534BD595F5AF0FA2C892376C84ACE1BB4E3019B71634C01131159CAE03CEE9D9932184BEEF216BD71DF2DADF86A627306ECFF96DBB8BACE198B61E00F8B332),
+        'order':     0xAADD9DB8DBE9C48B3FD4E6AE33C9FC07CB308DB3B3C9D20ED6639CCA70330870553E5C414CA92619418661197FAC10471DB1D381085DDADDB58796829CA90069,
+        'cofactor':  1,
+        'a':         0xAADD9DB8DBE9C48B3FD4E6AE33C9FC07CB308DB3B3C9D20ED6639CCA703308717D4D9B009BC66842AECDA12AE6A380E62881FF2F2D82C68528AA6056583A48F0,
+        'b':         0x7CBBBCF9441CFAB76E1890E46884EAE321F70C0BCB4981527897504BEC3E36A62BCDFA2304976540F6450085F2DAE145C22553B465763689180EA2571867423E,
+        
+    },
+
+    {
+        'name':      "Brainpool-p512r1",
+        'type':      WEIERSTRASS,
+        'size':      512,
+        'field':     0xAADD9DB8DBE9C48B3FD4E6AE33C9FC07CB308DB3B3C9D20ED6639CCA703308717D4D9B009BC66842AECDA12AE6A380E62881FF2F2D82C68528AA6056583A48F3,
+        'generator': (0x81AEE4BDD82ED9645A21322E9C4C6A9385ED9F70B5D916C1B43B62EEF4D0098EFF3B1F78E2D0D48D50D1687B93B97D5F7C6D5047406A5E688B352209BCB9F822,
+                      0x7DDE385D566332ECC0EABFA9CF7822FDF209F70024A57B1AA000C55B881F8111B2DCDE494A5F485E5BCA4BD88A2763AED1CA2B2FA8F0540678CD1E0F3AD80892),
+        'order':     0xAADD9DB8DBE9C48B3FD4E6AE33C9FC07CB308DB3B3C9D20ED6639CCA70330870553E5C414CA92619418661197FAC10471DB1D381085DDADDB58796829CA90069,
+        'cofactor':  1,
+        'a':         0x7830A3318B603B89E2327145AC234CC594CBDD8D3DF91610A83441CAEA9863BC2DED5D5AA8253AA10A2EF1C98B9AC8B57F1117A72BF2C7B9E7C1AC4D77FC94CA,
+        'b':         0x3DF91610A83441CAEA9863BC2DED5D5AA8253AA10A2EF1C98B9AC8B57F1117A72BF2C7B9E7C1AC4D77FC94CADC083E67984050B75EBAE5DD2809BD638016F723,
+        
+    },
+
+    {
+        'name':      "Brainpool-p384t1",
+        'type':      WEIERSTRASS,
+        'size':      384,
+        'field':     0x8CB91E82A3386D280F5D6F7E50E641DF152F7109ED5456B412B1DA197FB71123ACD3A729901D1A71874700133107EC53,
+        'generator': (0x18DE98B02DB9A306F2AFCD7235F72A819B80AB12EBD653172476FECD462AABFFC4FF191B946A5F54D8D0AA2F418808CC,
+                      0x25AB056962D30651A114AFD2755AD336747F93475B7A1FCA3B88F2B6A208CCFE469408584DC2B2912675BF5B9E582928),
+        'order':     0x8CB91E82A3386D280F5D6F7E50E641DF152F7109ED5456B31F166E6CAC0425A7CF3AB6AF6B7FC3103B883202E9046565,
+        'cofactor':  1,
+        'a':         0x8CB91E82A3386D280F5D6F7E50E641DF152F7109ED5456B412B1DA197FB71123ACD3A729901D1A71874700133107EC50,
+        'b':         0x7F519EADA7BDA81BD826DBA647910F8C4B9346ED8CCDC64E4B1ABD11756DCE1D2074AA263B88805CED70355A33B471EE,
+        
+    },
+    
+    {
+        'name':      "Brainpool-p384r1",
+        'type':      WEIERSTRASS,
+        'size':      384,
+        'field':     0x8CB91E82A3386D280F5D6F7E50E641DF152F7109ED5456B412B1DA197FB71123ACD3A729901D1A71874700133107EC53,
+        'generator': (0x1D1C64F068CF45FFA2A63A81B7C13F6B8847A3E77EF14FE3DB7FCAFE0CBD10E8E826E03436D646AAEF87B2E247D4AF1E,
+                      0x8ABE1D7520F9C2A45CB1EB8E95CFD55262B70B29FEEC5864E19C054FF99129280E4646217791811142820341263C5315),
+        'order':     0x8CB91E82A3386D280F5D6F7E50E641DF152F7109ED5456B31F166E6CAC0425A7CF3AB6AF6B7FC3103B883202E9046565,
+        'cofactor':  1,
+        'a':         0x7BC382C63D8C150C3C72080ACE05AFA0C2BEA28E4FB22787139165EFBA91F90F8AA5814A503AD4EB04A8C7DD22CE2826,
+        'b':         0x04A8C7DD22CE28268B39B55416F0447C2FB77DE107DCD2A62E880EA53EEB62D57CB4390295DBC9943AB78696FA504C11,
+        
+    },
+
+    {
+        'name':      "Brainpool-p320t1",
+        'type':      WEIERSTRASS,
+        'size':      320,
+        'field':     0xD35E472036BC4FB7E13C785ED201E065F98FCFA6F6F40DEF4F92B9EC7893EC28FCD412B1F1B32E27,
+        'generator': (0x925BE9FB01AFC6FB4D3E7D4990010F813408AB106C4F09CB7EE07868CC136FFF3357F624A21BED52,
+                      0x63BA3A7A27483EBF6671DBEF7ABB30EBEE084E58A0B077AD42A5A0989D1EE71B1B9BC0455FB0D2C3),
+        'order':     0xD35E472036BC4FB7E13C785ED201E065F98FCFA5B68F12A32D482EC7EE8658E98691555B44C59311,
+        'cofactor':  1,
+        'a':         0xD35E472036BC4FB7E13C785ED201E065F98FCFA6F6F40DEF4F92B9EC7893EC28FCD412B1F1B32E24,
+        'b':         0xA7F561E038EB1ED560B3D147DB782013064C19F27ED27C6780AAF77FB8A547CEB5B4FEF422340353,
+        
+    },
+
+    {
+        'name':      "Brainpool-p320r1",
+        'type':      WEIERSTRASS,
+        'size':      320,
+        'field':     0xD35E472036BC4FB7E13C785ED201E065F98FCFA6F6F40DEF4F92B9EC7893EC28FCD412B1F1B32E27,
+        'generator': (0x43BD7E9AFB53D8B85289BCC48EE5BFE6F20137D10A087EB6E7871E2A10A599C710AF8D0D39E20611,
+                      0x14FDD05545EC1CC8AB4093247F77275E0743FFED117182EAA9C77877AAAC6AC7D35245D1692E8EE1),
+        'order':     0xD35E472036BC4FB7E13C785ED201E065F98FCFA5B68F12A32D482EC7EE8658E98691555B44C59311,
+        'cofactor':  1,
+        'a':         0x3EE30B568FBAB0F883CCEBD46D3F3BB8A2A73513F5EB79DA66190EB085FFA9F492F375A97D860EB4,
+        'b':         0x520883949DFDBC42D3AD198640688A6FE13F41349554B49ACC31DCCD884539816F5EB4AC8FB1F1A6,
+        
     },
     
     {
@@ -1147,7 +1285,20 @@ curves = [
         'a':         0xfffffffffffffffffffffffffffffffefffffffffffffffc,
         'b':         0x64210519e59c80e70fa7e9ab72243049feb8deecc146b9b1
     },
-    
+
+    {
+        'name':      "Ed448",
+        'type':      TWISTEDEDWARD,
+        'size':      448,
+        'field':     0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffeffffffffffffffffffffffffffffffffffffffffffffffffffffffff,
+        'generator': (0x4f1970c66bed0ded221d15a622bf36da9e146570470f1767ea6de324a3d3a46412ae1af72ab66511433b80e18b00938e2626a82bc70cc05e,
+                      0x693f46716eb6bc248876203756c9c7624bea73736ca3984087789c1e05a0c2d73ad3ff1ce67c39c4fdbd132c4ed7c8ad9808795bf230fa14),
+        'order':     0x3fffffffffffffffffffffffffffffffffffffffffffffffffffffff7cca23e9c44edb49aed63690216cc2728dc58f552378c292ab5844f3,
+        'cofactor':  4,
+        'd':         0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffeffffffffffffffffffffffffffffffffffffffffffffffffffff6756,
+        'a':         1
+    },
+
     {
         'name':      "Ed25519",
         'type':      TWISTEDEDWARD,
@@ -1160,7 +1311,20 @@ curves = [
         'd':         0x52036cee2b6ffe738cc740797779e89800700a4d4141d8ab75eb4dca135978a3,
         'a':         -1
     },
-    
+ 
+    {
+        'name':      "Curve448",
+        'type':      MONTGOMERY,
+        'size':      448,
+        'field':     0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffeffffffffffffffffffffffffffffffffffffffffffffffffffffffff,
+        'generator': (5,
+                      0x7d235d1295f5b1f66c98ab6e58326fcecbae5d34f55545d060f75dc28df3f6edb8027e2346430d211312c4b150677af76fd7223d457b5b1a),
+        'order':     0x3fffffffffffffffffffffffffffffffffffffffffffffffffffffff7cca23e9c44edb49aed63690216cc2728dc58f552378c292ab5844f3,
+        'cofactor':  4,
+        'b':         1,
+        'a':         0x262a6
+    },
+
     {
         'name':      "Curve25519",
         'type':      MONTGOMERY,
@@ -1172,7 +1336,7 @@ curves = [
         'cofactor':  0x08,
         'b':         1,
         'a':         486662
-    }
+    },
 ]
 
 

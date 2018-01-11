@@ -21,26 +21,27 @@ if  sys.version_info[0] == 2 and sys.version_info[1] < 7:
 reqs = []
 if  sys.version_info[0] == 2:
     reqs.append('future')
-    
+
 with open('README.rst') as file:
     long_description = file.read()
 
 setup(name='ECPy',
-      version='0.8.2',
+      version='0.8.3',
       description='Pure Pyhton Elliptic Curve Library',
       long_description=long_description,
-      keywords='ecdsa eddsa ed25519 schnorr ecschnorr elliptic curve',
+      keywords='ecdsa eddsa ed25519 ed448 schnorr ecschnorr elliptic curve',
       author='Cedric Mesnil',
-      author_email='cedric.mesnil@ubinity.com',
+      author_email='cslashm@gmail.com',
       url='https://github.com/ubinity/ECPy',
       license='Apache License - Version 2.0',
       provides=['ecpy'],
       packages=['ecpy'],
       package_dir={'ecpy': 'src/ecpy'},
       install_requires=reqs,
-      classifiers=['Programming Language :: Python :: 3 ',
-                   'Programming Language :: Python :: 2.7 ',
+      classifiers=['Programming Language :: Python :: 3',
                    'Development Status :: 4 - Beta',
                    'License :: OSI Approved :: Apache Software License',
-                   'Topic :: Security :: Cryptography']
+                   'Topic :: Security :: Cryptography'],
+       python_requires='>=3',
+
      )

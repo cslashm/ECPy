@@ -19,7 +19,7 @@ Status
 | ECPy is in beta stage but already used in some internal tooling.
 | Any constructive comment is welcome.
 
-:Version:  0.8.0
+:Version:  0.8.2
 :Authors:  Cedric Mesnil, <cedric.mesnil@ubinity.com>
 :License:  Apache 2.0
 

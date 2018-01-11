@@ -16,7 +16,7 @@
 #python 2 compatibility
 from builtins import int,pow
 
-
+import binascii
 from ecpy.curves import Curve,Point
 from ecpy.keys import ECPublicKey, ECPrivateKey
 from ecpy.formatters import decode_sig, encode_sig
@@ -32,14 +32,15 @@ class EDDSA:
       fmt (str): in/out signature format. See  :mod:`ecpy.formatters`.
     """
         
-    def __init__(self, hasher, fmt="EDDSA"):
+    def __init__(self, hasher, hash_len = None, *, fmt="EDDSA"):
         self._hasher = hasher
+        self._hash_len = hash_len
         self.fmt = fmt
         pass
 
 
     @staticmethod
-    def get_public_key(pv_key, hasher = hashlib.sha512) :
+    def get_public_key(pv_key, hasher = hashlib.sha512, hash_len=None) :
         """ Returns the public key corresponding to this private key 
         
         This method compute the public key according to draft-irtf-cfrg-eddsa-05.
@@ -54,16 +55,13 @@ class EDDSA:
         Returns:
            ECPublicKey : public key
         """
-        a = EDDSA.get_interal_private_key(pv_key,hasher)
-        A = a.d * pv_key.curve.generator
-        return   ECPublicKey(A)
+        a,A,h = EDDSA._get_materials(pv_key, hasher, hash_len)
+        return ECPublicKey(A)
 
     @staticmethod
-    def get_interal_private_key(pv_key, hasher = hashlib.sha512) :
-        """ Returns the internal private key corresponding to this private key 
-        
-        Internal private key correspond to the multiplier derived from private
-        key and used to compute the public key.
+    def _get_materials(pv_key, hasher = hashlib.sha512, hash_len=None) :
+        """ Returns the internal private scalar a(int), the public point A(ECPoint) = a.B and the 
+            signature prefix h(bytes)
         
         The hash parameter shall be the same as the one used for signing and
         verifying.
@@ -76,21 +74,39 @@ class EDDSA:
            ECPrivateKey : internal private key
         """
         curve = pv_key.curve
+        B     = curve.generator
         n     = curve.order
-        size  = curve.size >>3
+        size  = curve._coord_size()
         
         k = pv_key.d.to_bytes(size,'big')
         hasher = hasher()
         hasher.update(k)
-        h = hasher.digest()
+        if hash_len:
+            h = hasher.digest(hash_len)
+        else :
+            h = hasher.digest()
+
         #retrieve encoded pub key
-        a = bytearray(h[:32])
-        a[0]  &= 0xF8
-        a[31] = (a[31] &0x7F) | 0x40
+        
+        if curve.name == 'Ed25519':
+            a = bytearray(h[:32])
+            h = h[32:]
+            a[0]  &= 0xF8
+            a[31] = (a[31] &0x7F) | 0x40
+        elif curve.name == 'Ed448':
+            a = bytearray(h[:57])
+            h = h[57:]
+            a[0]  &= 0xFC; 
+            a[56]  = 0;
+            a[55] |= 0x80;
+        else :
+            assert False, '%s not supported'%curve.name
+        
         a = bytes(a)
         a = int.from_bytes(a,'little')
-        return   ECPrivateKey(a,pv_key.curve)
-
+        A = a * B
+       
+        return a,A,h[32:]
 
     def sign(self, msg, pv_key):
         """ Signs a message.
@@ -106,26 +122,41 @@ class EDDSA:
         curve = pv_key.curve
         B     = curve.generator
         n     = curve.order
-        size = curve.size >>3
+        size = curve._coord_size()
         
-        k = pv_key.d.to_bytes(size,'big')
-        hasher = self._hasher()
-        hasher.update(k)
-        h = hasher.digest()
-        #retrieve encoded pub key
-        a = bytearray(h[:32])
-        a[0]  &= 0xF8
-        a[31] = (a[31] &0x7F) | 0x40
-        a = bytes(a)
-        a = int.from_bytes(a,'little')
-        A = a * B        
+        # k = pv_key.d.to_bytes(size,'big')
+        # hasher = self._hasher()
+        # hasher.update(k)
+        # if self._hash_len:
+        #     h = hasher.digest(self._hash_len)
+        # else:
+        #     h = hasher.digest()
+        # #retrieve encoded pub key
+        # a = bytearray(h[:32])
+        # a[0]  &= 0xF8
+        # a[31] = (a[31] &0x7F) | 0x40
+        # a = bytes(a)
+        # a = int.from_bytes(a,'little')
+        # A = a * B        
+        # eA = curve.encode_point(A)
+        
+        a, A, prefix = EDDSA._get_materials(pv_key, self._hasher, self._hash_len)
         eA = curve.encode_point(A)
-        #OK
-        
+
         #compute R
-        hasher = self._hasher()         
-        hasher.update(h[size:]+msg)
-        r = hasher.digest()
+        hasher = self._hasher()
+        if curve.name =='Ed448':         
+            hasher.update(b'SigEd448\x00\x00')
+            hasher.update(prefix)
+            hasher.update(msg)
+            r = hasher.digest(self._hash_len)
+        elif curve.name =='Ed25519':  
+            hasher.update(prefix)
+            hasher.update(msg)
+            r = hasher.digest()
+        else :
+            assert False, '%s not supported'%curve.name
+
         r = int.from_bytes(r,'little')
         r = r % n
         R = r*B
@@ -133,8 +164,20 @@ class EDDSA:
               
         #compute S
         hasher = self._hasher()
-        hasher.update(eR+eA+msg)
-        H_eR_eA_m = hasher.digest()
+        if curve.name =='Ed448':  
+            hasher.update(b'SigEd448\x00\x00')
+            hasher.update(eR)
+            hasher.update(eA)
+            hasher.update(msg)
+            H_eR_eA_m = hasher.digest(self._hash_len)
+        elif  curve.name =='Ed25519':  
+            hasher.update(eR)
+            hasher.update(eA)
+            hasher.update(msg)
+            H_eR_eA_m = hasher.digest()
+        else:
+            assert False, '%s not supported'%curve.name
+
         i = int.from_bytes(H_eR_eA_m, 'little')
         S = (r + i*a)%n
         
@@ -155,10 +198,8 @@ class EDDSA:
         """
         curve = pu_key.curve
         n     = curve.order
-        size  = curve.size>>3
+        size  = curve._coord_size()
 
-        #eR = sig[0:size]
-        #S  = int.from_bytes(sig[size:],'little')
         eR,S = decode_sig(sig, self.fmt)
 
         #left
@@ -167,8 +208,20 @@ class EDDSA:
         
         hasher = self._hasher()
         eA = curve.encode_point(pu_key.W)
-        hasher.update(eR+eA+msg)
-        h = hasher.digest()
+        if curve.name =='Ed448':
+            hasher.update(b'SigEd448\x00\x00')
+            hasher.update(eR)
+            hasher.update(eA)
+            hasher.update(msg)
+            h = hasher.digest(self._hash_len)
+        elif curve.name == 'Ed25519':
+            hasher.update(eR)
+            hasher.update(eA)
+            hasher.update(msg)
+            h = hasher.digest()
+        else:
+            assert False, '%s not supported'%curve.name
+    
         h = int.from_bytes(h,'little')
         h = h%n
         A = pu_key.W        
