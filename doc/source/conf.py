@@ -33,13 +33,27 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
     'sphinx.ext.ifconfig',
+    #'sphinx.ext.linkcode',
     'sphinx.ext.viewcode',
+    'sphinx.ext.githubpages',
 ]
 
-# autodoc settings
+
+### sphinx.ext.linkcode',
+def linkcode_resolve(domain, info):
+    if domain != 'py':
+        return None
+    if not info['module']:
+        return None
+    if info['fullname'].count('.') == 0:
+        filename = info['module'].replace('.', '/')
+        return "https://github.com/ubinity/ECPy/blob/0.8/src/%s.py"%filename
+    return None
+
+### sphinx.ext.autodoc settings
 autodoc_member_order = 'groupwise'
 
-# Napoleon settings
+### sphinx.ext.napoleon settings
 #see http://www.sphinx-doc.org/en/stable/ext/napoleon.html#configuration
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
@@ -52,6 +66,8 @@ napoleon_use_ivar = False
 napoleon_use_param = True
 napoleon_use_rtype = True
 
+
+### GLOBAL settings
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['.templates']
@@ -193,7 +209,7 @@ html_static_path = ['.static']
 #html_split_index = False
 
 # If true, links to the reST sources are added to the pages.
-html_show_sourcelink = False
+html_show_sourcelink = True
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
 #html_show_sphinx = True

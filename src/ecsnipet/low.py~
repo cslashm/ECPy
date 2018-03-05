@@ -1,0 +1,14 @@
+import hashlib
+from ecpy.curves     import Curve,Point
+from ecpy.keys       import ECPublicKey, ECPrivateKey
+from ecpy.ecdsa  import ECDSA
+
+
+
+cv  = Curve.get_curve('secp256k1')
+
+
+W = 2*c.generator
+print("%Wx"%W.x)
+print("%wy"%W.y)
+

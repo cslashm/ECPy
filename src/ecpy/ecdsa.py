@@ -33,7 +33,7 @@ class ECDSA:
         self.maxtries=10
         pass
 
-    def sign(self, msg, pv_key):
+    def sign(self, msg, pv_key, canonical=False):
         """ Signs a message hash.
 
         Args:
@@ -43,12 +43,12 @@ class ECDSA:
         order = pv_key.curve.order
         for i in range(1,self.maxtries):
             k = ecrand.rnd(order)
-            sig = self._do_sign(msg, pv_key,k)
+            sig = self._do_sign(msg, pv_key,k, canonical)
             if sig:
                 return sig
         return None
 
-    def sign_rfc6979(self, msg, pv_key, hasher):
+    def sign_rfc6979(self, msg, pv_key, hasher, canonical=False):
         """ Signs a message hash  according to  RFC6979 
 
         Args:
@@ -60,13 +60,13 @@ class ECDSA:
         V = None
         for i in range(1,self.maxtries):
             k,V = ecrand.rnd_rfc6979(msg, pv_key.d, field, hasher,V)
-            sig = self._do_sign(msg, pv_key,k)
+            sig = self._do_sign(msg, pv_key, k, canonical)
             if sig:
                 return sig
                                  
         return None
     
-    def sign_k(self,msg,pv_key,k):
+    def sign_k(self, msg, pv_key, k,canonical=False):
         """ Signs a message hash  with provided random
 
         Args:
@@ -74,9 +74,9 @@ class ECDSA:
             pv_key (ecpy.keys.ECPrivateKey): key to use for signing
             k (ecpy.keys.ECPrivateKey)     : random to use for signing
         """
-        return self._do_sign(msg, pv_key,k)
+        return self._do_sign(msg, pv_key, k, canonical)
             
-    def _do_sign(self,msg,pv_key,k):
+    def _do_sign(self, msg, pv_key, k, canonical=False):
         if (pv_key.curve == None):
             raise ECPyException('private key haz no curve')
         curve = pv_key.curve
@@ -95,6 +95,9 @@ class ECDSA:
         s = (kinv*(msg+pv_key.d*r)) %n
         if s == 0:
             return None
+
+        if canonical and (s > (n//2)):
+            s = n-s
         
         sig = encode_sig(r,s,self.fmt)
         

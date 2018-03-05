@@ -1,0 +1,25 @@
+import hashlib
+from ecpy.curves     import Curve,Point
+from ecpy.keys       import ECPublicKey, ECPrivateKey
+from ecpy.ecdsa  import ECDSA
+
+### ECS
+cv     = Curve.get_curve('secp256k1')
+pu_key = ECPublicKey(Point(0x81bc1f9486564d3d57a305e8f9067df2a7e1f007d4af4fed085aca139c6b9c7a,
+                           0x8e3f35e4d7fb27a56a3f35d34c8c2b27cd1d266d5294df131bf3c1cbc39f5a91,
+                           cv))
+
+#sha256("abc")
+msg = int(0x040f0e1c58b6f889bf0ab23cd49e28fe187cc45eed5cf46f29f2b8ce9f6cd8d74917c703c4b027d58aaea5991a1a9df273d8c6fbe46c8ddca37dfb172876f23884)
+msg  = msg.to_bytes(130//2,'big')
+H = hashlib.sha256()
+H.update(msg)
+msg = H.digest()
+
+## verify
+signer = ECDSA()
+
+
+sig = int(0x3046022100ed02771f0c34d70d94d34b41e26dafc99cb0f173adb7d1d214641c7855fab090022100fe5d72db217a14a3236110db0be5b737a1ec84f1a83d50be93e32ee90a3e818b)
+sig  = sig.to_bytes(0x46+2,'big')
+assert(signer.verify(msg,sig,pu_key))        

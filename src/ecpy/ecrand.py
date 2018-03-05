@@ -106,7 +106,7 @@ def rnd_rfc6979(hashmsg, secret, q, hasher, V = None):
         k_blen =  k.bit_length()
         
         if k_blen > q_blen :
-            k = k >>  (kb_len - qb_len)
+            k = k >>  (k_blen - q_blen)
         #      If that value of k is within the [1,q-1] range, and is
         #      suitable for DSA or ECDSA (i.e., it results in an r value
         #      that is not 0; see Section 3.4), then the generation of k is
