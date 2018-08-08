@@ -106,7 +106,7 @@ class EDDSA:
         a = int.from_bytes(a,'little')
         A = a * B
        
-        return a,A,h[32:]
+        return a,A,h
 
     def sign(self, msg, pv_key):
         """ Signs a message.
@@ -126,7 +126,6 @@ class EDDSA:
               
         a, A, prefix = EDDSA._get_materials(pv_key, self._hasher, self._hash_len)
         eA = curve.encode_point(A)
-
         #compute R
         hasher = self._hasher()
         if curve.name =='Ed448':         
@@ -253,8 +252,7 @@ if __name__ == "__main__":
 
         signer = EDDSA(hashlib.sha512)
         sig = signer.sign(msg,pv_key)
-        #assert(sig == expected_sig)
-
+        assert(sig == expected_sig)
         assert(signer.verify(msg,sig,pu_key))
 
 
@@ -293,12 +291,51 @@ if __name__ == "__main__":
 
         signer = EDDSA(hashlib.sha512)
         sig = signer.sign(msg,pv_key)
-        #assert(sig == expected_sig)
-
+        assert(sig == expected_sig)
         assert(signer.verify(msg,sig,pu_key))
         
+
+        ### EDDSA
+        cv     = Curve.get_curve('Ed25519')
+
+        # public key
+        # x: 74ad28205b4f384bc0813e6585864e528085f91fb6a5096f244ae01e57de43ae
+        # y: 0c66f42af155cdc08c96c42ecf2c989cbc7e1b4da70ab7925a8943e8c317403d
+
+
+        pu_key = ECPublicKey(Point(0x74ad28205b4f384bc0813e6585864e528085f91fb6a5096f244ae01e57de43ae,
+                                   0x0c66f42af155cdc08c96c42ecf2c989cbc7e1b4da70ab7925a8943e8c317403d,
+                                   cv))
+        # private key
+        # s: 0x4ccd089b28ff96da9db6c346ec114e0f5b8a319f35aba624da8cf6ed4fb8a6fb
+        pv_key = ECPrivateKey(0x4ccd089b28ff96da9db6c346ec114e0f5b8a319f35aba624da8cf6ed4fb8a6fb,
+                              cv)
+
+        pu = EDDSA.get_public_key(pv_key)
+        assert(pu.W == pu_key.W);
+        
+
+        # sig:
+        # 
+        # 
+        expected_sig = int(0xa2ce8472cf883cca5f98ca76d5834831d9d121a755c00daa385d0bac145203269e572a3d1f221af1b1ca6feaae05141a9aa9d6990163a85ab8690da44c056d0f)
+        expected_sig  = expected_sig.to_bytes(64,'big')
+        
+        #msg:
+        # 72
+        msg  = int(0xe8898b646cc2274b5daf7fb6e30f738b24203604d7849391056d0fe8093f669338b24203604d7849391056d0fe8093f6693e8898b646cc2274b5daf7fb6e30f7)
+        msg  = msg.to_bytes(64,'big')
+
+        signer = EDDSA(hashlib.sha512)
+        sig = signer.sign(msg,pv_key)
+        assert(signer.verify(msg,sig,pu_key))
+        assert(sig == expected_sig)
+
+        
+
         ##OK!
         print("All internal assert OK!")
     finally:
         pass
+
 

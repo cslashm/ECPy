@@ -26,7 +26,7 @@ with open('README.rst') as file:
     long_description = file.read()
 
 setup(name='ECPy',
-      version='0.9.0',
+      version='0.9.1',
       description='Pure Pyhton Elliptic Curve Library',
       long_description=long_description,
       keywords='ecdsa eddsa ed25519 ed448 schnorr ecschnorr elliptic curve',
@@ -42,7 +42,5 @@ setup(name='ECPy',
                    'Programming Language :: Python :: 3',
                    'Development Status :: 4 - Beta',
                    'License :: OSI Approved :: Apache Software License',
-                   'Topic :: Security :: Cryptography'],
-       python_requires='>=3',
-
+                   'Topic :: Security :: Cryptography']
      )
