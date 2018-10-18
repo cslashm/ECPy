@@ -22,6 +22,7 @@ from ecpy            import ecrand
 from ecpy.curves     import ECPyException
 
 import hashlib
+import binascii
 
 class ECSchnorr:
     """ ECSchnorr signer implementation according to:
@@ -29,10 +30,10 @@ class ECSchnorr:
      - `BSI:TR03111 <https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TR03111/BSI-TR-03111_pdf.html>`_
      - `ISO/IEC:14888-3 <http://www.iso.org/iso/iso_catalogue/catalogue_ics/catalogue_detail_ics.htm?csnumber=43656>`_
      - `bitcoin-core:libsecp256k1 <https://github.com/bitcoin-core/secp256k1/blob/master/src/modules/schnorr/schnorr_impl.h>`_
-
+     - `Z` : https://docs.zilliqa.com/whitepaper.pdf
 
     In order to select the specification to be conform to, choose 
-    the corresponding string option: "BSI", "ISO", "ISOx", "LIBSECP"
+    the corresponding string option: "BSI", "ISO", "ISOx", "LIBSECP", "Z"
 
     *Signature*:
 
@@ -69,6 +70,14 @@ class ECSchnorr:
            if h == 0 or h >= order goto 1
         5. s = k - h.d.
         6. Output (r, s)
+    - "Z": compute r,s according to zilliqa lib:
+        1. Generate a random k from [1, ..., order-1]
+        2. Compute the commitment Q = kG, where  G is the base point
+        3. Compute the challenge r = H(Q, kpub, m) [CME: mod n according to pdf/code, Q and kpub compressed "02|03 x" according to code)
+        4. If r = 0 mod(order), goto 1
+        5. Compute s = k - r*kpriv mod(order)
+        6. If s = 0 goto 1.
+        7. Output (r, s)
 
     *Verification*
 
@@ -99,6 +108,12 @@ class ECSchnorr:
         3. R = [h]Q + [s]G. 
            Signature is invalid if R is infinity or R's y coordinate is odd.
         4. Signature is valid if the serialization of R's x coordinate equals r.
+    - "Z":
+        1. Check if r,s is in [1, ..., order-1]
+        2. Compute Q = sG + r*kpub
+        3. If Q = O (the neutral point), return 0;
+        4. r' = H(Q, kpub, m) [CME: mod n according to pdf/code, according to code), Q and kpub compressed "02|03 x"]
+        5. return r' == r
 
     Default is "ISO"
     
@@ -109,7 +124,7 @@ class ECSchnorr:
     """
     
     def __init__(self, hasher, option="ISO", fmt="DER"):
-        if not option in ("ISO","ISOx","BSI","LIBSECP"):
+        if not option in ("ISO","ISOx","BSI","LIBSECP","Z"):
             raise ECPyException('ECSchnorr option not supported: %s'%option)
         if not fmt in list_formats():
             raise ECPyException('ECSchnorr format not supported: %s'%fmt)
@@ -192,6 +207,24 @@ class ECSchnorr:
             h = int.from_bytes(h,'big')
             r = Q.x % n
             s = (k - h*pv_key.d)%n
+
+        elif self.option == "Z":
+            if Q.y & 1:
+                xQ = b'\x03'+Q.x.to_bytes(size,'big')
+            else :
+                xQ = b'\x02'+Q.x.to_bytes(size,'big')
+            pu_key = pv_key.get_public_key()
+            if pu_key.W.y & 1:
+                xPub = b'\x03'+pu_key.W.x.to_bytes(size,'big')
+            else :
+                xPub = b'\x02'+pu_key.W.x.to_bytes(size,'big')
+            hasher.update(xQ+xPub+msg)
+            r = hasher.digest()
+            r = int.from_bytes(r,'big') % n
+            s = (k - r*pv_key.d) %n
+            if r==0 or s==0:
+                return None
+
         return encode_sig(r, s, self.fmt)
             
     def verify(self,msg,sig,pu_key):
@@ -254,6 +287,23 @@ class ECSchnorr:
             R = sG + hW
             v = R.x % n
 
+        elif self.option == "Z":
+            sG = s * G
+            rW = r*pu_key.W
+            Q = sG + rW
+            if Q.y & 1:
+                xQ = b'\x03'+Q.x.to_bytes(size,'big')
+            else :
+                xQ = b'\x02'+Q.x.to_bytes(size,'big')
+            if pu_key.W.y & 1:
+                xPub = b'\x03'+pu_key.W.x.to_bytes(size,'big')
+            else :
+                xPub = b'\x02'+pu_key.W.x.to_bytes(size,'big')
+            hasher.update(xQ+xPub+msg)
+            v = hasher.digest()
+            v = int.from_bytes(v,'big')
+            v = v%n
+
         return v == r
  
 if __name__ == "__main__":
@@ -295,6 +345,19 @@ if __name__ == "__main__":
         signer = ECSchnorr(hashlib.sha256,"BSI","ITUPLE")
         sig = signer.sign_k(msg,pv_key,k)
         assert(signer.verify(msg,sig,pu_key))
+
+        ##Z
+        k = int(0xde7e0e5e663f24183414b7c72f24546b81e9e5f410bebf26f3ca5fa82f5192c8)
+        cv     = Curve.get_curve('secp256r1')
+        pv_key = ECPrivateKey(0x2eef7823f82ed254524fad3d11cc17e897e582a0cd52b93f07cc030370d170bd,
+                              cv)
+        pu_key = pv_key.get_public_key()
+        msg = int(0xb46d1525379e02e232d97928265b7254ea2ed97813454388c1a08f62dccd70b3)
+        msg  = msg.to_bytes(32,'big')
+        signer = ECSchnorr(hashlib.sha256,"Z","ITUPLE")
+        sig = signer.sign_k(msg,pv_key,k)
+        assert(signer.verify(msg,sig,pu_key))
+
 
         ##LIBSECP
         cv     = Curve.get_curve('secp256k1')

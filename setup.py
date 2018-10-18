@@ -26,13 +26,13 @@ with open('README.rst') as file:
     long_description = file.read()
 
 setup(name='ECPy',
-      version='0.9.1',
+      version='0.10.0',
       description='Pure Pyhton Elliptic Curve Library',
       long_description=long_description,
       keywords='ecdsa eddsa ed25519 ed448 schnorr ecschnorr elliptic curve',
       author='Cedric Mesnil',
       author_email='cslashm@gmail.com',
-      url='https://github.com/ubinity/ECPy',
+      url='https://github.com/cslashm/ECPy',
       license='Apache License - Version 2.0',
       provides=['ecpy'],
       packages=['ecpy'],
