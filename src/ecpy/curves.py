@@ -382,7 +382,7 @@ class WeierstrassCurve(Curve):
         if xy[0] == 2:
             x = xy[1:1+size]
             x = int.from_bytes(x,'big')
-            y = self.y_recover(x,xy[1+size])  
+            y = self.y_recover(x,xy[size])  
         elif xy[0] == 4:
             x = xy[1:1+size]
             x = int.from_bytes(x,'big')    
