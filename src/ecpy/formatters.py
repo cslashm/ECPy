@@ -13,6 +13,7 @@
 # limitations under the License.
 
 #python 2 compatibility
+
 from builtins import int,pow
 
 def list_formats():
@@ -82,29 +83,28 @@ def decode_sig(sig,fmt="DER") :
        ints:   (r,s) 
     """
 
-    
     if fmt=="DER":
-        sig_len  = sig[1]+2
+        sig_len  = int.from_bytes(sig[1], 'big') + 2
         r_offset = 4
-        r_len    = sig[3]
+        r_len    = int.from_bytes(sig[3], 'big')
         s_offset = 4+r_len+2
-        s_len    = sig[4+r_len+1]
-        if ( sig[0]  != 0x30          or
-             sig_len != r_len+s_len+6 or
-             sig[r_offset-2] != 0x02  or 
-             sig[s_offset-2] != 0x02  ):
+        s_len    = int.from_bytes(sig[4+r_len+1], 'big')
+        if ( int.from_bytes(sig[0], 'big')  != 0x30          or
+             sig_len != r_len+s_len+6                        or
+             int.from_bytes(sig[r_offset-2], 'big') != 0x02  or 
+             int.from_bytes(sig[s_offset-2], 'big') != 0x02  ):
             return None,None
         r = int.from_bytes(sig[r_offset:r_offset+r_len], 'big')
         s = int.from_bytes(sig[s_offset:s_offset+s_len], 'big')                
         return r,s
     
     if fmt=="ITUPLE":        
-        return (sig[0],sig[1])
-
-    if fmt=="BTUPLE":        
         r = int.from_bytes(sig[0], 'big')
         s = int.from_bytes(sig[1], 'big')                
         return r,s
+
+    if fmt=="BTUPLE":        
+        return (sig[0],sig[1])
 
     if fmt=="RAW":
         l = len(sig)>>1
