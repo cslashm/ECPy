@@ -13,8 +13,12 @@
 # limitations under the License.
 
 #python 2 compatibility
-
+import sys
 from builtins import int,pow
+if sys.version_info[0] <= 2:
+    basint = lambda b:int.from_bytes(b, 'big')
+else:
+    basint = lambda b:int(b)
 
 def list_formats():
     return ("DER","BTUPLE","ITUPLE","RAW","EDDSA")
@@ -84,21 +88,21 @@ def decode_sig(sig,fmt="DER") :
     """
 
     if fmt=="DER":
-        sig_len  = int.from_bytes(sig[1], 'big') + 2
+        sig_len  = basint(sig[1]) + 2
         r_offset = 4
-        r_len    = int.from_bytes(sig[3], 'big')
+        r_len    = basint(sig[3])
         s_offset = 4+r_len+2
-        s_len    = int.from_bytes(sig[4+r_len+1], 'big')
-        if ( int.from_bytes(sig[0], 'big')  != 0x30          or
-             sig_len != r_len+s_len+6                        or
-             int.from_bytes(sig[r_offset-2], 'big') != 0x02  or 
-             int.from_bytes(sig[s_offset-2], 'big') != 0x02  ):
+        s_len    = basint(sig[4+r_len+1])
+        if ( basint(sig[0])  != 0x30          or
+             sig_len != r_len+s_len+6         or
+             basint(sig[r_offset-2]) != 0x02  or 
+             basint(sig[s_offset-2]) != 0x02  ):
             return None,None
         r = int.from_bytes(sig[r_offset:r_offset+r_len], 'big')
         s = int.from_bytes(sig[s_offset:s_offset+s_len], 'big')                
         return r,s
     
-    if fmt=="ITUPLE":        
+    if fmt=="ITUPLE":
         r = int.from_bytes(sig[0], 'big')
         s = int.from_bytes(sig[1], 'big')                
         return r,s
