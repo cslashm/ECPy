@@ -159,7 +159,7 @@ class ECSchnorr:
         field = pv_key.curve.field
         V = None
         for i in range(1, self.maxtries):
-            k,V = ecpy.ecrand.rnd_rfc6979(msg, pv_key.d, field, hasher, V)
+            k,V = ecrand.rnd_rfc6979(msg, pv_key.d, field, hasher, V)
             sig = self._do_sign(msg, pv_key, k)
             if sig:
                 return sig
