@@ -49,7 +49,7 @@ class ECDSA:
         return None
 
     def sign_rfc6979(self, msg, pv_key, hasher, canonical=False):
-        """ Signs a message hash  according to  RFC6979 
+        """ Signs a message hash according to RFC6979 
 
         Args:
             msg (bytes)                    : the message hash to sign
@@ -62,12 +62,11 @@ class ECDSA:
             k,V = ecrand.rnd_rfc6979(msg, pv_key.d, field, hasher,V)
             sig = self._do_sign(msg, pv_key, k, canonical)
             if sig:
-                return sig
-                                 
+                return sig                  
         return None
     
     def sign_k(self, msg, pv_key, k,canonical=False):
-        """ Signs a message hash  with provided random
+        """ Signs a message hash with provided random
 
         Args:
             msg (bytes)                    : the hash of message to sign

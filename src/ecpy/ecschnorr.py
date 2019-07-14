@@ -149,6 +149,22 @@ class ECSchnorr:
                 return sig 
         return None
 
+    def sign_rfc6979(self, msg, pv_key, hasher, canonical=False):
+        """ Signs a message hash according to RFC6979 
+        Args:
+            msg (bytes)                    : the message hash to sign
+            pv_key (ecpy.keys.ECPrivateKey): key to use for signing
+            hasher (hashlib)               : hasher conform to hashlib interface
+        """
+        field = pv_key.curve.field
+        V = None
+        for i in range(1, self.maxtries):
+            k,V = ecpy.ecrand.rnd_rfc6979(msg, pv_key.d, field, hasher, V)
+            sig = self._do_sign(msg, pv_key, k)
+            if sig:
+                return sig
+            return None
+
     def sign_k(self, msg, pv_key, k):
         """ Signs a message hash  with provided random
 
