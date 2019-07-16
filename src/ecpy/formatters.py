@@ -16,9 +16,9 @@
 import sys
 from builtins import int,pow
 if sys.version_info[0] <= 2:
-    basint = lambda b:int.from_bytes(b, 'big')
+    basint = lambda b: ord(b)
 else:
-    basint = lambda b:int(b)
+    basint = lambda b: int(b)
 
 def list_formats():
     return ("DER","BTUPLE","ITUPLE","RAW","EDDSA")
@@ -103,12 +103,12 @@ def decode_sig(sig,fmt="DER") :
         return r,s
     
     if fmt=="ITUPLE":
+        return (sig[0],sig[1])
+
+    if fmt=="BTUPLE":        
         r = int.from_bytes(sig[0], 'big')
         s = int.from_bytes(sig[1], 'big')                
         return r,s
-
-    if fmt=="BTUPLE":        
-        return (sig[0],sig[1])
 
     if fmt=="RAW":
         l = len(sig)>>1
