@@ -225,7 +225,7 @@ class ECSchnorr:
             if r==0 or s==0:
                 return None
 
-        return encode_sig(r, s, self.fmt, 0 if self.fmt not in ["RAW", "EDDSA"] else size)
+        return encode_sig(r, s, self.fmt)
             
     def verify(self,msg,sig,pu_key):
         """ Verifies a message signature.                
