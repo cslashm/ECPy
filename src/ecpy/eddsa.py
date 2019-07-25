@@ -168,8 +168,7 @@ class EDDSA:
 
         #return eR+S
         eR = int.from_bytes(eR,'little')
-        sig = encode_sig(eR,S,self.fmt,size)
-        return sig
+        return encode_sig(eR,S,self.fmt,size)
     
     def verify(self,msg,sig,pu_key):
         """ Verifies a message signature.                
