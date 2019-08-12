@@ -63,14 +63,14 @@ def encode_sig(r,s,fmt="DER",size=0) :
     
     if fmt=="RAW":
         if size == 0:
-            raise ECPyException("size must be specified when encoding in RAW")
+            raise Exception("size must be specified when encoding in RAW")
         r = r.to_bytes(size, 'big')
         s = s.to_bytes(size, 'big')
         return r+s
 
     if fmt=="EDDSA":
         if size == 0:
-            raise ECPyException("size must be specified when encoding in EDDSA")
+            raise Exception("size must be specified when encoding in EDDSA")
         r = r.to_bytes(size, 'little')
         s = s.to_bytes(size, 'little')
         return r+s
