@@ -356,7 +356,7 @@ class WeierstrassCurve(Curve):
         Returns
            bytes : encoded point [04 | x | y] or [02 | x | sign] 
         """
-        size = self.size >> 3 + bool(self.size % 8)
+        size = self.size>>3 + bool(self.size % 8)
         x = bytearray(P.x.to_bytes(size,'big'))
         y = bytearray(P.y.to_bytes(size,'big'))
         if compressed:
