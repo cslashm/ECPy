@@ -377,7 +377,7 @@ class WeierstrassCurve(Curve):
         Returns
            Point : decoded point
         """
-        size = self.size>>3 + bool(self.size % 8)  # Prevent overflow error
+        size = self.size>>3 + bool(self.size % 8)
         xy    =  bytearray(eP)
         if xy[0] == 2:
             x = xy[1:1+size]
