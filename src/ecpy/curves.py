@@ -23,6 +23,7 @@
 
 #python 2 compatibility
 from builtins import int,pow
+from math import ceil
 
 import binascii
 import random
@@ -356,7 +357,7 @@ class WeierstrassCurve(Curve):
         Returns
            bytes : encoded point [04 | x | y] or [02 | x | sign] 
         """
-        size = self.size>>3
+        size = ceil(self.size /)  # Prevent overflow error
         x = bytearray(P.x.to_bytes(size,'big'))
         y = bytearray(P.y.to_bytes(size,'big'))
         if compressed:
@@ -377,7 +378,7 @@ class WeierstrassCurve(Curve):
         Returns
            Point : decoded point
         """
-        size = self.size>>3
+        size = ceil(self.size / 8)  # Prevent overflow error
         xy    =  bytearray(eP)
         if xy[0] == 2:
             x = xy[1:1+size]
@@ -713,7 +714,7 @@ class MontgomeryCurve(Curve):
         Returns
            bytes : encoded point
         """
-        size = self.size>>3
+        size = ceil(self.size / 8)
         x = bytearray(P.x.to_bytes(size,'little'))
         return bytes(x)
 
