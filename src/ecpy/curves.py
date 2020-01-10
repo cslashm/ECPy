@@ -356,7 +356,7 @@ class WeierstrassCurve(Curve):
         Returns
            bytes : encoded point [04 | x | y] or [02 | x | sign] 
         """
-        size = self.size>>3 + bool(self.size % 8)
+        size = self.size>>3 + (1 if self.size % 8 else 0)
         x = bytearray(P.x.to_bytes(size,'big'))
         y = bytearray(P.y.to_bytes(size,'big'))
         if compressed:
@@ -377,7 +377,7 @@ class WeierstrassCurve(Curve):
         Returns
            Point : decoded point
         """
-        size = self.size>>3 + bool(self.size % 8)
+        size = self.size>>3 + (1 if self.size % 8 else 0)
         xy    =  bytearray(eP)
         if xy[0] == 2:
             x = xy[1:1+size]
@@ -713,7 +713,7 @@ class MontgomeryCurve(Curve):
         Returns
            bytes : encoded point
         """
-        size = self.size>>3 + bool(self.size % 8)
+        size = self.size>>3 + (1 if self.size % 8 else 0)
         x = bytearray(P.x.to_bytes(size,'little'))
         return bytes(x)
 
