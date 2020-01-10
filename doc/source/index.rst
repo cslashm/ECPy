@@ -4,7 +4,7 @@
 Welcome to ECPy's documentation!
 =================================
 
-      
+
 Indices and tables
 ==================
 
@@ -12,15 +12,15 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-  
+
 Status
 ======
 
 | ECPy is in beta stage but already used in some internal tooling.
 | Any constructive comment is welcome.
 
-:Version:  0.8.2
-:Authors:  Cedric Mesnil, <cedric.mesnil@ubinity.com>
+:Version:  |release|
+:Authors:  Cedric Mesnil, <csalshm@gmail.com>
 :License:  Apache 2.0
 
 |
@@ -28,9 +28,16 @@ Status
 Install
 =======
 
-ECPy is originally coded for Python 3, but run under python 2.7 (and maybe 2.6) by using `future`. If you run Python 2, please install the future into the present:
+ECPy is originally coded for Python 3, but should run under python 2.7 by using `future`.
 
-    pip install future
+If you are running Python 2:
+
+- please install the future into the present:
+
+    `pip install future`
+
+- as python 2 is in 'End Of Life' status, consider to move your code to python 3, future release will may not support python 2.
+
 
 Then install ECPy:
 
@@ -48,7 +55,6 @@ Then install ECPy:
     * tar xzvf ECPy-M.m.tar.gz
     * python3 setup.py install
 
-
 |
 
 Overview
@@ -65,7 +71,7 @@ ECDSA, EDDSA, ECSchnorr signature  as well as Point operation.
 
         cv     = Curve.get_curve('secp256k1')
         pu_key = ECPublicKey(Point(0x65d5b8bf9ab1801c9f168d4815994ad35f1dcb6ae6c7a1a303966b677b813b00,
-                                   
+
                                    0xe6b865e529b8ecbf71cf966e900477d49ced5846d7662dd2dd11ccd55c0aff7f,
                                    cv))
         pv_key = ECPrivateKey(0xfb26a4e75eec75544c0f44e937dcf5ee6355c7176600b9688c667e5c283b43c5,
@@ -75,7 +81,7 @@ ECDSA, EDDSA, ECSchnorr signature  as well as Point operation.
         signer = ECDSA()
         sig    = signer.sign(b'01234567890123456789012345678912',pv_key)
         assert(signer.verify(b'01234567890123456789012345678912',sig,pu_key))
-                              
+
 
 
 *Point sample* ::
@@ -96,12 +102,18 @@ Supported Curves & Signature
 
 ECPy support the following curves
    - Short Weierstrass form: y²=x³+a*x+b
-   - Twisted Edward a*x²+y2=1+d*x²*y²
+   - Twisted Edward form:    a*x²+y2=1+d*x²*y²
+   - Montgomery form:        b.y²=x³+a*x²+x.
 
 See pyec.Curve. get_curve_names
 
-ECPy supports the following 
-       
+ECPy supports the following signature schemes:
+
+- ecdsa
+- eddsa
+- ecschnorr
+
+
 Types
 -----
 
@@ -124,14 +136,14 @@ curves module
 .. automodule:: ecpy.curves
    :show-inheritance:
    :members:
-      
+
 keys module
 -----------
 
 .. automodule:: ecpy.keys
    :show-inheritance:
    :members:
-      
+
 ECDSA module
 -------------
 
@@ -159,7 +171,7 @@ Borromean module
 .. automodule:: ecpy.borromean
    :show-inheritance:
    :members:
-      
+
 ecrand  module
 --------------
 

@@ -44,6 +44,14 @@ Full html documentation is available `here <https://cslashm.github.com/ECPy>`_.
 
 
 
+History
+=======
+
+1.0.0beta
+---------
+
+Initial 1.x series (Beta)
+
 
 Quick Install
 =============
