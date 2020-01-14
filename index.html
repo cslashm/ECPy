@@ -1,18 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Welcome to ECPy’s documentation! &#8212; ECPy 0.8 documentation</title>
+    <meta charset="utf-8" />
+    <title>Welcome to ECPy’s documentation! &#8212; ECPy 1.0beta. documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
    
@@ -27,6 +26,8 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="welcome-to-ecpy-s-documentation">
@@ -35,9 +36,9 @@
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
 </div>
 <div class="section" id="status">
@@ -46,54 +47,57 @@
 <div class="line">ECPy is in beta stage but already used in some internal tooling.</div>
 <div class="line">Any constructive comment is welcome.</div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Version:</th><td class="field-body">0.10.0</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Authors:</th><td class="field-body">Cedric Mesnil, &lt;<a class="reference external" href="mailto:csalshm&#37;&#52;&#48;gmail&#46;com">csalshm<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">License:</th><td class="field-body">Apache 2.0</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Version</dt>
+<dd class="field-odd"><p>1.0beta.</p>
+</dd>
+<dt class="field-even">Authors</dt>
+<dd class="field-even"><p>Cedric Mesnil, &lt;<a class="reference external" href="mailto:csalshm&#37;&#52;&#48;gmail&#46;com">csalshm<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</p>
+</dd>
+<dt class="field-odd">License</dt>
+<dd class="field-odd"><p>Apache 2.0</p>
+</dd>
+</dl>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 </div>
 <div class="section" id="install">
 <h1>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h1>
-<p>ECPy is originally coded for Python 3, but run under python 2.7 (and maybe 2.6) by using <cite>future</cite>. If you run Python 2, please install the future into the present:</p>
+<p>ECPy is originally coded for Python 3, but should run under python 2.7 by using <cite>future</cite>.</p>
+<p>If you are running Python 2:</p>
+<ul>
+<li><p>please install the future into the present:</p>
 <blockquote>
-<div>pip install future</div></blockquote>
+<div><p><cite>pip install future</cite></p>
+</div></blockquote>
+</li>
+<li><p>as python 2 is in ‘End Of Life’ status, consider to move your code to python 3, future release will may not support python 2.</p></li>
+</ul>
 <p>Then install ECPy:</p>
 <ul class="simple">
-<li><dl class="first docutils">
-<dt>From pypi (using pip or pip3)</dt>
-<dd><ul class="first last">
-<li>pip install ECPy</li>
+<li><dl class="simple">
+<dt>From pypi (using pip or pip3)</dt><dd><ul>
+<li><p>pip install ECPy</p></li>
 </ul>
 </dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt>Rebuild from git clone:</dt>
-<dd><ul class="first last">
-<li>python3 setup.py sdist</li>
-<li>cd dist</li>
-<li>tar xzvf ECPy-M.m.tar.gz</li>
-<li>python3 setup install</li>
+<li><dl class="simple">
+<dt>Rebuild from git clone:</dt><dd><ul>
+<li><p>python3 setup.py sdist</p></li>
+<li><p>cd dist</p></li>
+<li><p>tar xzvf ECPy-M.m.tar.gz</p></li>
+<li><p>python3 setup install</p></li>
 </ul>
 </dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt>Install from dist package:</dt>
-<dd><ul class="first last">
-<li>Download last dist tarball</li>
-<li>tar xzvf ECPy-M.m.tar.gz</li>
-<li>python3 setup.py install</li>
+<li><dl class="simple">
+<dt>Install from dist package:</dt><dd><ul>
+<li><p>Download last dist tarball</p></li>
+<li><p>tar xzvf ECPy-M.m.tar.gz</p></li>
+<li><p>python3 setup.py install</p></li>
 </ul>
 </dd>
 </dl>
@@ -108,9 +112,9 @@
 <p>ECPy (pronounced ekpy), is a pure python Elliptic Curve library. It provides
 ECDSA, EDDSA, ECSchnorr signature  as well as Point operation.</p>
 <p><em>ECDSA sample</em></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ecpy.curves</span>     <span class="k">import</span> <span class="n">Curve</span><span class="p">,</span><span class="n">Point</span>
-<span class="kn">from</span> <span class="nn">ecpy.keys</span>       <span class="k">import</span> <span class="n">ECPublicKey</span><span class="p">,</span> <span class="n">ECPrivateKey</span>
-<span class="kn">from</span> <span class="nn">ecpy.ecdsa</span>      <span class="k">import</span> <span class="n">ECDSA</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ecpy.curves</span>     <span class="kn">import</span> <span class="n">Curve</span><span class="p">,</span><span class="n">Point</span>
+<span class="kn">from</span> <span class="nn">ecpy.keys</span>       <span class="kn">import</span> <span class="n">ECPublicKey</span><span class="p">,</span> <span class="n">ECPrivateKey</span>
+<span class="kn">from</span> <span class="nn">ecpy.ecdsa</span>      <span class="kn">import</span> <span class="n">ECDSA</span>
 
 <span class="n">cv</span>     <span class="o">=</span> <span class="n">Curve</span><span class="o">.</span><span class="n">get_curve</span><span class="p">(</span><span class="s1">&#39;secp256k1&#39;</span><span class="p">)</span>
 <span class="n">pu_key</span> <span class="o">=</span> <span class="n">ECPublicKey</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="mh">0x65d5b8bf9ab1801c9f168d4815994ad35f1dcb6ae6c7a1a303966b677b813b00</span><span class="p">,</span>
@@ -127,7 +131,7 @@ ECDSA, EDDSA, ECSchnorr signature  as well as Point operation.</p>
 </pre></div>
 </div>
 <p><em>Point sample</em></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ecpy.curves</span>     <span class="k">import</span> <span class="n">Curve</span><span class="p">,</span><span class="n">Point</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ecpy.curves</span>     <span class="kn">import</span> <span class="n">Curve</span><span class="p">,</span><span class="n">Point</span>
 
 <span class="n">cv</span> <span class="o">=</span> <span class="n">Curve</span><span class="o">.</span><span class="n">get_curve</span><span class="p">(</span><span class="s1">&#39;secp256k1&#39;</span><span class="p">)</span>
 <span class="n">P</span>  <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mh">0x65d5b8bf9ab1801c9f168d4815994ad35f1dcb6ae6c7a1a303966b677b813b00</span><span class="p">,</span>
@@ -140,16 +144,21 @@ ECDSA, EDDSA, ECSchnorr signature  as well as Point operation.</p>
 </div>
 <div class="section" id="supported-curves-signature">
 <h2>Supported Curves &amp; Signature<a class="headerlink" href="#supported-curves-signature" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>ECPy support the following curves</dt>
-<dd><ul class="first last simple">
-<li>Short Weierstrass form: y²=x³+a*x+b</li>
-<li>Twisted Edward a*x²+y2=1+d*x²*y²</li>
+<dl class="simple">
+<dt>ECPy support the following curves</dt><dd><ul class="simple">
+<li><p>Short Weierstrass form: y²=x³+a*x+b</p></li>
+<li><p>Twisted Edward form:    a*x²+y2=1+d*x²*y²</p></li>
+<li><p>Montgomery form:        b.y²=x³+a*x²+x.</p></li>
 </ul>
 </dd>
 </dl>
 <p>See pyec.Curve. get_curve_names</p>
-<p>ECPy supports the following</p>
+<p>ECPy supports the following signature schemes:</p>
+<ul class="simple">
+<li><p>ecdsa</p></li>
+<li><p>eddsa</p></li>
+<li><p>ecschnorr</p></li>
+</ul>
 </div>
 <div class="section" id="types">
 <h2>Types<a class="headerlink" href="#types" title="Permalink to this headline">¶</a></h2>
@@ -169,601 +178,847 @@ ECDSA, EDDSA, ECSchnorr signature  as well as Point operation.</p>
 <p>Elliptic Curve and Point manipulation</p>
 <dl class="exception">
 <dt id="ecpy.curves.ECPyException">
-<em class="property">exception </em><code class="descclassname">ecpy.curves.</code><code class="descname">ECPyException</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#ECPyException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.ECPyException" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<em class="property">exception </em><code class="sig-prename descclassname">ecpy.curves.</code><code class="sig-name descname">ECPyException</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#ECPyException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.ECPyException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="ecpy.curves.Curve">
-<em class="property">class </em><code class="descclassname">ecpy.curves.</code><code class="descname">Curve</code><span class="sig-paren">(</span><em>parameters</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-prename descclassname">ecpy.curves.</code><code class="sig-name descname">Curve</code><span class="sig-paren">(</span><em class="sig-param">parameters</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Elliptic Curve abstraction</p>
 <p>You should not directly create such Object.
 Use <cite>get_curve</cite> to get the predefined curve or create a well-know type
 of curve with your parameters</p>
-<dl class="docutils">
-<dt>Supported well know elliptic curve are:</dt>
-<dd><ul class="first last simple">
-<li>Short Weierstrass form:  y²=x³+a*x+b</li>
-<li>Twisted Edward          a*x²+y2=1+d*x²*y²</li>
+<dl class="simple">
+<dt>Supported well know elliptic curve are:</dt><dd><ul class="simple">
+<li><p>Short Weierstrass form:  y²=x³+a*x+b</p></li>
+<li><p>Twisted Edward           a*x²+y2=1+d*x²*y²</p></li>
+<li><p>Montgomery:              b.y²=x³+a*x²+x.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="attribute">
 <dt id="ecpy.curves.Curve.name">
-<code class="descname">name</code><a class="headerlink" href="#ecpy.curves.Curve.name" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> – curve name, the one given to get_curve or return by get_curve_names</p>
+<code class="sig-name descname">name</code><a class="headerlink" href="#ecpy.curves.Curve.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>curve name, the one given to get_curve or return by get_curve_names</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="ecpy.curves.Curve.size">
-<code class="descname">size</code><a class="headerlink" href="#ecpy.curves.Curve.size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – bit size of curve</p>
+<code class="sig-name descname">size</code><a class="headerlink" href="#ecpy.curves.Curve.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>bit size of curve</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="ecpy.curves.Curve.a">
-<code class="descname">a</code><a class="headerlink" href="#ecpy.curves.Curve.a" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – first curve parameter</p>
+<code class="sig-name descname">a</code><a class="headerlink" href="#ecpy.curves.Curve.a" title="Permalink to this definition">¶</a></dt>
+<dd><p>first curve parameter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt>
-<code class="descname">b d</code></dt>
-<dd><p><em>int</em> – second curve parameter</p>
+<code class="sig-name descname">b d</code></dt>
+<dd><p>second curve parameter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="ecpy.curves.Curve.field">
-<code class="descname">field</code><a class="headerlink" href="#ecpy.curves.Curve.field" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – curve field</p>
+<code class="sig-name descname">field</code><a class="headerlink" href="#ecpy.curves.Curve.field" title="Permalink to this definition">¶</a></dt>
+<dd><p>curve field</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="ecpy.curves.Curve.generator">
-<code class="descname">generator</code><a class="headerlink" href="#ecpy.curves.Curve.generator" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>Point</em> – curve point generator</p>
+<code class="sig-name descname">generator</code><a class="headerlink" href="#ecpy.curves.Curve.generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>curve point generator</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point">Point</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="ecpy.curves.Curve.order">
-<code class="descname">order</code><a class="headerlink" href="#ecpy.curves.Curve.order" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – order of generator</p>
+<code class="sig-name descname">order</code><a class="headerlink" href="#ecpy.curves.Curve.order" title="Permalink to this definition">¶</a></dt>
+<dd><p>order of generator</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.curves.Curve.add_point">
-<code class="descname">add_point</code><span class="sig-paren">(</span><em>P</em>, <em>Q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.add_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.add_point" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_point</code><span class="sig-paren">(</span><em class="sig-param">P</em>, <em class="sig-param">Q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.add_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.add_point" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the sum of P and Q</p>
-<p>This function ignores the default curve attach to P and Q,
-and assumes P and Q are on this curve.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>P</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) – first  point to add</li>
-<li><strong>Q</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) – second point to add</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>P</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) – first  point to add</p></li>
+<li><p><strong>Q</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) – second point to add</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A new Point R = P+Q</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point">Point</a></p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#ecpy.curves.ECPyException" title="ecpy.curves.ECPyException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ECPyException</span></code></a> – with “Point not on curve”, if Point R is not on              curve,  thus meaning either P or Q was not on.</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A new Point R = P+Q</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point">Point</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#ecpy.curves.ECPyException" title="ecpy.curves.ECPyException"><strong>ECPyException</strong></a> – with “Point not on curve”, if Point R is not on              curve,  thus meaning either P or Q was not on.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.curves.Curve.decode_point">
-<code class="descname">decode_point</code><span class="sig-paren">(</span><em>eP</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.decode_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.decode_point" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">decode_point</code><span class="sig-paren">(</span><em class="sig-param">eP</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.decode_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.decode_point" title="Permalink to this definition">¶</a></dt>
 <dd><p>decode/decompress a point according to its curve</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.curves.Curve.encode_point">
-<code class="descname">encode_point</code><span class="sig-paren">(</span><em>P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.encode_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.encode_point" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">encode_point</code><span class="sig-paren">(</span><em class="sig-param">P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.encode_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.encode_point" title="Permalink to this definition">¶</a></dt>
 <dd><p>encode/compress a point according to its curve</p>
 </dd></dl>
 
-<dl class="staticmethod">
+<dl class="method">
 <dt id="ecpy.curves.Curve.get_curve">
-<em class="property">static </em><code class="descname">get_curve</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.get_curve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.get_curve" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">get_curve</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.get_curve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.get_curve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a Curve object  according to its name</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – curve name to retrieve</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Curve object</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#ecpy.curves.Curve" title="ecpy.curves.Curve">Curve</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – curve name to retrieve</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Curve object, or None if curve is unknown</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ecpy.curves.Curve" title="ecpy.curves.Curve">Curve</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="staticmethod">
+<dl class="method">
 <dt id="ecpy.curves.Curve.get_curve_names">
-<em class="property">static </em><code class="descname">get_curve_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.get_curve_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.get_curve_names" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">get_curve_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.get_curve_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.get_curve_names" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns all known curve names</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of names as str</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of names as str</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)">tuple</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.curves.Curve.is_on_curve">
-<code class="descname">is_on_curve</code><span class="sig-paren">(</span><em>P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.is_on_curve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.is_on_curve" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">is_on_curve</code><span class="sig-paren">(</span><em class="sig-param">P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.is_on_curve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.is_on_curve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if P is on this curve</p>
 <p>This function ignores the default curve attach to P</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>P</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) – Point to check</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if P is on curve, False else</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>P</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) – Point to check</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if P is on curve, False else</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.curves.Curve.mul_point">
-<code class="descname">mul_point</code><span class="sig-paren">(</span><em>k</em>, <em>P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.mul_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.mul_point" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">mul_point</code><span class="sig-paren">(</span><em class="sig-param">k</em>, <em class="sig-param">P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.mul_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.mul_point" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the scalar multiplication  P with k.</p>
 <p>This function ignores the default curve attach to P and Q,
 and assumes P and Q are on this curve.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>P</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) – point to mul_point</li>
-<li><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – scalar to multiply</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>P</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) – point to mul_point</p></li>
+<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – scalar to multiply</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A new Point R = k*Q</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point">Point</a></p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
-<li><a class="reference internal" href="#ecpy.curves.ECPyException" title="ecpy.curves.ECPyException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ECPyException</span></code></a> – with “Point not on curve”, if Point R is not</li>
-<li>on curve, thus meaning P was not on.</li>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A new Point R = k*Q</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point">Point</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#ecpy.curves.ECPyException" title="ecpy.curves.ECPyException"><strong>ECPyException</strong></a> – with “Point not on curve”, if Point R is not</p></li>
+<li><p><strong>on curve</strong><strong>, </strong><strong>thus meaning P was not on.</strong> – </p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecpy.curves.Curve.neg_point">
+<code class="sig-name descname">neg_point</code><span class="sig-paren">(</span><em class="sig-param">P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.neg_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.neg_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns R, R = -P.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>P</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) – point to mul_point</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A new Point R = -Q</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point">Point</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#ecpy.curves.ECPyException" title="ecpy.curves.ECPyException"><strong>ECPyException</strong></a> – with “Point not on curve”, if Point R is not</p></li>
+<li><p><strong>on curve</strong><strong>, </strong><strong>thus meaning P was not on.</strong> – </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.curves.Curve.sub_point">
-<code class="descname">sub_point</code><span class="sig-paren">(</span><em>P</em>, <em>Q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.sub_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.sub_point" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sub_point</code><span class="sig-paren">(</span><em class="sig-param">P</em>, <em class="sig-param">Q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.sub_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.sub_point" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the difference of P and Q</p>
-<p>This function ignores the default curve attach to P and Q,
-and assumes P and Q are on this curve.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>P</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) – first  point to subtract with</li>
-<li><strong>Q</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) – second point to subtract to</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>P</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) – first  point to subtract with</p></li>
+<li><p><strong>Q</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) – second point to subtract to</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A new Point R = P-Q</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point">Point</a></p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#ecpy.curves.ECPyException" title="ecpy.curves.ECPyException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ECPyException</span></code></a> – with “Point not on curve”, if Point R is not on              curve,  thus meaning either P or Q was not on.</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A new Point R = P-Q</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point">Point</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#ecpy.curves.ECPyException" title="ecpy.curves.ECPyException"><strong>ECPyException</strong></a> – with “Point not on curve”, if Point R is not on              curve,  thus meaning either P or Q was not on.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecpy.curves.Curve.x_recover">
+<code class="sig-name descname">x_recover</code><span class="sig-paren">(</span><em class="sig-param">y</em>, <em class="sig-param">sign=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.x_recover"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.x_recover" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recover the x coordinate according to y</p>
+<p>This method is currently only supported for TwiestedEdward curve</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>the coordinate</strong> (<em>y</em>) – </p></li>
+<li><p><strong>the sign of x</strong> (<em>sign</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>x coordinate</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecpy.curves.Curve.y_recover">
+<code class="sig-name descname">y_recover</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">sign=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Curve.y_recover"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Curve.y_recover" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recover the y coordinate according to x</p>
+<p>This method is currently only  supported for Weierstrass and Montgomery curve</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>the coordinate</strong> (<em>x</em>) – </p></li>
+<li><p><strong>the sign of y</strong> (<em>sign</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>y coordinate</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="ecpy.curves.MontgomeryCurve">
-<em class="property">class </em><code class="descclassname">ecpy.curves.</code><code class="descname">MontgomeryCurve</code><span class="sig-paren">(</span><em>domain</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#MontgomeryCurve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.MontgomeryCurve" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">ecpy.curves.</code><code class="sig-name descname">MontgomeryCurve</code><span class="sig-paren">(</span><em class="sig-param">domain</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#MontgomeryCurve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.MontgomeryCurve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#ecpy.curves.Curve" title="ecpy.curves.Curve"><code class="xref py py-class docutils literal notranslate"><span class="pre">ecpy.curves.Curve</span></code></a></p>
 <p>An elliptic curve defined by the equation: b.y²=x³+a*x²+x.</p>
-<dl class="docutils">
-<dt>The given domain must be a dictionary providing the following keys/values:</dt>
-<dd><ul class="first last simple">
-<li>name (str)         : curve unique name</li>
-<li>size (int)         : bit size</li>
-<li>a    (int)         : <cite>a</cite> equation coefficient</li>
-<li>b    (int)         : <cite>b</cite> equation coefficient</li>
-<li>field (inf)        : field value</li>
-<li>generator (int[2]) : x,y coordinate of generator</li>
-<li>order (int)        : order of generator</li>
+<dl class="simple">
+<dt>The given domain must be a dictionary providing the following keys/values:</dt><dd><ul class="simple">
+<li><p>name (str)         : curve unique name</p></li>
+<li><p>size (int)         : bit size</p></li>
+<li><p>a    (int)         : <cite>a</cite> equation coefficient</p></li>
+<li><p>b    (int)         : <cite>b</cite> equation coefficient</p></li>
+<li><p>field (inf)        : field value</p></li>
+<li><p>generator (int[2]) : x,y coordinate of generator</p></li>
+<li><p>order (int)        : order of generator</p></li>
 </ul>
 </dd>
 </dl>
 <p><em>Note</em>: you should not use the constructor and only use <a class="reference internal" href="#ecpy.curves.Curve.get_curve" title="ecpy.curves.Curve.get_curve"><code class="xref py py-func docutils literal notranslate"><span class="pre">Curve.get_curve()</span></code></a>
 builder to ensure using supported curve.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – a dictionary providing curve domain parameters</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – a dictionary providing curve domain parameters</p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="ecpy.curves.MontgomeryCurve.decode_point">
-<code class="descname">decode_point</code><span class="sig-paren">(</span><em>eP</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#MontgomeryCurve.decode_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.MontgomeryCurve.decode_point" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">decode_point</code><span class="sig-paren">(</span><em class="sig-param">eP</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#MontgomeryCurve.decode_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.MontgomeryCurve.decode_point" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decodes a point P according to <em>RFC7748</em>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>eP</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – encoded point</li>
-<li><strong>curve</strong> (<a class="reference internal" href="#ecpy.curves.Curve" title="ecpy.curves.Curve"><em>Curve</em></a>) – curve on witch point is</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eP</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – encoded point</p></li>
+<li><p><strong>curve</strong> (<a class="reference internal" href="#ecpy.curves.Curve" title="ecpy.curves.Curve"><em>Curve</em></a>) – curve on witch point is</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="docutils">
-<dt>Returns</dt>
-<dd>Point : decoded point</dd>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>decoded point</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point">Point</a></p>
+</dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.curves.MontgomeryCurve.encode_point">
-<code class="descname">encode_point</code><span class="sig-paren">(</span><em>P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#MontgomeryCurve.encode_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.MontgomeryCurve.encode_point" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">encode_point</code><span class="sig-paren">(</span><em class="sig-param">P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#MontgomeryCurve.encode_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.MontgomeryCurve.encode_point" title="Permalink to this definition">¶</a></dt>
 <dd><p>Encodes a point P according to <em>RFC7748</em>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>P</strong> – point to encode</td>
-</tr>
-</tbody>
-</table>
-<dl class="docutils">
-<dt>Returns</dt>
-<dd>bytes : encoded point</dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>P</strong> – point to encode</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>encoded point</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)">bytes</a></p>
+</dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.curves.MontgomeryCurve.is_on_curve">
-<code class="descname">is_on_curve</code><span class="sig-paren">(</span><em>P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#MontgomeryCurve.is_on_curve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.MontgomeryCurve.is_on_curve" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">is_on_curve</code><span class="sig-paren">(</span><em class="sig-param">P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#MontgomeryCurve.is_on_curve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.MontgomeryCurve.is_on_curve" title="Permalink to this definition">¶</a></dt>
 <dd><p>See <a class="reference internal" href="#ecpy.curves.Curve.is_on_curve" title="ecpy.curves.Curve.is_on_curve"><code class="xref py py-func docutils literal notranslate"><span class="pre">Curve.is_on_curve()</span></code></a></p>
 </dd></dl>
 
 <dl class="method">
-<dt id="ecpy.curves.MontgomeryCurve.mul_point">
-<code class="descname">mul_point</code><span class="sig-paren">(</span><em>k</em>, <em>P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#MontgomeryCurve.mul_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.MontgomeryCurve.mul_point" title="Permalink to this definition">¶</a></dt>
-<dd><p>See <a class="reference internal" href="#ecpy.curves.Curve.add_point" title="ecpy.curves.Curve.add_point"><code class="xref py py-func docutils literal notranslate"><span class="pre">Curve.add_point()</span></code></a></p>
-</dd></dl>
-
-<dl class="method">
 <dt id="ecpy.curves.MontgomeryCurve.y_recover">
-<code class="descname">y_recover</code><span class="sig-paren">(</span><em>x</em>, <em>sign=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#MontgomeryCurve.y_recover"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.MontgomeryCurve.y_recover" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">y_recover</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">sign=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#MontgomeryCurve.y_recover"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.MontgomeryCurve.y_recover" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="ecpy.curves.Point">
-<em class="property">class </em><code class="descclassname">ecpy.curves.</code><code class="descname">Point</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>curve</em>, <em>check=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Point" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-prename descclassname">ecpy.curves.</code><code class="sig-name descname">Point</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">curve</em>, <em class="sig-param">check=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Immutable Elliptic Curve Point.</p>
 <p>A Point support the following operator:</p>
 <blockquote>
 <div><ul class="simple">
-<li><cite>+</cite> : Point Addition, with automatic doubling support.</li>
-<li><cite>*</cite> : Scalar multiplication, can write as k*P or P*k, with P :class:Point and  k :class:int</li>
-<li><cite>==</cite>: Point comparison</li>
+<li><p><cite>-</cite> : Point Subtraction.</p></li>
+<li><p><cite>+</cite> : Point Addition, with automatic doubling support.</p></li>
+<li><p><cite>*</cite> : Scalar multiplication, can write as k*P or P*k, with P :class:Point and  k :class:int.</p></li>
+<li><p><cite>==</cite>: Point comparison.</p></li>
+<li><p><cite>-</cite> : Point negation (unary operator).</p></li>
 </ul>
 </div></blockquote>
 <dl class="attribute">
 <dt id="ecpy.curves.Point.x">
-<code class="descname">x</code><a class="headerlink" href="#ecpy.curves.Point.x" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – Affine x coordinate</p>
+<code class="sig-name descname">x</code><a class="headerlink" href="#ecpy.curves.Point.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Affine x coordinate</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="ecpy.curves.Point.y">
-<code class="descname">y</code><a class="headerlink" href="#ecpy.curves.Point.y" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – Affine y coordinate</p>
+<code class="sig-name descname">y</code><a class="headerlink" href="#ecpy.curves.Point.y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Affine y coordinate</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="ecpy.curves.Point.curve">
-<code class="descname">curve</code><a class="headerlink" href="#ecpy.curves.Point.curve" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>Curve</em> – Curve on which the point is define</p>
+<code class="sig-name descname">curve</code><a class="headerlink" href="#ecpy.curves.Point.curve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Curve on which the point is define</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ecpy.curves.Curve" title="ecpy.curves.Curve">Curve</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – x coordinate</li>
-<li><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – y coordinate</li>
-<li><strong>check</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – if True enforce x,y is on curve</li>
+<dl class="attribute">
+<dt id="ecpy.curves.Point.check">
+<code class="sig-name descname">check</code><a class="headerlink" href="#ecpy.curves.Point.check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check or not if the built point is on curve</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – x coordinate</p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – y coordinate</p></li>
+<li><p><strong>check</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – if True enforce x,y is on curve</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#ecpy.curves.ECPyException" title="ecpy.curves.ECPyException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ECPyException</span></code></a> – if check=True and x,y is not on curve</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#ecpy.curves.ECPyException" title="ecpy.curves.ECPyException"><strong>ECPyException</strong></a> – if check=True and x,y is not on curve</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="ecpy.curves.Point.add">
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param">Q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Point.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Point.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the addition of self and provided point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Q</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) – Point to add</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>self+Q</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point">Point</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecpy.curves.Point.eq">
+<code class="sig-name descname">eq</code><span class="sig-paren">(</span><em class="sig-param">Q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Point.eq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Point.eq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tells is the provided Point and this point have the same coordinate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Q</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) – Point to check the equality</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if P==Q, False else.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecpy.curves.Point.infinity">
+<em class="property">static </em><code class="sig-name descname">infinity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Point.infinity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Point.infinity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the unique (singleton) point at infinity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>infinity Point</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point">Point</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecpy.curves.Point.mul">
+<code class="sig-name descname">mul</code><span class="sig-paren">(</span><em class="sig-param">k</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Point.mul"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Point.mul" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the scalar multiplication of self by k</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – the scalar to multiply</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>k*self</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point">Point</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecpy.curves.Point.neg">
+<code class="sig-name descname">neg</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Point.neg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Point.neg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the opposite self point bycallinf Curve.neg function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>-self</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point">Point</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecpy.curves.Point.recover">
+<code class="sig-name descname">recover</code><span class="sig-paren">(</span><em class="sig-param">sign=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Point.recover"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Point.recover" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recvoer the missing corrdinate according to the know one and the provided sign of the missing one</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sign</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – zero or one</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecpy.curves.Point.sub">
+<code class="sig-name descname">sub</code><span class="sig-paren">(</span><em class="sig-param">Q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#Point.sub"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.Point.sub" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the subtraction of felf and provided point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Q</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) – Point to subtract</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>self-Q</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point">Point</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">curve</code></dt>
+<dd><p>Returned the curve on which this point is defined</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>this point curve</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#ecpy.curves.Curve" title="ecpy.curves.Curve">Curve</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecpy.curves.Point.has_x">
+<em class="property">property </em><code class="sig-name descname">has_x</code><a class="headerlink" href="#ecpy.curves.Point.has_x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tell if this point has y coordinate</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Trueu if x coordinate is set, False else</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecpy.curves.Point.has_y">
+<em class="property">property </em><code class="sig-name descname">has_y</code><a class="headerlink" href="#ecpy.curves.Point.has_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tell if this point has y coordinate</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Trueu if y coordinate is set, False else</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecpy.curves.Point.is_infinity">
+<em class="property">property </em><code class="sig-name descname">is_infinity</code><a class="headerlink" href="#ecpy.curves.Point.is_infinity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tell is this pointn is the inifinity one</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>true if self is infinity</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecpy.curves.Point.is_on_curve">
+<em class="property">property </em><code class="sig-name descname">is_on_curve</code><a class="headerlink" href="#ecpy.curves.Point.is_on_curve" title="Permalink to this definition">¶</a></dt>
+<dd><p>” Tells if this point is on the curve</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if point on curve, False else</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">x</code></dt>
+<dd><p>X affine coordinate of this point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>x coordinate</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#ecpy.curves.ECPyException" title="ecpy.curves.ECPyException"><strong>ECPyException</strong></a> – if point is infinity</p></li>
+<li><p><a class="reference internal" href="#ecpy.curves.ECPyException" title="ecpy.curves.ECPyException"><strong>ECPyException</strong></a> – if point has no x coordinate</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">y</code></dt>
+<dd><p>Y affine coordinate of this point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>x coordinate</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#ecpy.curves.ECPyException" title="ecpy.curves.ECPyException"><strong>ECPyException</strong></a> – if point is infinity</p></li>
+<li><p><a class="reference internal" href="#ecpy.curves.ECPyException" title="ecpy.curves.ECPyException"><strong>ECPyException</strong></a> – if point has no y coordinate</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt id="ecpy.curves.TwistedEdwardCurve">
-<em class="property">class </em><code class="descclassname">ecpy.curves.</code><code class="descname">TwistedEdwardCurve</code><span class="sig-paren">(</span><em>domain</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#TwistedEdwardCurve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.TwistedEdwardCurve" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">ecpy.curves.</code><code class="sig-name descname">TwistedEdwardCurve</code><span class="sig-paren">(</span><em class="sig-param">domain</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#TwistedEdwardCurve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.TwistedEdwardCurve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#ecpy.curves.Curve" title="ecpy.curves.Curve"><code class="xref py py-class docutils literal notranslate"><span class="pre">ecpy.curves.Curve</span></code></a></p>
 <p>An elliptic curve defined by the equation: a*x²+y²=1+d*x²*y²</p>
-<dl class="docutils">
-<dt>The given domain must be a dictionary providing the following keys/values:</dt>
-<dd><ul class="first last simple">
-<li>name (str)         : curve unique name</li>
-<li>size (int)         : bit size</li>
-<li>a    (int)         : <cite>a</cite> equation coefficient</li>
-<li>d    (int)         : <cite>b</cite> equation coefficient</li>
-<li>field (inf)        : field value</li>
-<li>generator (int[2]) : x,y coordinate of generator</li>
-<li>order (int)        : order of generator</li>
+<dl class="simple">
+<dt>The given domain must be a dictionary providing the following keys/values:</dt><dd><ul class="simple">
+<li><p>name (str)         : curve unique name</p></li>
+<li><p>size (int)         : bit size</p></li>
+<li><p>a    (int)         : <cite>a</cite> equation coefficient</p></li>
+<li><p>d    (int)         : <cite>b</cite> equation coefficient</p></li>
+<li><p>field (inf)        : field value</p></li>
+<li><p>generator (int[2]) : x,y coordinate of generator</p></li>
+<li><p>order (int)        : order of generator</p></li>
 </ul>
 </dd>
 </dl>
 <p><em>Note</em>: you should not use the constructor and only use <a class="reference internal" href="#ecpy.curves.Curve.get_curve" title="ecpy.curves.Curve.get_curve"><code class="xref py py-func docutils literal notranslate"><span class="pre">Curve.get_curve()</span></code></a>
 builder to ensure using supported curve.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – a dictionary providing curve domain parameters</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – a dictionary providing curve domain parameters</p>
+</dd>
+</dl>
 <dl class="method">
-<dt id="ecpy.curves.TwistedEdwardCurve.add_point">
-<code class="descname">add_point</code><span class="sig-paren">(</span><em>P</em>, <em>Q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#TwistedEdwardCurve.add_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.TwistedEdwardCurve.add_point" title="Permalink to this definition">¶</a></dt>
-<dd><p>See <a class="reference internal" href="#ecpy.curves.Curve.add_point" title="ecpy.curves.Curve.add_point"><code class="xref py py-func docutils literal notranslate"><span class="pre">Curve.add_point()</span></code></a></p>
+<dt id="ecpy.curves.TwistedEdwardCurve.decode_point">
+<code class="sig-name descname">decode_point</code><span class="sig-paren">(</span><em class="sig-param">eP</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#TwistedEdwardCurve.decode_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.TwistedEdwardCurve.decode_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes a point P according to <em>draft_irtf-cfrg-eddsa-04</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eP</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – encoded point</p></li>
+<li><p><strong>curve</strong> (<a class="reference internal" href="#ecpy.curves.Curve" title="ecpy.curves.Curve"><em>Curve</em></a>) – curve on witch point is</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>decoded point</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point">Point</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
-<dt id="ecpy.curves.TwistedEdwardCurve.decode_point">
-<code class="descname">decode_point</code><span class="sig-paren">(</span><em>eP</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#TwistedEdwardCurve.decode_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.TwistedEdwardCurve.decode_point" title="Permalink to this definition">¶</a></dt>
-<dd><p>Decodes a point P according to <em>draft_irtf-cfrg-eddsa-04</em>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>eP</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – encoded point</li>
-<li><strong>curve</strong> (<a class="reference internal" href="#ecpy.curves.Curve" title="ecpy.curves.Curve"><em>Curve</em></a>) – curve on witch point is</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="docutils">
-<dt>Returns</dt>
-<dd>Point : decoded point</dd>
+<dt id="ecpy.curves.TwistedEdwardCurve.decode_scalar_25519">
+<em class="property">static </em><code class="sig-name descname">decode_scalar_25519</code><span class="sig-paren">(</span><em class="sig-param">k</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#TwistedEdwardCurve.decode_scalar_25519"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.TwistedEdwardCurve.decode_scalar_25519" title="Permalink to this definition">¶</a></dt>
+<dd><p>decode scalar according to RF7748 and draft-irtf-cfrg-eddsa</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – scalar to decode</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>decoded scalar</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.curves.TwistedEdwardCurve.encode_point">
-<code class="descname">encode_point</code><span class="sig-paren">(</span><em>P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#TwistedEdwardCurve.encode_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.TwistedEdwardCurve.encode_point" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">encode_point</code><span class="sig-paren">(</span><em class="sig-param">P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#TwistedEdwardCurve.encode_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.TwistedEdwardCurve.encode_point" title="Permalink to this definition">¶</a></dt>
 <dd><p>Encodes a point P according to <em>draft_irtf-cfrg-eddsa-04</em>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>P</strong> – point to encode</td>
-</tr>
-</tbody>
-</table>
-<dl class="docutils">
-<dt>Returns</dt>
-<dd>bytes : encoded point</dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>P</strong> – point to encode</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>encoded point</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)">bytes</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecpy.curves.TwistedEdwardCurve.encode_scalar_25519">
+<em class="property">static </em><code class="sig-name descname">encode_scalar_25519</code><span class="sig-paren">(</span><em class="sig-param">k</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#TwistedEdwardCurve.encode_scalar_25519"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.TwistedEdwardCurve.encode_scalar_25519" title="Permalink to this definition">¶</a></dt>
+<dd><p>encode scalar according to RF7748 and draft-irtf-cfrg-eddsa</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – scalar to encode</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>encoded scalar</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)">bytes</a></p>
+</dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.curves.TwistedEdwardCurve.is_on_curve">
-<code class="descname">is_on_curve</code><span class="sig-paren">(</span><em>P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#TwistedEdwardCurve.is_on_curve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.TwistedEdwardCurve.is_on_curve" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">is_on_curve</code><span class="sig-paren">(</span><em class="sig-param">P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#TwistedEdwardCurve.is_on_curve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.TwistedEdwardCurve.is_on_curve" title="Permalink to this definition">¶</a></dt>
 <dd><p>See <a class="reference internal" href="#ecpy.curves.Curve.is_on_curve" title="ecpy.curves.Curve.is_on_curve"><code class="xref py py-func docutils literal notranslate"><span class="pre">Curve.is_on_curve()</span></code></a></p>
 </dd></dl>
 
 <dl class="method">
-<dt id="ecpy.curves.TwistedEdwardCurve.mul_point">
-<code class="descname">mul_point</code><span class="sig-paren">(</span><em>k</em>, <em>P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#TwistedEdwardCurve.mul_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.TwistedEdwardCurve.mul_point" title="Permalink to this definition">¶</a></dt>
-<dd><p>See <a class="reference internal" href="#ecpy.curves.Curve.add_point" title="ecpy.curves.Curve.add_point"><code class="xref py py-func docutils literal notranslate"><span class="pre">Curve.add_point()</span></code></a></p>
-</dd></dl>
-
-<dl class="method">
 <dt id="ecpy.curves.TwistedEdwardCurve.x_recover">
-<code class="descname">x_recover</code><span class="sig-paren">(</span><em>y</em>, <em>sign=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#TwistedEdwardCurve.x_recover"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.TwistedEdwardCurve.x_recover" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">x_recover</code><span class="sig-paren">(</span><em class="sig-param">y</em>, <em class="sig-param">sign=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#TwistedEdwardCurve.x_recover"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.TwistedEdwardCurve.x_recover" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieves the x coordinate according to the y one,             such that point (x,y) is on curve.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – y coordinate</li>
-<li><strong>sign</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – sign of x</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – y coordinate</p></li>
+<li><p><strong>sign</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – sign of x</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the computed x coordinate</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the computed x coordinate</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="ecpy.curves.WeierstrassCurve">
-<em class="property">class </em><code class="descclassname">ecpy.curves.</code><code class="descname">WeierstrassCurve</code><span class="sig-paren">(</span><em>domain</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#WeierstrassCurve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.WeierstrassCurve" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">ecpy.curves.</code><code class="sig-name descname">WeierstrassCurve</code><span class="sig-paren">(</span><em class="sig-param">domain</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#WeierstrassCurve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.WeierstrassCurve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#ecpy.curves.Curve" title="ecpy.curves.Curve"><code class="xref py py-class docutils literal notranslate"><span class="pre">ecpy.curves.Curve</span></code></a></p>
 <p>An elliptic curve defined by the equation: y²=x³+a*x+b.</p>
-<dl class="docutils">
-<dt>The given domain must be a dictionary providing the following keys/values:</dt>
-<dd><ul class="first last simple">
-<li>name (str)         : curve unique name</li>
-<li>size (int)         : bit size</li>
-<li>a    (int)         : <cite>a</cite> equation coefficient</li>
-<li>b    (int)         : <cite>b</cite> equation coefficient</li>
-<li>field (inf)        : field value</li>
-<li>generator (int[2]) : x,y coordinate of generator</li>
-<li>order (int)        : order of generator</li>
-<li>cofactor (int)     : cofactor</li>
+<dl class="simple">
+<dt>The given domain must be a dictionary providing the following keys/values:</dt><dd><ul class="simple">
+<li><p>name (str)         : curve unique name</p></li>
+<li><p>size (int)         : bit size</p></li>
+<li><p>a    (int)         : <cite>a</cite> equation coefficient</p></li>
+<li><p>b    (int)         : <cite>b</cite> equation coefficient</p></li>
+<li><p>field (inf)        : field value</p></li>
+<li><p>generator (int[2]) : x,y coordinate of generator</p></li>
+<li><p>order (int)        : order of generator</p></li>
+<li><p>cofactor (int)     : cofactor</p></li>
 </ul>
 </dd>
 </dl>
 <p><em>Note</em>: you should not use the constructor and only use <a class="reference internal" href="#ecpy.curves.Curve.get_curve" title="ecpy.curves.Curve.get_curve"><code class="xref py py-func docutils literal notranslate"><span class="pre">Curve.get_curve()</span></code></a>
 builder to ensure using supported curve.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – a dictionary providing curve parameters</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="ecpy.curves.WeierstrassCurve.add_point">
-<code class="descname">add_point</code><span class="sig-paren">(</span><em>P</em>, <em>Q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#WeierstrassCurve.add_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.WeierstrassCurve.add_point" title="Permalink to this definition">¶</a></dt>
-<dd><p>See <a class="reference internal" href="#ecpy.curves.Curve.add_point" title="ecpy.curves.Curve.add_point"><code class="xref py py-func docutils literal notranslate"><span class="pre">Curve.add_point()</span></code></a></p>
-</dd></dl>
-
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – a dictionary providing curve parameters</p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="ecpy.curves.WeierstrassCurve.decode_point">
-<code class="descname">decode_point</code><span class="sig-paren">(</span><em>eP</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#WeierstrassCurve.decode_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.WeierstrassCurve.decode_point" title="Permalink to this definition">¶</a></dt>
-<dd><p>Decodes a point P according to <em>P1363-2000</em>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>eP</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – encoded point</li>
-<li><strong>curve</strong> (<a class="reference internal" href="#ecpy.curves.Curve" title="ecpy.curves.Curve"><em>Curve</em></a>) – curve on witch point is</li>
+<code class="sig-name descname">decode_point</code><span class="sig-paren">(</span><em class="sig-param">eP</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#WeierstrassCurve.decode_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.WeierstrassCurve.decode_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes a point P according to <em>P1363-2008</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eP</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – encoded point</p></li>
+<li><p><strong>curve</strong> (<a class="reference internal" href="#ecpy.curves.Curve" title="ecpy.curves.Curve"><em>Curve</em></a>) – curve on witch point is</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="docutils">
-<dt>Returns</dt>
-<dd>Point : decoded point</dd>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>decoded point</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point">Point</a></p>
+</dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.curves.WeierstrassCurve.encode_point">
-<code class="descname">encode_point</code><span class="sig-paren">(</span><em>P</em>, <em>compressed=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#WeierstrassCurve.encode_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.WeierstrassCurve.encode_point" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">encode_point</code><span class="sig-paren">(</span><em class="sig-param">P</em>, <em class="sig-param">compressed=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#WeierstrassCurve.encode_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.WeierstrassCurve.encode_point" title="Permalink to this definition">¶</a></dt>
 <dd><p>Encodes a point P according to <em>P1363-2000</em>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>P</strong> – point to encode</td>
-</tr>
-</tbody>
-</table>
-<dl class="docutils">
-<dt>Returns</dt>
-<dd>bytes : encoded point [04 | x | y] or [02 | x | sign]</dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>P</strong> – point to encode</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>encoded point [04 | x | y] or [02 | x | sign]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)">bytes</a></p>
+</dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.curves.WeierstrassCurve.is_on_curve">
-<code class="descname">is_on_curve</code><span class="sig-paren">(</span><em>P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#WeierstrassCurve.is_on_curve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.WeierstrassCurve.is_on_curve" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">is_on_curve</code><span class="sig-paren">(</span><em class="sig-param">P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#WeierstrassCurve.is_on_curve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.WeierstrassCurve.is_on_curve" title="Permalink to this definition">¶</a></dt>
 <dd><p>See <a class="reference internal" href="#ecpy.curves.Curve.is_on_curve" title="ecpy.curves.Curve.is_on_curve"><code class="xref py py-func docutils literal notranslate"><span class="pre">Curve.is_on_curve()</span></code></a></p>
 </dd></dl>
 
 <dl class="method">
-<dt id="ecpy.curves.WeierstrassCurve.mul_point">
-<code class="descname">mul_point</code><span class="sig-paren">(</span><em>k</em>, <em>P</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#WeierstrassCurve.mul_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.WeierstrassCurve.mul_point" title="Permalink to this definition">¶</a></dt>
-<dd><p>See <a class="reference internal" href="#ecpy.curves.Curve.mul_point" title="ecpy.curves.Curve.mul_point"><code class="xref py py-func docutils literal notranslate"><span class="pre">Curve.mul_point()</span></code></a></p>
-</dd></dl>
-
-<dl class="method">
 <dt id="ecpy.curves.WeierstrassCurve.y_recover">
-<code class="descname">y_recover</code><span class="sig-paren">(</span><em>x</em>, <em>sign=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#WeierstrassCurve.y_recover"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.WeierstrassCurve.y_recover" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">y_recover</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">sign=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#WeierstrassCurve.y_recover"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.WeierstrassCurve.y_recover" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</dd></dl>
-
-<dl class="function">
-<dt id="ecpy.curves.decode_scalar_25519">
-<code class="descclassname">ecpy.curves.</code><code class="descname">decode_scalar_25519</code><span class="sig-paren">(</span><em>k</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#decode_scalar_25519"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.decode_scalar_25519" title="Permalink to this definition">¶</a></dt>
-<dd><p>decode scalar according to RF7748 and draft-irtf-cfrg-eddsa</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – scalar to decode</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">decoded scalar</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="ecpy.curves.encode_scalar_25519">
-<code class="descclassname">ecpy.curves.</code><code class="descname">encode_scalar_25519</code><span class="sig-paren">(</span><em>k</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/curves.html#encode_scalar_25519"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.curves.encode_scalar_25519" title="Permalink to this definition">¶</a></dt>
-<dd><p>encode scalar according to RF7748 and draft-irtf-cfrg-eddsa</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – scalar to encode</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">encoded scalar</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)">bytes</a></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </div>
@@ -771,68 +1026,64 @@ builder to ensure using supported curve.</p>
 <span id="keys-module"></span><h2>keys module<a class="headerlink" href="#module-ecpy.keys" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="ecpy.keys.ECPrivateKey">
-<em class="property">class </em><code class="descclassname">ecpy.keys.</code><code class="descname">ECPrivateKey</code><span class="sig-paren">(</span><em>d</em>, <em>curve</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/keys.html#ECPrivateKey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.keys.ECPrivateKey" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-prename descclassname">ecpy.keys.</code><code class="sig-name descname">ECPrivateKey</code><span class="sig-paren">(</span><em class="sig-param">d</em>, <em class="sig-param">curve</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/keys.html#ECPrivateKey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.keys.ECPrivateKey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Public EC key.</p>
 <p>Can be used for both ECDSA and EDDSA signature</p>
-<dl class="docutils">
-<dt>Attributes</dt>
-<dd>d (int)       : private key scalar
-curve (Curve) : curve</dd>
+<dl class="simple">
+<dt>Attributes</dt><dd><p>d (int)       : private key scalar
+curve (Curve) : curve</p>
+</dd>
 </dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>d</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – private key value</li>
-<li><strong>curve</strong> (<a class="reference internal" href="#ecpy.curves.Curve" title="ecpy.curves.Curve"><em>Curve</em></a>) – curve</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – private key value</p></li>
+<li><p><strong>curve</strong> (<a class="reference internal" href="#ecpy.curves.Curve" title="ecpy.curves.Curve"><em>Curve</em></a>) – curve</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="ecpy.keys.ECPrivateKey.get_public_key">
-<code class="descname">get_public_key</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/keys.html#ECPrivateKey.get_public_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.keys.ECPrivateKey.get_public_key" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_public_key</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/keys.html#ECPrivateKey.get_public_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.keys.ECPrivateKey.get_public_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the public key corresponding to this private key</p>
 <p>This method considers the private key the generator multiplier and
 return pv*Generator in all cases.</p>
 <p>For specific derivation such as in EdDSA, see ecpy.eddsa.get_public_key</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">public key</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#ecpy.keys.ECPublicKey" title="ecpy.keys.ECPublicKey">ECPublicKey</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>public key</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#ecpy.keys.ECPublicKey" title="ecpy.keys.ECPublicKey">ECPublicKey</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="ecpy.keys.ECPublicKey">
-<em class="property">class </em><code class="descclassname">ecpy.keys.</code><code class="descname">ECPublicKey</code><span class="sig-paren">(</span><em>W</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/keys.html#ECPublicKey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.keys.ECPublicKey" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-prename descclassname">ecpy.keys.</code><code class="sig-name descname">ECPublicKey</code><span class="sig-paren">(</span><em class="sig-param">W</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/keys.html#ECPublicKey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.keys.ECPublicKey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Public EC key.</p>
 <p>Can be used for both ECDSA and EDDSA signature</p>
 <dl class="attribute">
 <dt id="ecpy.keys.ECPublicKey.W">
-<code class="descname">W</code><a class="headerlink" href="#ecpy.keys.ECPublicKey.W" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>Point</em> – public key point</p>
+<code class="sig-name descname">W</code><a class="headerlink" href="#ecpy.keys.ECPublicKey.W" title="Permalink to this definition">¶</a></dt>
+<dd><p>public key point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point">Point</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>W</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) – public key value</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>W</strong> (<a class="reference internal" href="#ecpy.curves.Point" title="ecpy.curves.Point"><em>Point</em></a>) – public key value</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -840,90 +1091,71 @@ return pv*Generator in all cases.</p>
 <span id="ecdsa-module"></span><h2>ECDSA module<a class="headerlink" href="#module-ecpy.ecdsa" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="ecpy.ecdsa.ECDSA">
-<em class="property">class </em><code class="descclassname">ecpy.ecdsa.</code><code class="descname">ECDSA</code><span class="sig-paren">(</span><em>fmt='DER'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecdsa.html#ECDSA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecdsa.ECDSA" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-prename descclassname">ecpy.ecdsa.</code><code class="sig-name descname">ECDSA</code><span class="sig-paren">(</span><em class="sig-param">fmt='DER'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecdsa.html#ECDSA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecdsa.ECDSA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>ECDSA signer.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – in/out signature format. See <a class="reference internal" href="#module-ecpy.formatters" title="ecpy.formatters"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ecpy.formatters</span></code></a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – in/out signature format. See <a class="reference internal" href="#module-ecpy.formatters" title="ecpy.formatters"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ecpy.formatters</span></code></a></p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="ecpy.ecdsa.ECDSA.sign">
-<code class="descname">sign</code><span class="sig-paren">(</span><em>msg</em>, <em>pv_key</em>, <em>canonical=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecdsa.html#ECDSA.sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecdsa.ECDSA.sign" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sign</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">pv_key</em>, <em class="sig-param">canonical=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecdsa.html#ECDSA.sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecdsa.ECDSA.sign" title="Permalink to this definition">¶</a></dt>
 <dd><p>Signs a message hash.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – the message hash to sign</li>
-<li><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) – key to use for signing</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – the message hash to sign</p></li>
+<li><p><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) – key to use for signing</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.ecdsa.ECDSA.sign_k">
-<code class="descname">sign_k</code><span class="sig-paren">(</span><em>msg</em>, <em>pv_key</em>, <em>k</em>, <em>canonical=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecdsa.html#ECDSA.sign_k"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecdsa.ECDSA.sign_k" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sign_k</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">pv_key</em>, <em class="sig-param">k</em>, <em class="sig-param">canonical=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecdsa.html#ECDSA.sign_k"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecdsa.ECDSA.sign_k" title="Permalink to this definition">¶</a></dt>
 <dd><p>Signs a message hash  with provided random</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – the hash of message to sign</li>
-<li><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) – key to use for signing</li>
-<li><strong>k</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) – random to use for signing</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – the hash of message to sign</p></li>
+<li><p><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) – key to use for signing</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) – random to use for signing</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.ecdsa.ECDSA.sign_rfc6979">
-<code class="descname">sign_rfc6979</code><span class="sig-paren">(</span><em>msg</em>, <em>pv_key</em>, <em>hasher</em>, <em>canonical=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecdsa.html#ECDSA.sign_rfc6979"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecdsa.ECDSA.sign_rfc6979" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sign_rfc6979</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">pv_key</em>, <em class="sig-param">hasher</em>, <em class="sig-param">canonical=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecdsa.html#ECDSA.sign_rfc6979"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecdsa.ECDSA.sign_rfc6979" title="Permalink to this definition">¶</a></dt>
 <dd><p>Signs a message hash  according to  RFC6979</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – the message hash to sign</li>
-<li><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) – key to use for signing</li>
-<li><strong>hasher</strong> (<em>hashlib</em>) – hasher conform to hashlib interface</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – the message hash to sign</p></li>
+<li><p><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) – key to use for signing</p></li>
+<li><p><strong>hasher</strong> (<em>hashlib</em>) – hasher conform to hashlib interface</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.ecdsa.ECDSA.verify">
-<code class="descname">verify</code><span class="sig-paren">(</span><em>msg</em>, <em>sig</em>, <em>pu_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecdsa.html#ECDSA.verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecdsa.ECDSA.verify" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">verify</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">sig</em>, <em class="sig-param">pu_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecdsa.html#ECDSA.verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecdsa.ECDSA.verify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verifies a message signature.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – the message hash to verify the signature</li>
-<li><strong>sig</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – signature to verify</li>
-<li><strong>pu_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPublicKey" title="ecpy.keys.ECPublicKey"><em>ecpy.keys.ECPublicKey</em></a>) – key to use for verifying</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – the message hash to verify the signature</p></li>
+<li><p><strong>sig</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – signature to verify</p></li>
+<li><p><strong>pu_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPublicKey" title="ecpy.keys.ECPublicKey"><em>ecpy.keys.ECPublicKey</em></a>) – key to use for verifying</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -933,88 +1165,72 @@ return pv*Generator in all cases.</p>
 <span id="eddsa-module"></span><h2>EDDSA module<a class="headerlink" href="#module-ecpy.eddsa" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="ecpy.eddsa.EDDSA">
-<em class="property">class </em><code class="descclassname">ecpy.eddsa.</code><code class="descname">EDDSA</code><span class="sig-paren">(</span><em>hasher</em>, <em>hash_len=None</em>, <em>fmt='EDDSA'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/eddsa.html#EDDSA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.eddsa.EDDSA" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-prename descclassname">ecpy.eddsa.</code><code class="sig-name descname">EDDSA</code><span class="sig-paren">(</span><em class="sig-param">hasher</em>, <em class="sig-param">hash_len=None</em>, <em class="sig-param">fmt='EDDSA'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/eddsa.html#EDDSA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.eddsa.EDDSA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>EDDSA signer implemenation according to:</p>
 <blockquote>
 <div><ul class="simple">
-<li>IETF <a class="reference external" href="https://tools.ietf.org/html/draft-irtf-cfrg-eddsa-05">draft-irtf-cfrg-eddsa-05</a>.</li>
+<li><p>IETF <a class="reference external" href="https://tools.ietf.org/html/draft-irtf-cfrg-eddsa-05">draft-irtf-cfrg-eddsa-05</a>.</p></li>
 </ul>
 </div></blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>hasher</strong> (<em>hashlib</em>) – callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512…</li>
-<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – in/out signature format. See  <a class="reference internal" href="#module-ecpy.formatters" title="ecpy.formatters"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ecpy.formatters</span></code></a>.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hasher</strong> (<em>hashlib</em>) – callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512…</p></li>
+<li><p><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – in/out signature format. See  <a class="reference internal" href="#module-ecpy.formatters" title="ecpy.formatters"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ecpy.formatters</span></code></a>.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="staticmethod">
+</dd>
+</dl>
+<dl class="method">
 <dt id="ecpy.eddsa.EDDSA.get_public_key">
-<em class="property">static </em><code class="descname">get_public_key</code><span class="sig-paren">(</span><em>pv_key</em>, <em>hasher=&lt;built-in function openssl_sha512&gt;</em>, <em>hash_len=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/eddsa.html#EDDSA.get_public_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.eddsa.EDDSA.get_public_key" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">get_public_key</code><span class="sig-paren">(</span><em class="sig-param">pv_key</em>, <em class="sig-param">hasher=&lt;built-in function openssl_sha512&gt;</em>, <em class="sig-param">hash_len=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/eddsa.html#EDDSA.get_public_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.eddsa.EDDSA.get_public_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the public key corresponding to this private key</p>
 <p>This method compute the public key according to draft-irtf-cfrg-eddsa-05.</p>
 <p>The hash parameter shall be the same as the one used for signing and
 verifying.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>hasher</strong> (<em>hashlib</em>) – callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512…</li>
-<li><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) – key to use for signing</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hasher</strong> (<em>hashlib</em>) – callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512…</p></li>
+<li><p><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) – key to use for signing</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">public key</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#ecpy.keys.ECPublicKey" title="ecpy.keys.ECPublicKey">ECPublicKey</a></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>public key</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ecpy.keys.ECPublicKey" title="ecpy.keys.ECPublicKey">ECPublicKey</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.eddsa.EDDSA.sign">
-<code class="descname">sign</code><span class="sig-paren">(</span><em>msg</em>, <em>pv_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/eddsa.html#EDDSA.sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.eddsa.EDDSA.sign" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sign</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">pv_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/eddsa.html#EDDSA.sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.eddsa.EDDSA.sign" title="Permalink to this definition">¶</a></dt>
 <dd><p>Signs a message.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – the message to sign</li>
-<li><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) – key to use for signing</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – the message to sign</p></li>
+<li><p><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) – key to use for signing</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.eddsa.EDDSA.verify">
-<code class="descname">verify</code><span class="sig-paren">(</span><em>msg</em>, <em>sig</em>, <em>pu_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/eddsa.html#EDDSA.verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.eddsa.EDDSA.verify" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">verify</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">sig</em>, <em class="sig-param">pu_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/eddsa.html#EDDSA.verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.eddsa.EDDSA.verify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verifies a message signature.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – the message to verify the signature</li>
-<li><strong>sig</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – signature to verify</li>
-<li><strong>pu_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPublicKey" title="ecpy.keys.ECPublicKey"><em>ecpy.keys.ECPublicKey</em></a>) – key to use for verifying</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – the message to verify the signature</p></li>
+<li><p><strong>sig</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – signature to verify</p></li>
+<li><p><strong>pu_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPublicKey" title="ecpy.keys.ECPublicKey"><em>ecpy.keys.ECPublicKey</em></a>) – key to use for verifying</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1024,88 +1240,83 @@ verifying.</p>
 <span id="ecschnorr-module"></span><h2>ECSchnorr module<a class="headerlink" href="#module-ecpy.ecschnorr" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="ecpy.ecschnorr.ECSchnorr">
-<em class="property">class </em><code class="descclassname">ecpy.ecschnorr.</code><code class="descname">ECSchnorr</code><span class="sig-paren">(</span><em>hasher</em>, <em>option='ISO'</em>, <em>fmt='DER'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecschnorr.html#ECSchnorr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecschnorr.ECSchnorr" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-prename descclassname">ecpy.ecschnorr.</code><code class="sig-name descname">ECSchnorr</code><span class="sig-paren">(</span><em class="sig-param">hasher</em>, <em class="sig-param">option='ISO'</em>, <em class="sig-param">fmt='DER'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecschnorr.html#ECSchnorr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecschnorr.ECSchnorr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>ECSchnorr signer implementation according to:</p>
 <blockquote>
 <div><ul class="simple">
-<li><a class="reference external" href="https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TR03111/BSI-TR-03111_pdf.html">BSI:TR03111</a></li>
-<li><a class="reference external" href="http://www.iso.org/iso/iso_catalogue/catalogue_ics/catalogue_detail_ics.htm?csnumber=43656">ISO/IEC:14888-3</a></li>
-<li><a class="reference external" href="https://github.com/bitcoin-core/secp256k1/blob/master/src/modules/schnorr/schnorr_impl.h">bitcoin-core:libsecp256k1</a></li>
-<li><cite>Z</cite> : <a class="reference external" href="https://docs.zilliqa.com/whitepaper.pdf">https://docs.zilliqa.com/whitepaper.pdf</a></li>
+<li><p><a class="reference external" href="https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TR03111/BSI-TR-03111_pdf.html">BSI:TR03111</a></p></li>
+<li><p><a class="reference external" href="http://www.iso.org/iso/iso_catalogue/catalogue_ics/catalogue_detail_ics.htm?csnumber=43656">ISO/IEC:14888-3</a></p></li>
+<li><p><a class="reference external" href="https://github.com/bitcoin-core/secp256k1/blob/master/src/modules/schnorr/schnorr_impl.h">bitcoin-core:libsecp256k1</a></p></li>
+<li><p><cite>Z</cite> : <a class="reference external" href="https://docs.zilliqa.com/whitepaper.pdf">https://docs.zilliqa.com/whitepaper.pdf</a></p></li>
 </ul>
 </div></blockquote>
 <p>In order to select the specification to be conform to, choose
 the corresponding string option: “BSI”, “ISO”, “ISOx”, “LIBSECP”, “Z”</p>
 <p><em>Signature</em>:</p>
 <ul class="simple">
-<li><dl class="first docutils">
-<dt>“BSI”: compute r,s according to to BSI :</dt>
-<dd><ol class="first last arabic">
-<li>k = RNG(1:n-1)</li>
-<li>Q = [k]G</li>
-<li>r = H(M ||Qx)
-If r = 0 mod n, goto 1.</li>
-<li>s = k - r.d mod n
-If s = 0 goto 1.</li>
-<li>Output (r, s)</li>
+<li><dl class="simple">
+<dt>“BSI”: compute r,s according to to BSI :</dt><dd><ol class="arabic simple">
+<li><p>k = RNG(1:n-1)</p></li>
+<li><p>Q = [k]G</p></li>
+<li><p>r = H(M ||Qx)
+If r = 0 mod n, goto 1.</p></li>
+<li><p>s = k - r.d mod n
+If s = 0 goto 1.</p></li>
+<li><p>Output (r, s)</p></li>
 </ol>
 </dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt>“ISO”: compute r,s according to ISO :</dt>
-<dd><ol class="first last arabic">
-<li>k = RNG(1:n-1)</li>
-<li>Q = [k]G
-If r = 0 mod n, goto 1.</li>
-<li>r = H(Qx||Qy||M).</li>
-<li>s = (k + r.d) mod n
-If s = 0 goto 1.</li>
-<li>Output (r, s)</li>
+<li><dl class="simple">
+<dt>“ISO”: compute r,s according to ISO :</dt><dd><ol class="arabic simple">
+<li><p>k = RNG(1:n-1)</p></li>
+<li><p>Q = [k]G
+If r = 0 mod n, goto 1.</p></li>
+<li><p>r = H(Qx||Qy||M).</p></li>
+<li><p>s = (k + r.d) mod n
+If s = 0 goto 1.</p></li>
+<li><p>Output (r, s)</p></li>
 </ol>
 </dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt>“ISOx”: compute r,s according to optimized ISO variant:</dt>
-<dd><ol class="first last arabic">
-<li>k = RNG(1:n-1)</li>
-<li>Q = [k]G
-If r = 0 mod n, goto 1.</li>
-<li>r = H(Qx||Qy||M).</li>
-<li>s = (k + r.d) mod n
-If s = 0 goto 1.</li>
-<li>Output (r, s)</li>
+<li><dl class="simple">
+<dt>“ISOx”: compute r,s according to optimized ISO variant:</dt><dd><ol class="arabic simple">
+<li><p>k = RNG(1:n-1)</p></li>
+<li><p>Q = [k]G
+If r = 0 mod n, goto 1.</p></li>
+<li><p>r = H(Qx||Qy||M).</p></li>
+<li><p>s = (k + r.d) mod n
+If s = 0 goto 1.</p></li>
+<li><p>Output (r, s)</p></li>
 </ol>
 </dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt>“LIBSECP”: compute r,s according to bitcoin lib:</dt>
-<dd><ol class="first last arabic">
-<li>k = RNG(1:n-1)</li>
-<li>Q = [k]G
-if Qy is odd, negate k and goto 2</li>
-<li>r = Qx % n</li>
-<li>h = H(r || m).
-if h == 0 or h &gt;= order goto 1</li>
-<li>s = k - h.d.</li>
-<li>Output (r, s)</li>
+<li><dl class="simple">
+<dt>“LIBSECP”: compute r,s according to bitcoin lib:</dt><dd><ol class="arabic simple">
+<li><p>k = RNG(1:n-1)</p></li>
+<li><p>Q = [k]G
+if Qy is odd, negate k and goto 2</p></li>
+<li><p>r = Qx % n</p></li>
+<li><p>h = H(r || m).
+if h == 0 or h &gt;= order goto 1</p></li>
+<li><p>s = k - h.d.</p></li>
+<li><p>Output (r, s)</p></li>
 </ol>
 </dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt>“Z”: compute r,s according to zilliqa lib:</dt>
-<dd><ol class="first last arabic">
-<li>Generate a random k from [1, …, order-1]</li>
-<li>Compute the commitment Q = kG, where  G is the base point</li>
-<li>Compute the challenge r = H(Q, kpub, m) [CME: mod n according to pdf/code, Q and kpub compressed “02|03 x” according to code)</li>
-<li>If r = 0 mod(order), goto 1</li>
-<li>Compute s = k - r*kpriv mod(order)</li>
-<li>If s = 0 goto 1.</li>
-<li>Output (r, s)</li>
+<li><dl class="simple">
+<dt>“Z”: compute r,s according to zilliqa lib:</dt><dd><ol class="arabic simple">
+<li><p>Generate a random k from [1, …, order-1]</p></li>
+<li><p>Compute the commitment Q = kG, where  G is the base point</p></li>
+<li><p>Compute the challenge r = H(Q, kpub, m) [CME: mod n according to pdf/code, Q and kpub compressed “02|03 x” according to code)</p></li>
+<li><p>If r = 0 mod(order), goto 1</p></li>
+<li><p>Compute s = k - r*kpriv mod(order)</p></li>
+<li><p>If s = 0 goto 1.</p></li>
+<li><p>Output (r, s)</p></li>
 </ol>
 </dd>
 </dl>
@@ -1113,138 +1324,117 @@ if h == 0 or h &gt;= order goto 1</li>
 </ul>
 <p><em>Verification</em></p>
 <ul class="simple">
-<li><dl class="first docutils">
-<dt>“BSI”: verify r,s according to to BSI :</dt>
-<dd><ol class="first last arabic">
-<li>Verify that r in {0, … , 2**t - 1} and s in {1, 2, … , n - 1}.
-If the check fails, output False and terminate.</li>
-<li>Q = [s]G + [r]W
-If Q = 0, output Error and terminate.</li>
-<li>v = H(M||Qx)</li>
-<li>Output True if v = r, and False otherwise.</li>
+<li><dl class="simple">
+<dt>“BSI”: verify r,s according to to BSI :</dt><dd><ol class="arabic simple">
+<li><p>Verify that r in {0, … , 2**t - 1} and s in {1, 2, … , n - 1}.
+If the check fails, output False and terminate.</p></li>
+<li><p>Q = [s]G + [r]W
+If Q = 0, output Error and terminate.</p></li>
+<li><p>v = H(M||Qx)</p></li>
+<li><p>Output True if v = r, and False otherwise.</p></li>
 </ol>
 </dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt>“ISO”: verify r,s according to ISO :</dt>
-<dd><ol class="first last arabic">
-<li>check…</li>
-<li>Q = [s]G - [r]W
-If Q = 0, output Error and terminate.</li>
-<li>v = H(Qx||Qy||M).</li>
-<li>Output True if v = r, and False otherwise.</li>
+<li><dl class="simple">
+<dt>“ISO”: verify r,s according to ISO :</dt><dd><ol class="arabic simple">
+<li><p>check…</p></li>
+<li><p>Q = [s]G - [r]W
+If Q = 0, output Error and terminate.</p></li>
+<li><p>v = H(Qx||Qy||M).</p></li>
+<li><p>Output True if v = r, and False otherwise.</p></li>
 </ol>
 </dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt>“ISOx”: verify r,s according to optimized ISO variant:</dt>
-<dd><ol class="first last arabic">
-<li>check…</li>
-<li>Q = [s]G - [r]W
-If Q = 0, output Error and terminate.</li>
-<li>v = H(Qx||M).</li>
-<li>Output True if v = r, and False otherwise.</li>
+<li><dl class="simple">
+<dt>“ISOx”: verify r,s according to optimized ISO variant:</dt><dd><ol class="arabic simple">
+<li><p>check…</p></li>
+<li><p>Q = [s]G - [r]W
+If Q = 0, output Error and terminate.</p></li>
+<li><p>v = H(Qx||M).</p></li>
+<li><p>Output True if v = r, and False otherwise.</p></li>
 </ol>
 </dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt>“LIBSECP”:</dt>
-<dd><ol class="first last arabic">
-<li>Signature is invalid if s &gt;= order.
-Signature is invalid if r &gt;= p.</li>
-<li>h = H(r || m).
-Signature is invalid if h == 0 or h &gt;= order.</li>
-<li>R = [h]Q + [s]G.
-Signature is invalid if R is infinity or R’s y coordinate is odd.</li>
-<li>Signature is valid if the serialization of R’s x coordinate equals r.</li>
+<li><dl class="simple">
+<dt>“LIBSECP”:</dt><dd><ol class="arabic simple">
+<li><p>Signature is invalid if s &gt;= order.
+Signature is invalid if r &gt;= p.</p></li>
+<li><p>h = H(r || m).
+Signature is invalid if h == 0 or h &gt;= order.</p></li>
+<li><p>R = [h]Q + [s]G.
+Signature is invalid if R is infinity or R’s y coordinate is odd.</p></li>
+<li><p>Signature is valid if the serialization of R’s x coordinate equals r.</p></li>
 </ol>
 </dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt>“Z”:</dt>
-<dd><ol class="first last arabic">
-<li>Check if r,s is in [1, …, order-1]</li>
-<li>Compute Q = sG + r*kpub</li>
-<li>If Q = O (the neutral point), return 0;</li>
-<li>r’ = H(Q, kpub, m) [CME: mod n according to pdf/code, according to code), Q and kpub compressed “02|03 x”]</li>
-<li>return r’ == r</li>
+<li><dl class="simple">
+<dt>“Z”:</dt><dd><ol class="arabic simple">
+<li><p>Check if r,s is in [1, …, order-1]</p></li>
+<li><p>Compute Q = sG + r*kpub</p></li>
+<li><p>If Q = O (the neutral point), return 0;</p></li>
+<li><p>r’ = H(Q, kpub, m) [CME: mod n according to pdf/code, according to code), Q and kpub compressed “02|03 x”]</p></li>
+<li><p>return r’ == r</p></li>
 </ol>
 </dd>
 </dl>
 </li>
 </ul>
 <p>Default is “ISO”</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>hasher</strong> (<em>hashlib</em>) – callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512…</li>
-<li><strong>option</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – one of “BSI”,”ISO”,”ISOx”,”LIBSECP”</li>
-<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – in/out signature format. See <a class="reference internal" href="#module-ecpy.formatters" title="ecpy.formatters"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ecpy.formatters</span></code></a></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hasher</strong> (<em>hashlib</em>) – callable constructor returning an object with update(), digest() interface. Example: hashlib.sha256,  hashlib.sha512…</p></li>
+<li><p><strong>option</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – one of “BSI”,”ISO”,”ISOx”,”LIBSECP”</p></li>
+<li><p><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – in/out signature format. See <a class="reference internal" href="#module-ecpy.formatters" title="ecpy.formatters"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ecpy.formatters</span></code></a></p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="ecpy.ecschnorr.ECSchnorr.sign">
-<code class="descname">sign</code><span class="sig-paren">(</span><em>msg</em>, <em>pv_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecschnorr.html#ECSchnorr.sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecschnorr.ECSchnorr.sign" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sign</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">pv_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecschnorr.html#ECSchnorr.sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecschnorr.ECSchnorr.sign" title="Permalink to this definition">¶</a></dt>
 <dd><p>Signs a message hash.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>hash_msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – the message hash to sign</li>
-<li><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) – key to use for signing</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hash_msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – the message hash to sign</p></li>
+<li><p><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) – key to use for signing</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.ecschnorr.ECSchnorr.sign_k">
-<code class="descname">sign_k</code><span class="sig-paren">(</span><em>msg</em>, <em>pv_key</em>, <em>k</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecschnorr.html#ECSchnorr.sign_k"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecschnorr.ECSchnorr.sign_k" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sign_k</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">pv_key</em>, <em class="sig-param">k</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecschnorr.html#ECSchnorr.sign_k"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecschnorr.ECSchnorr.sign_k" title="Permalink to this definition">¶</a></dt>
 <dd><p>Signs a message hash  with provided random</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>hash_msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – the message hash to sign</li>
-<li><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) – key to use for signing</li>
-<li><strong>k</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) – random to use for signing</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hash_msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – the message hash to sign</p></li>
+<li><p><strong>pv_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) – key to use for signing</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a>) – random to use for signing</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.ecschnorr.ECSchnorr.verify">
-<code class="descname">verify</code><span class="sig-paren">(</span><em>msg</em>, <em>sig</em>, <em>pu_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecschnorr.html#ECSchnorr.verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecschnorr.ECSchnorr.verify" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">verify</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">sig</em>, <em class="sig-param">pu_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecschnorr.html#ECSchnorr.verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecschnorr.ECSchnorr.verify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verifies a message signature.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – the message hash to verify the signature</li>
-<li><strong>sig</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – signature to verify</li>
-<li><strong>pu_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPublicKey" title="ecpy.keys.ECPublicKey"><em>ecpy.keys.ECPublicKey</em></a>) – key to use for verifying</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – the message hash to verify the signature</p></li>
+<li><p><strong>sig</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – signature to verify</p></li>
+<li><p><strong>pu_key</strong> (<a class="reference internal" href="#ecpy.keys.ECPublicKey" title="ecpy.keys.ECPublicKey"><em>ecpy.keys.ECPublicKey</em></a>) – key to use for verifying</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1254,37 +1444,33 @@ Signature is invalid if R is infinity or R’s y coordinate is odd.</li>
 <span id="borromean-module"></span><h2>Borromean module<a class="headerlink" href="#module-ecpy.borromean" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="ecpy.borromean.Borromean">
-<em class="property">class </em><code class="descclassname">ecpy.borromean.</code><code class="descname">Borromean</code><span class="sig-paren">(</span><em>fmt='BTUPLE'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/borromean.html#Borromean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.borromean.Borromean" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-prename descclassname">ecpy.borromean.</code><code class="sig-name descname">Borromean</code><span class="sig-paren">(</span><em class="sig-param">fmt='BTUPLE'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/borromean.html#Borromean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.borromean.Borromean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Borromean Ring signer implementation according to:</p>
 <p><a class="reference external" href="https://github.com/Blockstream/borromean_paper/blob/master/borromean_draft_0.01_9ade1e49.pdf">https://github.com/Blockstream/borromean_paper/blob/master/borromean_draft_0.01_9ade1e49.pdf</a></p>
 <p><a class="reference external" href="https://github.com/ElementsProject/secp256k1-zkp/blob/secp256k1-zkp/src/modules/rangeproof/borromean_impl.h">https://github.com/ElementsProject/secp256k1-zkp/blob/secp256k1-zkp/src/modules/rangeproof/borromean_impl.h</a></p>
 <p>ElementsProject implementation has some tweaks compared to PDF. This implementation is ElementsProject compliant.</p>
 <p>For now, only secp256k1+sha256 is supported. This constraint will be release soon.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – in/out signature format. See <a class="reference internal" href="#module-ecpy.formatters" title="ecpy.formatters"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ecpy.formatters</span></code></a>. IGNORED.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – in/out signature format. See <a class="reference internal" href="#module-ecpy.formatters" title="ecpy.formatters"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ecpy.formatters</span></code></a>. IGNORED.</p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="ecpy.borromean.Borromean.sign">
-<code class="descname">sign</code><span class="sig-paren">(</span><em>msg</em>, <em>rings</em>, <em>pv_keys</em>, <em>pv_keys_index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/borromean.html#Borromean.sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.borromean.Borromean.sign" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sign</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">rings</em>, <em class="sig-param">pv_keys</em>, <em class="sig-param">pv_keys_index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/borromean.html#Borromean.sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.borromean.Borromean.sign" title="Permalink to this definition">¶</a></dt>
 <dd><p>Signs a message hash.</p>
 <p>The public <cite>rings</cite> argument is a tuple of public key array. In other
 words each element of the ring tuple is an array containing the  public
 keys list of that ring</p>
 <p>A Private key must be given for each provided ring. For each private key,
 the corresponding public key is specified by its index in the ring.</p>
-<dl class="docutils">
-<dt>Exemple:</dt>
-<dd><p class="first">let r1 be the first ring with 2 keys:    pu11, pu12
+<dl>
+<dt>Exemple:</dt><dd><p>let r1 be the first ring with 2 keys:    pu11, pu12
 let 21 be the second ring with 3 keys:   pu21,pu22,pu23
 let say we want to produce a signature with sec12 and sec21
 <cite>sign</cite> should be called as:</p>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">borromean</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">m</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">borromean</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">m</span><span class="p">,</span>
               <span class="p">([</span><span class="n">pu11</span><span class="p">,</span><span class="n">pu12</span><span class="p">],[</span><span class="n">pu21</span><span class="p">,</span><span class="n">pu22</span><span class="p">,</span><span class="n">pu23</span><span class="p">]),</span>
               <span class="p">[</span><span class="n">sec12</span><span class="p">,</span> <span class="n">sec21</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
@@ -1293,51 +1479,43 @@ let say we want to produce a signature with sec12 and sec21
 </dl>
 <p>The return value is a tuple (e0, [s0,s1….]). Each value is encoded
 as binary (bytes).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – the message hash to sign</li>
-<li><strong>rings</strong> (<em>tuple of</em><em> (</em><a class="reference internal" href="#ecpy.keys.ECPublicKey" title="ecpy.keys.ECPublicKey"><em>ecpy.keys.ECPublicKey</em></a><em>[</em><em>]</em>) – public key rings</li>
-<li><strong>pv_keys</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a><em>[</em><em>]</em>) – key to use for signing</li>
-<li><strong>pv_keys_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>[</em><em>]</em>) – </li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – the message hash to sign</p></li>
+<li><p><strong>rings</strong> (<em>tuple of</em><em> (</em><a class="reference internal" href="#ecpy.keys.ECPublicKey" title="ecpy.keys.ECPublicKey"><em>ecpy.keys.ECPublicKey</em></a><em>[</em><em>]</em>) – public key rings</p></li>
+<li><p><strong>pv_keys</strong> (<a class="reference internal" href="#ecpy.keys.ECPrivateKey" title="ecpy.keys.ECPrivateKey"><em>ecpy.keys.ECPrivateKey</em></a><em>[</em><em>]</em>) – key to use for signing</p></li>
+<li><p><strong>pv_keys_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>[</em><em>]</em>) – </p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">signature</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(e0, [s0,s1….])</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>signature</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(e0, [s0,s1….])</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ecpy.borromean.Borromean.verify">
-<code class="descname">verify</code><span class="sig-paren">(</span><em>msg</em>, <em>sig</em>, <em>rings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/borromean.html#Borromean.verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.borromean.Borromean.verify" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">verify</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">sig</em>, <em class="sig-param">rings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/borromean.html#Borromean.verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.borromean.Borromean.verify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verifies a message signature.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – the message hash to verify the signature</li>
-<li><strong>sig</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – signature to verify</li>
-<li><strong>rings</strong> (<em>key.ECPublicKey</em>) – key to use for verifying</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – the message hash to verify the signature</p></li>
+<li><p><strong>sig</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – signature to verify</p></li>
+<li><p><strong>rings</strong> (<em>key.ECPublicKey</em>) – key to use for verifying</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if signature is verified, False else</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">boolean</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if signature is verified, False else</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1347,25 +1525,24 @@ as binary (bytes).</p>
 <span id="ecrand-module"></span><h2>ecrand  module<a class="headerlink" href="#module-ecpy.ecrand" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="ecpy.ecrand.rnd">
-<code class="descclassname">ecpy.ecrand.</code><code class="descname">rnd</code><span class="sig-paren">(</span><em>q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecrand.html#rnd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecrand.rnd" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ecpy.ecrand.</code><code class="sig-name descname">rnd</code><span class="sig-paren">(</span><em class="sig-param">q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecrand.html#rnd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecrand.rnd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a random number less than q, with the same bits length than q</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>q</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – field/modulo</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">random</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>q</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – field/modulo</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>random</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="ecpy.ecrand.rnd_rfc6979">
-<code class="descclassname">ecpy.ecrand.</code><code class="descname">rnd_rfc6979</code><span class="sig-paren">(</span><em>hashmsg</em>, <em>secret</em>, <em>q</em>, <em>hasher</em>, <em>V=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecrand.html#rnd_rfc6979"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecrand.rnd_rfc6979" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ecpy.ecrand.</code><code class="sig-name descname">rnd_rfc6979</code><span class="sig-paren">(</span><em class="sig-param">hashmsg</em>, <em class="sig-param">secret</em>, <em class="sig-param">q</em>, <em class="sig-param">hasher</em>, <em class="sig-param">V=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/ecrand.html#rnd_rfc6979"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.ecrand.rnd_rfc6979" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates a deterministic <cite>value</cite> according  to RF6979.</p>
 <p>See <a class="reference external" href="https://tools.ietf.org/html/rfc6979#section-3.2">https://tools.ietf.org/html/rfc6979#section-3.2</a></p>
 <p>if V == None, this is the first try, so compute the initial value for V.
@@ -1374,33 +1551,27 @@ generate the next one!</p>
 <p>Warning: the <cite>hashmsg</cite> parameter is the message hash, not the message
 itself. In other words, <cite>hashmsg</cite> is equal to <cite>h1</cite> in the  <em>rfc6979, section-3.2,
 step a</em>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>hasher</strong> (<em>hashlib</em>) – hasher</li>
-<li><strong>hashmsg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – message hash</li>
-<li><strong>secret</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – secret</li>
-<li><strong>q</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – field/modulo</li>
-<li><strong>V</strong> – previous value for continuation</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hasher</strong> (<em>hashlib</em>) – hasher</p></li>
+<li><p><strong>hashmsg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – message hash</p></li>
+<li><p><strong>secret</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – secret</p></li>
+<li><p><strong>q</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – field/modulo</p></li>
+<li><p><strong>V</strong> – previous value for continuation</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p>The function returns a couple <cite>(k,V)</cite> with <cite>k</cite> the expected value and <cite>V</cite> is the
 continuation value to pass to next cal if k is rejected.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(k,V)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>(k,V)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)">tuple</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -1408,69 +1579,61 @@ continuation value to pass to next cal if k is rejected.</p>
 <span id="formatters-module"></span><h2>formatters  module<a class="headerlink" href="#module-ecpy.formatters" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="ecpy.formatters.decode_sig">
-<code class="descclassname">ecpy.formatters.</code><code class="descname">decode_sig</code><span class="sig-paren">(</span><em>sig</em>, <em>fmt='DER'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/formatters.html#decode_sig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.formatters.decode_sig" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ecpy.formatters.</code><code class="sig-name descname">decode_sig</code><span class="sig-paren">(</span><em class="sig-param">sig</em>, <em class="sig-param">fmt='DER'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/formatters.html#decode_sig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.formatters.decode_sig" title="Permalink to this definition">¶</a></dt>
 <dd><p>encore signature according format</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>rs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a><em>,</em><em>ints</em><em>,</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a>) – r,s value</li>
-<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – ‘DER’|’BTUPLE’|’ITUPLES’|’RAW’|’EDDSA’</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a><em>,</em><em>ints</em><em>,</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a>) – r,s value</p></li>
+<li><p><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – ‘DER’|’BTUPLE’|’ITUPLES’|’RAW’|’EDDSA’</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">(r,s)</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ints</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(r,s)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ints</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="ecpy.formatters.encode_sig">
-<code class="descclassname">ecpy.formatters.</code><code class="descname">encode_sig</code><span class="sig-paren">(</span><em>r</em>, <em>s</em>, <em>fmt='DER'</em>, <em>size=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/formatters.html#encode_sig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.formatters.encode_sig" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ecpy.formatters.</code><code class="sig-name descname">encode_sig</code><span class="sig-paren">(</span><em class="sig-param">r</em>, <em class="sig-param">s</em>, <em class="sig-param">fmt='DER'</em>, <em class="sig-param">size=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ecpy/formatters.html#encode_sig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ecpy.formatters.encode_sig" title="Permalink to this definition">¶</a></dt>
 <dd><p>encore signature according format</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>r</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – r value</li>
-<li><strong>s</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – s value</li>
-<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – ‘DER’|’BTUPLE’|’ITUPLE’|’RAW’|’EDDSA</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – r value</p></li>
+<li><p><strong>s</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – s value</p></li>
+<li><p><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – ‘DER’|’BTUPLE’|’ITUPLE’|’RAW’|’EDDSA</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">TLV   for DER encoding</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)">bytes</a></p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">(r,s) for BTUPLE encoding</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)">bytes</a></p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">(r,s) for ITUPLE encoding</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">ints</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">r|s   for RAW encoding</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)">bytes</a></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>TLV   for DER encoding</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)">bytes</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(r,s) for BTUPLE encoding</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)">bytes</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(r,s) for ITUPLE encoding</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ints</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>r|s   for RAW encoding</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)">bytes</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -1478,33 +1641,22 @@ continuation value to pass to next cal if k is rejected.</p>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="#">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Welcome to ECPy’s documentation!</a></li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
-<li><a class="reference internal" href="#status">Status</a></li>
-<li><a class="reference internal" href="#install">Install</a></li>
-<li><a class="reference internal" href="#overview">Overview</a><ul>
-<li><a class="reference internal" href="#supported-curves-signature">Supported Curves &amp; Signature</a></li>
-<li><a class="reference internal" href="#types">Types</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#api">API</a><ul>
-<li><a class="reference internal" href="#module-ecpy.curves">curves module</a></li>
-<li><a class="reference internal" href="#module-ecpy.keys">keys module</a></li>
-<li><a class="reference internal" href="#module-ecpy.ecdsa">ECDSA module</a></li>
-<li><a class="reference internal" href="#module-ecpy.eddsa">EDDSA module</a></li>
-<li><a class="reference internal" href="#module-ecpy.ecschnorr">ECSchnorr module</a></li>
-<li><a class="reference internal" href="#module-ecpy.borromean">Borromean module</a></li>
-<li><a class="reference internal" href="#module-ecpy.ecrand">ecrand  module</a></li>
-<li><a class="reference internal" href="#module-ecpy.formatters">formatters  module</a></li>
-</ul>
-</li>
-</ul>
+<h1 class="logo"><a href="#">ECPy</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
@@ -1512,25 +1664,24 @@ continuation value to pass to next cal if k is rejected.</p>
   </ul></li>
 </ul>
 </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/index.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -1539,8 +1690,8 @@ continuation value to pass to next cal if k is rejected.</p>
       &copy;2016, Cédric Mesnil.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/index.rst.txt"
