@@ -49,7 +49,7 @@ class ECDSA:
         return None
 
     def sign_rfc6979(self, msg, pv_key, hasher, canonical=False):
-        """ Signs a message hash  according to  RFC6979 
+        """ Signs a message hash  according to  RFC6979
 
         Args:
             msg (bytes)                    : the message hash to sign
@@ -63,9 +63,9 @@ class ECDSA:
             sig = self._do_sign(msg, pv_key, k, canonical)
             if sig:
                 return sig
-                                 
+
         return None
-    
+
     def sign_k(self, msg, pv_key, k,canonical=False):
         """ Signs a message hash  with provided random
 
@@ -75,7 +75,7 @@ class ECDSA:
             k (ecpy.keys.ECPrivateKey)     : random to use for signing
         """
         return self._do_sign(msg, pv_key, k, canonical)
-            
+
     def _do_sign(self, msg, pv_key, k, canonical=False):
         if (pv_key.curve == None):
             raise ECPyException('private key haz no curve')
@@ -85,8 +85,11 @@ class ECDSA:
         k = k%n
 
         msg = int.from_bytes(msg, 'big')
-        
+
         Q = G*k
+        if Q.is_infinity:
+            return None
+
         kinv = pow(k,n-2,n)
         r = Q.x % n
         if r == 0:
@@ -98,9 +101,9 @@ class ECDSA:
 
         if canonical and (s > (n//2)):
             s = n-s
-        
+
         sig = encode_sig(r,s,self.fmt)
-        
+
         # r = r.to_bytes((r.bit_length()+7)//8, 'big')
         # s = s.to_bytes((s.bit_length()+7)//8, 'big')
         # if (r[0] & 0x80) == 0x80 :
@@ -111,9 +114,9 @@ class ECDSA:
         #        b'\x02'+int(len(r)).to_bytes(1,'big') + r        +
         #        b'\x02'+int(len(s)).to_bytes(1,'big') + s      )
         return sig
-            
+
     def verify(self,msg,sig,pu_key):
-        """ Verifies a message signature.                
+        """ Verifies a message signature.
 
         Args:
             msg (bytes)                   : the message hash to verify the signature
@@ -125,9 +128,9 @@ class ECDSA:
         G     = curve.generator
 
         r,s = decode_sig(sig, self.fmt)
-        if (r == None or
-            r > n     or
-            s > n     ) :
+        if (r == None or s == None or
+            r == 0 or r >= n or
+            s == 0 or s >= n ) :
             return False
 
         h = int.from_bytes(msg,'big')
@@ -138,17 +141,22 @@ class ECDSA:
         u1G = u1*G
         u2Q = u2*pu_key.W
         GQ  =  u1G+u2Q
+        if GQ.is_infinity:
+            return False
         x   = GQ.x % n
 
         return x == r
 
-    
+
 if __name__ == "__main__":
+    import binascii
     try:
-        ### ECDSA
+        signer = ECDSA()
+
+        ### ECDSA secp256k1
         cv     = Curve.get_curve('secp256k1')
         pu_key = ECPublicKey(Point(0x65d5b8bf9ab1801c9f168d4815994ad35f1dcb6ae6c7a1a303966b677b813b00,
-                                   
+
                                    0xe6b865e529b8ecbf71cf966e900477d49ced5846d7662dd2dd11ccd55c0aff7f,
                                    cv))
         pv_key = ECPrivateKey(0xfb26a4e75eec75544c0f44e937dcf5ee6355c7176600b9688c667e5c283b43c5,
@@ -169,13 +177,12 @@ if __name__ == "__main__":
         #       0623b4159c7112125be51716d1e706d68e52f5b321da68d8b86b3c7c7019a9da
         #      0221
         #       008dffe3c592a0c7e5168dcb3d4121a60ee727082be4fbf79eae564929156305fc
-        
+
         msg = int(0xba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad)
         sig = int(0x304502200623b4159c7112125be51716d1e706d68e52f5b321da68d8b86b3c7c7019a9da0221008dffe3c592a0c7e5168dcb3d4121a60ee727082be4fbf79eae564929156305fc)
         msg  = msg.to_bytes(32,'big')
         sig  = sig.to_bytes(0x47,'big')
 
-        signer = ECDSA()
         assert(signer.verify(msg,sig,pu_key))
 
         #  k:     0xe5a8d1d529971c10ca2af378444fb544a211707892c8898f91dcb171584e3db9
@@ -198,12 +205,30 @@ if __name__ == "__main__":
 
         #Sign with k rand
         sig = signer.sign(msg,pv_key)
-        assert(signer.verify(msg,sig,pu_key))        
+        assert(signer.verify(msg,sig,pu_key))
 
         #sign with krfc
         sig = signer.sign_rfc6979(msg,pv_key,hashlib.sha256)
         assert(sig == expected_sig)
-        
+
+
+        ### ECDSA secp256k1
+
+        cv     = Curve.get_curve('secp521r1')
+        pv_key = ECPrivateKey(0x018cd813ca254d350b6e4a4a0a0fe2a27eac701d8ccfb1564085d612f315d5aa6c055390cfb7bedf7fc8c02af2360423e8c8a2e3cb045f844f3ec0a6c75025f4a4fa,
+                              cv)
+        pu_key = ECPublicKey(Point(0x016d523c74262368b2f066859dfd36645cfd7aa7f7c782732c8bee450cd9d42384bb3b9b480df9b440374856a37061d023ff99861796d7b5d146c5c5c3f9a0e34872,
+                                   0x002377c7bee60c8dd47ce351c6e3f05d47fd0a1d62c8e2d0a61413e2ee453a38debf67de2da37bcdbd7e80ea5082021ad3f32c829f12d72240bc9f997b483366035a,
+                                   cv))
+        W = pv_key.d * cv.generator
+        assert(W == pu_key.W)
+
+        msg = int(0xba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad)
+        msg  = msg.to_bytes(32,'big')
+
+        sig = signer.sign(msg,pv_key)
+        assert(signer.verify(msg,sig,pu_key))
+
         ##OK!
         print("All internal assert OK!")
     finally:

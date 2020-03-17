@@ -45,4 +45,4 @@ while True:
     sig = signer.sign(msg,pv_key)
     signer.verify(msg,sig,pu_key)
 
-assert(signer.verify(msg,sig,pu_key))        
+assert(signer.verify(msg,sig,pu_key))

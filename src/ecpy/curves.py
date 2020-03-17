@@ -41,7 +41,7 @@ class Curve:
 
     Supported well know elliptic curve are:
        - Short Weierstrass form:  y²=x³+a*x+b
-       - Twisted Edward           a*x²+y2=1+d*x²*y²
+       - Twisted Edward           a*x²+y²=1+d*x²*y²
        - Montgomery:              b.y²=x³+a*x²+x.
 
     Attributes:
@@ -111,6 +111,8 @@ class Curve:
         y = self._domain['generator'][1]
         self._domain['generator'] = Point(x,y,self)
 
+        self._infinity_point = Point(0,0,self._domain['name'],False)
+        self._infinity_point._at_infinity = True
 
     def __getattr__(self, name):
         if name in self._domain:
@@ -119,6 +121,11 @@ class Curve:
 
     def __str__(self):
         return str(self._domain).replace(',','\n')
+
+
+    @property
+    def infinity(self):
+        return self._infinity_point
 
     def is_on_curve(self, P):
         """Check if P is on this curve
@@ -403,7 +410,7 @@ class WeierstrassCurve(Curve):
             x,y = self._jac2aff(x,y,z, q)
             return  Point(x,y, self)
         else:
-            return _infinity_point
+            return self.infinity
 
     def _mul_point(self, k, P):
         """ See :func:`Curve.mul_point` """
@@ -426,7 +433,7 @@ class WeierstrassCurve(Curve):
             x,y = self._jac2aff(x1,y1,z1, q)
             return Point(x,y,self)
         else:
-            return _infinity_point
+            return self.infinity
 
     def _neg_point(self, P):
         return Point(P.x,self.field-P.y,self)
@@ -655,7 +662,7 @@ class TwistedEdwardCurve(Curve):
             x,y = self._ext2aff(x,y,z,t, q)
             return Point(x,y, self)
         else:
-            return _infinity_point
+            return self.infinity
 
     def _mul_point(self, k, P):
         """ See :func:`Curve.add_point` """
@@ -677,7 +684,7 @@ class TwistedEdwardCurve(Curve):
             x,y = self._ext2aff(x1,y1,z1,t1, q)
             return Point(x,y,self)
         else:
-            return _infinity_point
+            return self.infinity
 
     def _neg_point(self, P):
         return Point(self.field-P.x,P.y,self)
@@ -817,7 +824,7 @@ class MontgomeryCurve(Curve):
     def _add_point(self, P, Q):
         """ See :func:`Curve.add_point` """
         if Q.has_y and P == -Q:
-            return _infinity_point
+            return self.infinity
 
         if P == Q:
             return self._mul_point(2,P)
@@ -871,7 +878,7 @@ class MontgomeryCurve(Curve):
                 ky = (y2*zinv)%p
             return Point (kx, ky, self)
         else:
-            return _infinity_point
+            return self.infinity
 
     def _neg_point(self, P):
         return Point(P.x,self.field-P.y,self)
@@ -1068,23 +1075,23 @@ class Point:
 
     def __add__(self, Q):
         if isinstance(Q,Point) :
-            if self._curve.name != Q._curve.name:
-                raise ECPyException('__add__: points on same curve')
             if self.is_infinity:
                 return Q
             if Q.is_infinity:
                 return self
+            if self._curve.name != Q._curve.name:
+                raise ECPyException('__add__: points on same curve')
             return self.curve._add_point(self,Q)
         raise ECPyException('__add__: type not supported: %s'%type(Q))
 
     def __sub__(self, Q):
         if isinstance(Q,Point) :
-            if self._curve.name != Q._curve.name:
-                raise ECPyException('__sub__: points on same curve')
             if self.is_infinity:
                 return -Q
             if Q.is_infinity:
                 return self
+            if self._curve.name != Q._curve.name:
+                raise ECPyException('__sub__: points on same curve')
             return self.curve._add_point(self,-Q)
         raise ECPyException('__sub__: type not supported: %s'%type(Q))
 
@@ -1092,7 +1099,8 @@ class Point:
         if isinstance(scal,int):
             if self.is_infinity:
                 return self
-            if scal%self.curve.order == 0:
+            scal = scal%self.curve.order
+            if scal == 0:
                 return Point.infinity()
             return self.curve._mul_point(scal,self)
         raise ECPyException('__mul__: type not supported: %s'%type(scal))

@@ -47,6 +47,27 @@ Full html documentation is available `here <https://cslashm.github.com/ECPy>`_.
 History
 =======
 
+1.1.0
+-----
+
+Fix DER encoding for length greater than 128
+
+    Declare ONE infinity point per curve. 
+    Consider global (non attached to a curve) infinity point as deprecated
+
+Fix infinity point management in ECDSA
+
+Fix issue #13
+
+
+
+
+1.0.1beta
+---------
+
+Merge PR11, fixing an overflow with secp521k1
+
+
 1.0.0beta
 ---------
 
