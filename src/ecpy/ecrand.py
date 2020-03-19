@@ -22,7 +22,6 @@ from ecpy.formatters import decode_sig, encode_sig
 import random
 import hmac
 
-
 def rnd(q):
     """ Returns a random number less than q, with the same bits length than q
 
@@ -30,26 +29,26 @@ def rnd(q):
         q (int)         : field/modulo
 
     Returns:
-        int : random 
+        int : random
     """
     nbits = q.bit_length()
     while True:
         k = random.getrandbits(nbits)
         if k<q:
             return k
-        
-    
-    
-def rnd_rfc6979(hashmsg, secret, q, hasher, V = None):
+
+
+
+def rnd_rfc6979(hashmsg, secret, q, hasher, VK = None):
     """ Generates a deterministic `value` according  to RF6979.
-    
+
     See https://tools.ietf.org/html/rfc6979#section-3.2
- 
+
     if V == None, this is the first try, so compute the initial value for V.
-    Else it means the previous value has been rejected by the caller, so 
+    Else it means the previous value has been rejected by the caller, so
     generate the next one!
 
-    Warning: the `hashmsg` parameter is the message hash, not the message 
+    Warning: the `hashmsg` parameter is the message hash, not the message
     itself. In other words, `hashmsg` is equal to `h1` in the  *rfc6979, section-3.2,
     step a*.
 
@@ -59,34 +58,60 @@ def rnd_rfc6979(hashmsg, secret, q, hasher, V = None):
        secret (int)    : secret
        q (int)         : field/modulo
        V               : previous value for continuation
-    
-    The function returns a couple `(k,V)` with `k` the expected value and `V` is the 
+
+    The function returns a couple `(k,V)` with `k` the expected value and `V` is the
     continuation value to pass to next cal if k is rejected.
 
     Returns:
       tuple: (k,V)
-    
-    """
 
-    
-    if (V == None):
-        #a.  Process m through the hash function H, yielding: h1 = H(m)
+    """
+    def bits2int(bs):
+        """
+        bs(bytes): binary value
+        """
+        i = int.from_bytes(bs,'big')
+        blen = len(bs)*8
+
+
+        qlen = q.bit_length()
+        if blen > qlen:
+            i = i >> (blen-qlen)
+        return i
+
+    def int2octets(i):
+        rlen = ((q.bit_length()+7)&~7)//8
+        o = i.to_bytes(rlen, 'big')
+        return o
+
+    def bits2octets(bs) :
+        z1 = bits2int(bs)
+        z2 = z1%q
+        o = int2octets(z2)
+        return o
+
+    if (VK == None):
+        #A.  Process m through the hash function H, yielding: h1 = H(m)
         #h1 = hasher(msg).digest()
+        hsize = hasher().digest_size
         h1 = hashmsg
-        hsize = len(h1)
-        #b. Set: V = 0x01 0x01 0x01 ... 0x01
+        #B. Set: V = 0x01 0x01 0x01 ... 0x01
         V = b'\x01'*hsize
-        #c. Set: K = 0x00 0x00 0x00 ... 0x00
+        #C. Set: K = 0x00 0x00 0x00 ... 0x00
         K = b'\x00'*hsize
-        #d. Set: K = HMAC_K(V || 0x00 || int2octets(x) || bits2octets(h1))
-        x = secret.to_bytes(hsize,'big')
-        K = hmac.new(K,V + b'\x00' + x + h1,hasher).digest()
-        #e. Set: V = HMAC_K(V)
+        #D. Set: K = HMAC_K(V || 0x00 || int2octets(x) || bits2octets(h1))
+        K = hmac.new(K, V + b'\x00' + int2octets(secret) + bits2octets(h1), hasher).digest()
+        #E. Set: V = HMAC_K(V)
         V = hmac.new(K,V,hasher).digest()
-        #f. Set: K = HMAC_K(V || 0x01 || int2octets(x) || bits2octets(h1))
-        K = hmac.new(K,V + b'\x01' + x + h1,hasher).digest()
-        #g. Set: V = HMAC_K(V)
+        #F. Set: K = HMAC_K(V || 0x01 || int2octets(x) || bits2octets(h1))
+        K = hmac.new(K, V + b'\x01' + int2octets(secret) + bits2octets(h1), hasher).digest()
+        #G. Set: V = HMAC_K(V)
         V = hmac.new(K,V,hasher).digest()
+    else:
+        V = VK[0]
+        K = VK[1]
+        K = hmac.new(K, V+b'\x00', hasher).digest()
+        V = hmac.new(K, V, hasher).digest()
 
     #h.  Apply the following algorithm until a proper value is found for  k:
     while True:
@@ -97,22 +122,19 @@ def rnd_rfc6979(hashmsg, secret, q, hasher, V = None):
         #   2.  While tlen < qlen, do the following:
         #         V = HMAC_K(V)
         #         T = T || V
-        q_blen =  q.bit_length()
-        while len(T)*8<q_blen :
+        qlen =  q.bit_length()
+        _i = 0
+        while len(T)*8 < qlen :
             V = hmac.new(K, V, hasher).digest()
             T = T + V
         #3.  Compute:
-        k = int.from_bytes(T,'big')
-        k_blen =  k.bit_length()
-        
-        if k_blen > q_blen :
-            k = k >>  (k_blen - q_blen)
+        k = bits2int(T)
         #      If that value of k is within the [1,q-1] range, and is
         #      suitable for DSA or ECDSA (i.e., it results in an r value
         #      that is not 0; see Section 3.4), then the generation of k is
         #      finished.  The obtained value of k is used in DSA or ECDSA.
-        if k > 0 and k < (q-1):
-            return k,V
+        if 1 <= k and k <= (q-1):
+            return k,(V,K)
         #      Otherwise, compute:
         #        K = HMAC_K(V || 0x00)
         #        V = HMAC_K(V)
@@ -127,7 +149,7 @@ if __name__ == "__main__":
     h = h.to_bytes(32,'big')
     secret = 0xe7244dd97b3558788fbf02f443d9a6ebd12a1ab01703a683aa12412354a43218
     q = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
-   
+
     hashlib.sha256
     r,V = rnd_rfc6979(h, secret, q, hashlib.sha256)
     assert(r == 0xbf13da837bcfa314f30fa68be3a9219ca244c1b36f0440624ba88406fcd7462d)
