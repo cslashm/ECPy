@@ -47,6 +47,19 @@ Full html documentation is available `here <https://cslashm.github.com/ECPy>`_.
 History
 =======
 
+1.2.1
+-----
+
+Missing README update
+
+
+1.2.0
+-----
+
+Fix rfc6979. Now conform to RFC and fully compat with python-ecdsa
+(https://github.com/warner/python-ecdsa).
+
+
 1.1.0
 -----
 
