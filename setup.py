@@ -18,7 +18,6 @@ from distutils.core import setup
 if  sys.version_info[0] == 2 and sys.version_info[1] < 7:
     sys.exit("Sorry, Python 2.7 or higher (included 3.x) is only supported ")
 
-reqs = []
 if  sys.version_info[0] == 2:
     reqs.append('future')
 
@@ -26,7 +25,7 @@ with open('README.rst') as file:
     long_description = file.read()
 
 setup(name='ECPy',
-      version='1.2.1',
+      version='1.2.2',
       description='Pure Pyhton Elliptic Curve Library',
       long_description=long_description,
       keywords='ecdsa eddsa ed25519 ed448 schnorr ecschnorr elliptic curve',
@@ -37,7 +36,6 @@ setup(name='ECPy',
       provides=['ecpy'],
       packages=['ecpy'],
       package_dir={'ecpy': 'src/ecpy'},
-      install_requires=reqs,
       classifiers=['Programming Language :: Python :: 2.7',
                    'Programming Language :: Python :: 3',
                    'Development Status :: 4 - Beta',

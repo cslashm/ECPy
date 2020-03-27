@@ -56,10 +56,10 @@ class ECDSA:
             pv_key (ecpy.keys.ECPrivateKey): key to use for signing
             hasher (hashlib)               : hasher conform to hashlib interface
         """
-        field = pv_key.curve.field
+        order = pv_key.curve.order
         V = None
         for i in range(1,self.maxtries):
-            k,V = ecrand.rnd_rfc6979(msg, pv_key.d, field, hasher,V)
+            k,V = ecrand.rnd_rfc6979(msg, pv_key.d, order, hasher,V)
             sig = self._do_sign(msg, pv_key, k, canonical)
             if sig:
                 return sig

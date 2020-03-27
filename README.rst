@@ -47,6 +47,12 @@ Full html documentation is available `here <https://cslashm.github.com/ECPy>`_.
 History
 =======
 
+
+1.2.2
+-----
+
+Fix ECDSA with rfc6979. Field was used instead of order for max random.
+
 1.2.1
 -----
 
@@ -65,7 +71,7 @@ Fix rfc6979. Now conform to RFC and fully compat with python-ecdsa
 
 Fix DER encoding for length greater than 128
 
-    Declare ONE infinity point per curve. 
+    Declare ONE infinity point per curve.
     Consider global (non attached to a curve) infinity point as deprecated
 
 Fix infinity point management in ECDSA
