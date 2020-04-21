@@ -47,6 +47,11 @@ Full html documentation is available `here <https://cslashm.github.com/ECPy>`_.
 History
 =======
 
+1.2.3
+-----
+
+Fix ECSchnorr when r is greater than order. Main use case is when
+using a hash function with bitlength greater than curve size.
 
 1.2.2
 -----

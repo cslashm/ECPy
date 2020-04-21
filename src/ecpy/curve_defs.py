@@ -307,7 +307,7 @@ curves = [
     {
         'name':      "Brainpool-p224t1",
         'type':      WEIERSTRASS,
-        'size':      192,
+        'size':      224,
         'a':         0xD7C134AA264366862A18302575D1D787B09F075797DA89F57EC8C0FC,
         'b':         0x4B337D934104CD7BEF271BF60CED1ED20DA14C08B3BB64F18A60888D,
         'field':     0x2DF271E14427A346910CF7A2E6CFA7B3F484E5C2CCE1C8B730E28B3F,

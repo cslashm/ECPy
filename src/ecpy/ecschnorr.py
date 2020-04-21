@@ -165,7 +165,7 @@ class ECSchnorr:
         curve = pv_key.curve
         n     = curve.order
         G     = curve.generator
-        size  = curve.size>>3
+        size  = (curve.size+7)//8
 
         Q = G*k
         hasher = self._hasher()
@@ -248,11 +248,12 @@ class ECSchnorr:
         curve = pu_key.curve
         n     = pu_key.curve.order
         G     = pu_key.curve.generator
-        size  = curve.size>>3
+        size  = (curve.size+7)//8
 
         r,s = decode_sig(sig, self.fmt)
-        if (r == None or r > (pow(2,size*8)-1) or
-            s == 0 or s >= n ) :
+        if (r == None or s == None or
+            r == 0 or
+            s == 0 or s >= n ):
             return False
         hasher = self._hasher()
         if self.option == "ISO":
