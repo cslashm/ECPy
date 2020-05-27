@@ -86,6 +86,12 @@ class ECDSA:
 
         msg = int.from_bytes(msg, 'big')
 
+        if n.bit_length() < msg.bit_length():
+            # msg is the 'n.bit_length()' leftmost bits of the received msg,
+            # leading zeroes included (if any).
+            mbyteslen = (msg.bit_length() + 7) // 8
+            msg = int(format(msg, f'0{8*mbyteslen}b')[:n.bit_length()], 2)
+
         Q = G*k
         if Q.is_infinity:
             return None
@@ -134,6 +140,12 @@ class ECDSA:
             return False
 
         h = int.from_bytes(msg,'big')
+
+        if n.bit_length() < h.bit_length():
+            # h is the 'n.bit_length()' leftmost bits of the received h value,
+            # leading zeroes included (if any).
+            hbyteslen = (h.bit_length() + 7) // 8
+            h = int(format(h, f'0{8*hbyteslen}b')[:n.bit_length()], 2)
 
         c   = pow(s, n-2, n)
         u1  = (h*c)%n
