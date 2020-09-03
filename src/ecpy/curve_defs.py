@@ -6,6 +6,20 @@ MONTGOMERY     = "montgomery"
 curves = [
 
     {
+        'name':      "bls12-381g1",
+        'type':      WEIERSTRASS,
+        'size':      381,
+        'field':     0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab,
+        'generator': (0x17f1d3a73197d7942695638c4fa9ac0fc3688c4f9774b905a14e3a3f171bac586c55e83ff97a1aeffb3af00adb22c6bb,
+                      0x08b3f481e3aaa0f1a09e30ed741d8ae4fcf5e095d5d00af600db18cb2c04b3edd03cc744a2888ae40caa232946c5e7e1),
+        'order':     0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001,
+        'cofactor':  1,
+        'a':         0x0000000000000000000000000000000000000000000000000000000000000000,
+        'b':         0x0000000000000000000000000000000000000000000000000000000000000004,
+
+    },
+
+    {
         'name':      "stark256",
         'type':      WEIERSTRASS,
         'size':      256,
