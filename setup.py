@@ -27,7 +27,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name='ECPy',
-      version='1.2.4',
+      version='1.2.5',
       description='Pure Pyhton Elliptic Curve Library',
       long_description=long_description,
       keywords='ecdsa eddsa ed25519 ed448 schnorr ecschnorr elliptic curve',

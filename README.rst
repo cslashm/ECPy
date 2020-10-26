@@ -47,6 +47,11 @@ Full html documentation is available `here <https://cslashm.github.com/ECPy>`_.
 History
 =======
 
+1.2.5
+-----
+
+Fix issue 19
+
 1.2.4
 -----
 
