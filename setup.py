@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import sys
-from distutils.core import setup
 
 if  sys.version_info[0] == 2 and sys.version_info[1] < 7:
     sys.exit("Sorry, Python 2.7 or higher (included 3.x) is only supported ")
@@ -21,11 +20,14 @@ if  sys.version_info[0] == 2 and sys.version_info[1] < 7:
 if  sys.version_info[0] == 2:
     reqs.append('future')
 
-with open('README.rst') as file:
-    long_description = file.read()
+import setuptools
 
-setup(name='ECPy',
-      version='1.2.3',
+with open("README.rst", "r") as fh:
+    long_description = fh.read()
+
+setuptools.setup(
+    name='ECPy',
+      version='1.2.4',
       description='Pure Pyhton Elliptic Curve Library',
       long_description=long_description,
       keywords='ecdsa eddsa ed25519 ed448 schnorr ecschnorr elliptic curve',
@@ -41,4 +43,5 @@ setup(name='ECPy',
                    'Development Status :: 4 - Beta',
                    'License :: OSI Approved :: Apache Software License',
                    'Topic :: Security :: Cryptography']
-     )
+
+)

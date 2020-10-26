@@ -47,6 +47,13 @@ Full html documentation is available `here <https://cslashm.github.com/ECPy>`_.
 History
 =======
 
+1.2.4
+-----
+
+Fix ECDSA when mesaage hash length is greater than domain order length 
+
+Move from distutils to setuptools
+
 1.2.3
 -----
 

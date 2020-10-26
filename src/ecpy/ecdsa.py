@@ -84,7 +84,12 @@ class ECDSA:
         G = curve.generator
         k = k%n
 
-        msg = int.from_bytes(msg, 'big')
+        # if "msg (hash) bit length" is greater that the "domain bit length",
+        # we only consider the left most "domain bit length" of message.
+        msg_len = len(msg)*8;
+        msg = int.from_bytes(msg, 'big');
+        if msg_len > curve.size:
+            msg = msg >> (msg_len-curve.size)
 
         Q = G*k
         if Q.is_infinity:
@@ -133,7 +138,12 @@ class ECDSA:
             s == 0 or s >= n ) :
             return False
 
-        h = int.from_bytes(msg,'big')
+        # if "msg (hash) bit length" is greater that the "domain bit length",
+        # we only consider the left most "domain bit length" of message.
+        msg_len = len(msg)*8;
+        h = int.from_bytes(msg, 'big')
+        if msg_len > curve.size:
+            h = h >> (msg_len-curve.size)
 
         c   = pow(s, n-2, n)
         u1  = (h*c)%n
@@ -214,6 +224,23 @@ if __name__ == "__main__":
 
         ### ECDSA secp256k1
 
+        cv     = Curve.get_curve('secp256k1')
+        pu_key = ECPublicKey(Point(0x65d5b8bf9ab1801c9f168d4815994ad35f1dcb6ae6c7a1a303966b677b813b00,
+
+                                   0xe6b865e529b8ecbf71cf966e900477d49ced5846d7662dd2dd11ccd55c0aff7f,
+                                   cv))
+        pv_key = ECPrivateKey(0xfb26a4e75eec75544c0f44e937dcf5ee6355c7176600b9688c667e5c283b43c5,
+                              cv)
+        W = pv_key.d * cv.generator
+        assert(W == pu_key.W)
+
+        msg = int(0xba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015adabcd)
+        msg  = msg.to_bytes(34,'big')
+        sig = signer.sign(msg,pv_key)
+        assert(signer.verify(msg,sig,pu_key))
+
+        ### ECDSA secp521k1
+
         cv     = Curve.get_curve('secp521r1')
         pv_key = ECPrivateKey(0x018cd813ca254d350b6e4a4a0a0fe2a27eac701d8ccfb1564085d612f315d5aa6c055390cfb7bedf7fc8c02af2360423e8c8a2e3cb045f844f3ec0a6c75025f4a4fa,
                               cv)
@@ -225,7 +252,6 @@ if __name__ == "__main__":
 
         msg = int(0xba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad)
         msg  = msg.to_bytes(32,'big')
-
         sig = signer.sign(msg,pv_key)
         assert(signer.verify(msg,sig,pu_key))
 
