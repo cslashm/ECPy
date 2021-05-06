@@ -561,6 +561,8 @@ class TwistedEdwardCurve(Curve):
                 x = (x*I) % q
         elif self.name =='Ed448':
             x = pow(xx,(q+1)//4,q)
+        elif self.name == 'Ed521':
+            x = pow(xx,(q+1)//4,q)
         else:
             assert False, '%s not supported'%curve.name
 
