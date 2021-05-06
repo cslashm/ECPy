@@ -214,6 +214,12 @@ class EDDSA:
             hasher.update(eA)
             hasher.update(msg)
             h = hasher.digest(self._hash_len)
+        elif curve.name == 'Ed521':
+            hasher.update(b'SigEd521\x00\x00')
+            hasher.update(eR)
+            hasher.update(eA)
+            hasher.update(msg)
+            h = hasher.digest(self._hash_len)
         elif curve.name == 'Ed25519':
             hasher.update(eR)
             hasher.update(eA)
