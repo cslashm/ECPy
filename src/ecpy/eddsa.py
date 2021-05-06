@@ -99,6 +99,12 @@ class EDDSA:
             a[0]  &= 0xFC; 
             a[56]  = 0;
             a[55] |= 0x80;
+        elif curve.name == 'Ed521':
+            a = bytearray(h[:66])
+            h = h[66:]
+            a[0] &= 0xFC
+            a[65]  = 0
+            a[65] |= 0x80
         else :
             assert False, '%s not supported'%curve.name
         
