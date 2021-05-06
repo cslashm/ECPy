@@ -514,6 +514,8 @@ class TwistedEdwardCurve(Curve):
             size = 32
         elif self.name == 'Ed448':
             size = 57
+        elif self.name == 'Ed521':
+            size = 66
         else:
             assert False, '%s not supported'%curve.name
         return size
