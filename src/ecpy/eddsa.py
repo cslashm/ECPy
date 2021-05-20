@@ -99,6 +99,12 @@ class EDDSA:
             a[0]  &= 0xFC; 
             a[56]  = 0;
             a[55] |= 0x80;
+        elif curve.name == 'Ed521':
+            a = bytearray(h[:66])
+            h = h[66:]
+            a[0] &= 0xFC
+            a[65]  = 0
+            a[65] |= 0x80
         else :
             assert False, '%s not supported'%curve.name
         
@@ -133,6 +139,11 @@ class EDDSA:
             hasher.update(prefix)
             hasher.update(msg)
             r = hasher.digest(self._hash_len)
+        elif curve.name == 'Ed521':
+            hasher.update(b'SigEd521\x00\x00')
+            hasher.update(prefix)
+            hasher.update(msg)
+            r = hasher.digest(self._hash_len)
         elif curve.name =='Ed25519':  
             hasher.update(prefix)
             hasher.update(msg)
@@ -149,6 +160,12 @@ class EDDSA:
         hasher = self._hasher()
         if curve.name =='Ed448':  
             hasher.update(b'SigEd448\x00\x00')
+            hasher.update(eR)
+            hasher.update(eA)
+            hasher.update(msg)
+            H_eR_eA_m = hasher.digest(self._hash_len)
+        elif curve.name =='Ed521':
+            hasher.update(b'SigEd521\x00\x00')
             hasher.update(eR)
             hasher.update(eA)
             hasher.update(msg)
@@ -193,6 +210,12 @@ class EDDSA:
         eA = curve.encode_point(pu_key.W)
         if curve.name =='Ed448':
             hasher.update(b'SigEd448\x00\x00')
+            hasher.update(eR)
+            hasher.update(eA)
+            hasher.update(msg)
+            h = hasher.digest(self._hash_len)
+        elif curve.name == 'Ed521':
+            hasher.update(b'SigEd521\x00\x00')
             hasher.update(eR)
             hasher.update(eA)
             hasher.update(msg)
@@ -332,6 +355,58 @@ if __name__ == "__main__":
         assert(sig == expected_sig)
 
         
+        ### EDDSA
+        cv     = Curve.get_curve('Ed521')
+
+        # public key
+        x = 0x16b159d5e880d2849165dec4d95d69051129baa1f8c23b2c95284c142d122f1bb96048547b30d2f2df430d36d40190ca86b8ef266a72b3034c4d03fe83d5b1b9c4e
+        y = 0x6cd6658b0e2a6100d1487507ac3c0f1b52677b2eb31074aebd5bdede3775d3e6447f7f714d2740d0ba46e67aedcc4c3f37410c47a26cf79077dbc3f9cb0c8700fb
+
+        pu_key = ECPublicKey(Point(x, y, cv))
+
+        # private key
+        s = 0xa0d4d2ea5090b09a5d05ddf8c10d72e3a4b5c435fbff6d3a5f775cfe837f158fcf4e04b3d70713b71e834f3bec2442ef4c5c8a1ffb6f2f81dec330226ffe2f46a285
+        pv_key = ECPrivateKey(s, cv)
+
+        pu = EDDSA.get_public_key(pv_key, hashlib.shake_256, hash_len=132)
+        assert(pu.W == pu_key.W)
+
+        # sig:
+        # 
+        expected_sig = int(0xc2fb4f7d03dd31f25753b9972aeb650ac3632eef945e7f94e426a865bb95e66241149c7eed24d98fed2ee8b9ef949b83ba556d045b72df6e6b8b9026414b26463d0088d2ed5ea88fcc6b2f343d308209dacd5fadadac352d497d2049831eca3536e7be5a7faef56d6c6786c60415e0febee8a45f9971ae4872e0b6cf09cc0a9407342000)
+        expected_sig  = expected_sig.to_bytes(132,'big')
+
+        # msg:
+        # Message for Ed521 signing
+        msg = b'Message for Ed521 signing'
+        signer = EDDSA(hashlib.shake_256, hash_len=132)
+        sig = signer.sign(msg,pv_key)
+
+        assert(signer.verify(msg,sig,pu_key))
+        assert(sig == expected_sig)
+
+        ### EDDSA with x509 Digital Certificate
+        cv     = Curve.get_curve('Ed521')
+
+        # public key
+        x = 0x23edddd64369863618296219add6d6dcafae3cc8e5666a6b6a1fea1d9cf92552c6836f51bfb872884cde1cc45837f7390b47f7e7e4c9722327ba09b5a97a88028
+        y = 0x12ce0b0c0eeac8418dc8639f628c183ed1523b2c71d4090f8e5c44c90e07cbaceb17ef077af8e120fb0350243780f61007cbd158de2f2d28d7295f135195afd6a9b
+
+        pu_key = ECPublicKey(Point(x, y, cv))
+
+        # sig:
+        # 
+        sig = int(0xa7e7f16597a9b70f9e6437de6e85239def223d68263cf49b3b8575e49a34d23bb79de2f3e59ecba4b5358e0eaea575b4645a6e420ff88632fe8725b0fe3ee92a510116969cba3cdc6c7b644d50efa27908dbceef807b180ec1e7e63c5badf058ea97112fbba153e3d672552c1ff49c754fdc1b891e470cfdd058fd788da6f98fa8e73200)
+        sig  = sig.to_bytes(132,'big')
+
+        # msg:
+        # tbs certificate
+        msg = int(0x308202bfa003020102020900e4ac9a3346c92509300c060a2b0601040182dc2c0201308197310b300906035504061302425231133011060355040a0c0a4943502d42726173696c313d303b060355040b0c34496e7374697475746f204e6163696f6e616c206465205465636e6f6c6f67696120646120496e666f726d6163616f202d204954493134303206035504030c2b4175746f72696461646520436572746966696361646f7261205261697a2042726173696c65697261207637301e170d3138313232383133343733355a170d3338313232383132303033355a308197310b300906035504061302425231133011060355040a0c0a4943502d42726173696c313d303b060355040b0c34496e7374697475746f204e6163696f6e616c206465205465636e6f6c6f67696120646120496e666f726d6163616f202d204954493134303206035504030c2b4175746f72696461646520436572746966696361646f7261205261697a2042726173696c656972612076373053300c060a2b0601040182dc2c02010343009b6afd5a1935f195728dd2f2e28d15bd7c00610f78430235b00f128eaf77f07eb1ceba7ce0904cc4e5f890401dc7b22315ed83c128f63986dc1884aceec0b0e02c01a381f53081f2304e0603551d200447304530430605604c010100303a303806082b06010505070201162c687474703a2f2f61637261697a2e69637062726173696c2e676f762e62722f44504361637261697a2e706466303f0603551d1f043830363034a032a030862e687474703a2f2f61637261697a2e69637062726173696c2e676f762e62722f4c435261637261697a76372e63726c301f0603551d2304183016801475513119e1c71321873e415fa31be67bfdb0d9c8301d0603551d0e0416041475513119e1c71321873e415fa31be67bfdb0d9c8300f0603551d130101ff040530030101ff300e0603551d0f0101ff040403020106)
+        msg  = msg.to_bytes(707,'big')
+
+        signer = EDDSA(hashlib.shake_256, hash_len=132)
+
+        assert(signer.verify(msg,sig,pu_key))
 
         ##OK!
         print("All internal assert OK!")
