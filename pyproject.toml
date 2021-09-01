@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "ECPy"
+version = "1.2.5"
+description = "Pure Python Elliptic Curve Library"
+authors = ["Cedric Mesnil <cslashm@gmail.com>"]
+keywords = [
+  "ecdsa",
+  "eddsa",
+  "ed25519",
+  "ed448",
+  "schnorr",
+  "ecschnorr",
+  "elliptic",
+  "curve",
+]
+homepage = "https://github.com/cslashm/ECPy"
+readme = "README.rst"
+license = "Apache License - Version 2.0"
+packages = [
+  { include = "ecpy", from = "src" },
+]
+classifiers = [
+  "Programming Language :: Python :: 2.7",
+  "Programming Language :: Python :: 3",
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: Apache Software License",
+  "Topic :: Security :: Cryptography",
+]
+
+[tool.poetry.dependencies]
+python = ">= 2.7"
+future = { version = ">= 0.18.0", python = "~2" }
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
