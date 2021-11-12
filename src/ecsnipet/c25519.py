@@ -1,7 +1,6 @@
 import hashlib, binascii
-from ecpy.curves     import Curve,Point,decode_scalar_25519
+from ecpy.curves import Curve, Point
 import sys
-
 
 
 ### ECS
@@ -25,10 +24,10 @@ def t1():
 
 def t2():
 	kalice  = binascii.unhexlify("77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a")
-	kalice = decode_scalar_25519(kalice)
+	kalice = cv.decode_scalar_25519(kalice)
 
 	kbob  = binascii.unhexlify("5dab087e624a8a4b79e17f8b83800ee66f3bb1292618b6fd1c2f8b27ff88e0eb")
-	kbob = decode_scalar_25519(kbob)
+	kbob = cv.decode_scalar_25519(kbob)
 
 	u  = 9
 	G = Point(u,None,cv)

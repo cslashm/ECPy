@@ -32,11 +32,9 @@ assert(k.W.y == pu_key.W.y)
 
 print("Public key ok")
 
-msg = 0x8c7632afe967e2e16ae7f39dc32c252b3d751fa6e01daa0efc3c174e230f4617
-msg = msg.to_bytes(32,'big')
+msg = 0x8c7632afe967e2e16ae7f39dc32c252b3d751fa6e01daa0efc3c174e230f4617.to_bytes(32, 'big')
 
-sig = 0x304402203a329589dbc6f3bb88bf90b45b5d4935a18e13e2cb8fcee0b94b3102ec19645702202f61af55df0e56e71d40a9f5f111faeb2f831c1fd314c55227ac44110fb33049
-sig = sig.to_bytes(70,'big')
+sig = 0x304402203a329589dbc6f3bb88bf90b45b5d4935a18e13e2cb8fcee0b94b3102ec19645702202f61af55df0e56e71d40a9f5f111faeb2f831c1fd314c55227ac44110fb33049.to_bytes(70, 'big')
 
 ## verify
 signer = ECDSA()

@@ -325,8 +325,7 @@ if __name__ == "__main__":
         pv_key = ECPrivateKey(0x5202a3d8acaf6909d12c9a774cd886f9fba61137ffd3e8e76aed363fb47ac492,
                               cv)
 
-        msg = int(0x616263)
-        msg  = msg.to_bytes(3,'big')
+        msg = int(0x616263).to_bytes(3, 'big')
 
         k = int(0xde7e0e5e663f24183414b7c72f24546b81e9e5f410bebf26f3ca5fa82f5192c8)
 
@@ -361,8 +360,7 @@ if __name__ == "__main__":
         pv_key = ECPrivateKey(0x2eef7823f82ed254524fad3d11cc17e897e582a0cd52b93f07cc030370d170bd,
                               cv)
         pu_key = pv_key.get_public_key()
-        msg = int(0xb46d1525379e02e232d97928265b7254ea2ed97813454388c1a08f62dccd70b3)
-        msg  = msg.to_bytes(32,'big')
+        msg = int(0xb46d1525379e02e232d97928265b7254ea2ed97813454388c1a08f62dccd70b3).to_bytes(32, 'big')
         signer = ECSchnorr(hashlib.sha256,"Z","ITUPLE")
         sig = signer.sign_k(msg,pv_key,k)
         assert(signer.verify(msg,sig,pu_key))
@@ -376,8 +374,7 @@ if __name__ == "__main__":
         pv_key = ECPrivateKey(0xfb26a4e75eec75544c0f44e937dcf5ee6355c7176600b9688c667e5c283b43c5,
                               cv)
 
-        msg = int(0x0101010101010101010101010101010101010101010101010101010101010101)
-        msg  = msg.to_bytes(32,'big')
+        msg = int(0x0101010101010101010101010101010101010101010101010101010101010101).to_bytes(32, 'big')
         k = int(0x4242424242424242424242424242424242424242424242424242424242424242)
         expect_r = 0x24653eac434488002cc06bbfb7f10fe18991e35f9fe4302dbea6d2353dc0ab1c
         expect_s = 0xacd417b277ab7e7d993cc4a601dd01a71696fd0dd2e93561d9de9b69dd4dc75c
@@ -409,8 +406,7 @@ if __name__ == "__main__":
                     d = random.randint(0, curveobj.order)
                     priv_key = ECPrivateKey(d, curveobj)
                     pub_key = priv_key.get_public_key()
-                    msg = random.randint(0, pow(2, 256))
-                    msg = msg.to_bytes(32, 'big')
+                    msg = random.randint(0, pow(2, 256)).to_bytes(32, 'big')
                     hasher.update(msg)
                     msg = hasher.digest()
                     sig_host = signer.sign(msg, priv_key)
