@@ -26,10 +26,9 @@ from builtins import int,pow
 
 import binascii
 import random
+from typing import Dict, Optional
 
 from . import curve_defs
-
-
 
 
 class Curve:
@@ -55,7 +54,7 @@ class Curve:
 
     """
 
-    _curves_cache = {}
+    _curves_cache: Dict[str, Optional[Curve]] = {}
 
 
     @staticmethod
@@ -1365,9 +1364,9 @@ if __name__ == "__main__":
         assert(_eQ == eQ)
 
         #0x449a44ba44226a50185afcc10a4c1462dd5e46824b15163b9d7c52f06be346a0
-        k = binascii.unhexlify("a546e36bf0527c9d3b16154b82465edd62144c0ac1fc5a18506a2244ba449ac4")
-        k = TwistedEdwardCurve.decode_scalar_25519(k)
-        assert(k == 0x449a44ba44226a50185afcc10a4c1462dd5e46824b15163b9d7c52f06be346a0)
+        k_bytes = binascii.unhexlify("a546e36bf0527c9d3b16154b82465edd62144c0ac1fc5a18506a2244ba449ac4")
+        k_bytes = TwistedEdwardCurve.decode_scalar_25519(k_bytes)
+        assert(k_bytes == 0x449a44ba44226a50185afcc10a4c1462dd5e46824b15163b9d7c52f06be346a0)
 
         eP =  binascii.unhexlify("e6db6867583030db3594c1a424b15f7c726624ec26b3353b10a903a6d0ab1c4c")
         P  = cv.decode_point(eP)
@@ -1376,7 +1375,7 @@ if __name__ == "__main__":
         eQ = binascii.unhexlify("c3da55379de9c6908e94ea4df28d084f32eccf03491c71f754b4075577a28552")
         Q  = cv.decode_point(eQ)
 
-        kP = k*P
+        kP = k_bytes*P
         assert(kP.x == Q.x)
         ekP =  cv.encode_point(kP)
         assert(ekP == eQ)

@@ -145,8 +145,7 @@ def rnd_rfc6979(hashmsg, secret, q, hasher, VK = None):
 
 if __name__ == "__main__":
     import hashlib
-    h = 0xaf9ae10ca04f826d5ff4727f97fb568c79e9ffa9686b9d5deb4ea4db44d6f23d
-    h = h.to_bytes(32,'big')
+    h = 0xaf9ae10ca04f826d5ff4727f97fb568c79e9ffa9686b9d5deb4ea4db44d6f23d.to_bytes(32, 'big')
     secret = 0xe7244dd97b3558788fbf02f443d9a6ebd12a1ab01703a683aa12412354a43218
     q = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
 

@@ -26,7 +26,7 @@ from ecpy            import ecrand
 from ecpy.curves     import ECPyException
 
 
-    
+
 # m: bytes     message
 # e: bytes     point
 # i: int       ring index
@@ -75,7 +75,7 @@ def borromean_verify(pubkeys,rings_size,ring_count,
     r0 = 0
     for i in range (0,ring_count):
         tell("\nstep2-3 / ring %d"%i)
-        e_ij = borromean_hash(m,e0,i,0) 
+        e_ij = borromean_hash(m,e0,i,0)
         for j in range(0,rings_size[i]):
             tell("\n  step2-3 / ring %d / sec %d"%(i,j))
             e_ij = int.from_bytes(e_ij,'big')
@@ -88,7 +88,7 @@ def borromean_verify(pubkeys,rings_size,ring_count,
             tell("  sG_eP :\n  %s"% sG_eP)
             e_ij = point_to_bytes(sG_eP)
             if j != rings_size[i]-1:
-                e_ij = borromean_hash(m,e_ij,i,j+1) 
+                e_ij = borromean_hash(m,e_ij,i,j+1)
             else:
                 tell("  e_ij0     : %s"%h(e_ij))
                 sha256_e0.update(e_ij)
@@ -96,7 +96,7 @@ def borromean_verify(pubkeys,rings_size,ring_count,
     sha256_e0.update(m)
     e0x = sha256_e0.digest()
     return e0 == e0x
-    
+
 def borromean_sign(pubkeys, privkeys,
                    rings_size,private_keys_index,ring_count,
                    msg):
@@ -105,19 +105,19 @@ def borromean_sign(pubkeys, privkeys,
     curve = Curve.get_curve('secp256k1')
     G     = curve.generator
     order = curve.order
-    
+
     e0=None
     s = []
     k = []
-    #just declare 
+    #just declare
     for i in range (0,ring_count):
         k.append(None)
         for j in range (0,rings_size[i]):
             s.append(None)
-            
+
     #step2-3
     shuffle = random.randint
-    
+
     r0 = 0
     sha256_e0 = hashlib.sha256()
     for i in range (0,ring_count):
@@ -132,7 +132,7 @@ def borromean_sign(pubkeys, privkeys,
         for j in range(j0+1, rings_size[i]):
             tell("\n  step2-3 / ring %d / sec %d"%(i,j))
             s[r0+j] = prand(r0+j)
-            e_ij = borromean_hash(m,e_ij,i,j) 
+            e_ij = borromean_hash(m,e_ij,i,j)
             e_ij = int.from_bytes(e_ij,'big')
             tell("  index    : %d"%(r0+j))
             tell("  pubkeys[]: %s"%pubkeys[r0+j])
@@ -141,11 +141,11 @@ def borromean_sign(pubkeys, privkeys,
             sG_eP = s[r0+j]*G + e_ij*pubkeys[r0+j].W
             tell("  sG_eP :\n  %s"% sG_eP)
             e_ij = point_to_bytes(sG_eP)
-        tell("\ne0ij :\n  %s"% h(e_ij))    
+        tell("\ne0ij :\n  %s"% h(e_ij))
         sha256_e0.update(e_ij)
         r0 += rings_size[i]
     sha256_e0.update(m)
-    e0 =  sha256_e0.digest()    
+    e0 =  sha256_e0.digest()
     tell("\ne0: %s"%h(e0))
     #step 4
     tell("")
@@ -157,7 +157,7 @@ def borromean_sign(pubkeys, privkeys,
         e_ij = int.from_bytes(e_ij,'big')
         for j in range(0, j0):
             tell("\n  step 4 / ring %d / sec %d"%(i,j))
-            s[r0+j] = prand(r0+j)            
+            s[r0+j] = prand(r0+j)
             tell("  index    : %d"%(r0+j))
             tell("  pubkeys[]: %s"%pubkeys[r0+j])
             tell("  s[]      : %x"%s[r0+j])
@@ -200,13 +200,13 @@ def tell(m):
     global trace
     if trace:
         print("%s%s"%(tab,m))
-    
+
 def enter(f):
     global tab, trace
     if trace:
         print("%sEntering: %s"%(tab,f))
         tab  = tab + "  "
-    
+
 def leave(f):
     global tab, trace
     if trace:
@@ -224,19 +224,19 @@ def strsig(sigma):
 if __name__ == "__main__":
 
     #
-    # layout: 
+    # layout:
     # nrings = 2
     #   ring 1 has 2 keys
     #   ring 2 has 3 keys
     #
-    # pubs=[ring1-key1, ring1-key2,   
+    # pubs=[ring1-key1, ring1-key2,
     #       ring2-key1, ring2-key2, ring2-key3]
-    # 
+    #
     # k = [ring1-rand, ring2-rand]
     # sec = [ring1-sec2, ring2-sec1]
     # rsizes = [2,3]
     # secidx = [1,0]
-    # 
+    #
     #
 
     cv     = Curve.get_curve('secp256k1')
@@ -264,8 +264,7 @@ if __name__ == "__main__":
     pubs = [pubkey0, pubkey1, pubkey2, pubkey3, pubkey4, pubkey5,pubkey6, pubkey7]
     secs = [seckey0, seckey1, seckey2, seckey3, seckey4, seckey5,seckey6, seckey7]
 
-    m = 0x800102030405060708090a0b0c0d0e0f800102030405060708090a0b0c0d0e0f
-    m = m.to_bytes(32,'big')
+    m = 0x800102030405060708090a0b0c0d0e0f800102030405060708090a0b0c0d0e0f.to_bytes(32, 'big')
 
     i =0
     for pu,pv in zip(pubs,secs):
@@ -273,7 +272,7 @@ if __name__ == "__main__":
         print ("%d %s"%(i,pu))
         print ("")
         i += 1
-        
+
     # ring1: 2 keys
     # ring2: 3 keys
     sigma = borromean_sign( [pubkey0, pubkey1,    pubkey2, pubkey3, pubkey4],
@@ -314,4 +313,4 @@ if __name__ == "__main__":
     #             print("NOK for %d, %d"%(s1,s2))
     #         else:
     #             print(" OK for %d, %d"%(s1,s2))
-                
+
