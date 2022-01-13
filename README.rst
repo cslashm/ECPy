@@ -5,7 +5,7 @@ ECPy (pronounced ekpy), is a pure python Elliptic Curve library
 providing ECDSA, EDDSA (Ed25519), ECSchnorr, Borromean signatures as well as Point
 operations.
 
-Full html documentation is available `here <https://cslashm.github.com/ECPy>`_.
+Full html documentation is available `here <https://cslashm.github.io/ECPy>`_.
 
 
 **ECDSA sample**
